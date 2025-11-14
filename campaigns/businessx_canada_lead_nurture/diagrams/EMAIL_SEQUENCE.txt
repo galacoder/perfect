@@ -1,0 +1,171 @@
+================================================================================
+Email Sequence Flow - 5-Email Nurture Sequence
+================================================================================
+
+Entry Point: Triggered by assessment_handler_flow
+Parameters: email, segment, contact_id
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        EMAIL SEQUENCE FLOW                              │
+│                        (5 emails over 7 days)                           │
+└─────────────────────────────────────────────────────────────────────────┘
+
+START (email, segment, contact_id)
+  │
+  │
+  ▼
+┌─────────────────────────────────────────────────────────┐
+│ EMAIL #1: Assessment Invitation (Universal)             │
+│                                                         │
+│ @task: fetch_template("email_1")                        │
+│ @task: render_template(contact_data)                    │
+│ @task: send_email_via_resend(email, subject, html)      │
+│ @task: update_notion_timestamp("email_1_sent")          │
+│                                                         │
+│ Subject: "Your BusinessX Assessment Results"           │
+│ Content: Thank you + next steps                        │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+                       WAIT 24h
+                    (or 1 min in test mode)
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│ EMAIL #2: Results (Segment-Specific)                    │
+│                                                         │
+│ IF segment == "CRITICAL":                               │
+│   template = "email_2a_critical"                        │
+│   subject = "⚠️  Urgent: Your Business Needs Attention" │
+│                                                         │
+│ ELIF segment == "URGENT":                               │
+│   template = "email_2b_urgent"                          │
+│   subject = "Your Assessment Results + Action Plan"    │
+│                                                         │
+│ ELSE (OPTIMIZE):                                        │
+│   template = "email_2c_optimize"                        │
+│   subject = "Great News: Optimization Opportunities"    │
+│                                                         │
+│ @task: fetch_template(template_name)                    │
+│ @task: render_template(contact_data)                    │
+│ @task: send_email_via_resend(email, subject, html)      │
+│ @task: update_notion_timestamp("email_2_sent")          │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+                       WAIT 48h
+                    (or 2 min in test mode)
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│ EMAIL #3: BusinessX Framework (Universal)               │
+│                                                         │
+│ @task: fetch_template("email_3")                        │
+│ @task: render_template(contact_data)                    │
+│ @task: send_email_via_resend(email, subject, html)      │
+│ @task: update_notion_timestamp("email_3_sent")          │
+│                                                         │
+│ Subject: "The BusinessX Framework Explained"           │
+│ Content: Educational content + methodology             │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+                       WAIT 48h
+                    (or 3 min in test mode)
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│ EMAIL #4: Special Offer (Universal)                     │
+│                                                         │
+│ @task: fetch_template("email_4")                        │
+│ @task: render_template(contact_data)                    │
+│ @task: send_email_via_resend(email, subject, html)      │
+│ @task: update_notion_timestamp("email_4_sent")          │
+│                                                         │
+│ Subject: "Limited Time: Holiday Special"               │
+│ Content: Offer + value proposition                     │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+                       WAIT 48h
+                    (or 4 min in test mode)
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│ EMAIL #5: Final Push (Segment-Specific)                 │
+│                                                         │
+│ IF segment == "CRITICAL":                               │
+│   template = "email_5a_critical"                        │
+│   subject = "Last Chance: Your Business Can't Wait"    │
+│                                                         │
+│ ELIF segment == "URGENT":                               │
+│   template = "email_5b_urgent"                          │
+│   subject = "Ready to Transform Your Business?"        │
+│                                                         │
+│ ELSE (OPTIMIZE):                                        │
+│   template = "email_5c_optimize"                        │
+│   subject = "Join Successful Business Owners"          │
+│                                                         │
+│ @task: fetch_template(template_name)                    │
+│ @task: render_template(contact_data)                    │
+│ @task: send_email_via_resend(email, subject, html)      │
+│ @task: update_notion_timestamp("email_5_sent")          │
+│ @task: update_notion_field("sequence_completed", true)  │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+                            ▼
+                          END
+
+================================================================================
+Task Implementation Details
+================================================================================
+
+fetch_template(template_name: str) -> dict:
+  - Query Notion Templates DB for template by name
+  - If not found or inactive, fallback to static template in config/
+  - Returns: {"subject": "...", "html_body": "..."}
+  - Retries: 3 (30s delay)
+
+render_template(template: dict, contact_data: dict) -> dict:
+  - Replace {{first_name}}, {{business_name}}, {{email}} placeholders
+  - Returns: {"subject": "...", "html": "..."}
+  - No retries (pure function)
+
+send_email_via_resend(to, subject, html) -> dict:
+  - POST to Resend API /emails endpoint
+  - Returns: {"id": "email_id", "status": "sent"}
+  - Retries: 3 (30s delay)
+
+update_notion_timestamp(field_name: str) -> None:
+  - Update contact page with current timestamp
+  - Field names: "email_1_sent", "email_2_sent", etc.
+  - Retries: 3 (60s delay)
+
+================================================================================
+Error Handling & Recovery
+================================================================================
+
+- Template fetch failure: Fallback to static template in config/
+- Email send failure: Retry 3 times, then log for manual follow-up
+- Notion update failure: Don't block sequence (can update manually)
+- Invalid contact_id: Fail fast (should never happen if triggered correctly)
+
+================================================================================
+Wait Time Configuration
+================================================================================
+
+Environment variable: TESTING_MODE=true|false
+
+TESTING_MODE=true (for development/testing):
+  - Email 1 → 2: 1 minute
+  - Email 2 → 3: 2 minutes
+  - Email 3 → 4: 3 minutes
+  - Email 4 → 5: 4 minutes
+  - Total sequence: ~10 minutes
+
+TESTING_MODE=false (production):
+  - Email 1 → 2: 24 hours (1 day)
+  - Email 2 → 3: 48 hours (2 days)
+  - Email 3 → 4: 48 hours (2 days)
+  - Email 4 → 5: 48 hours (2 days)
+  - Total sequence: ~7 days

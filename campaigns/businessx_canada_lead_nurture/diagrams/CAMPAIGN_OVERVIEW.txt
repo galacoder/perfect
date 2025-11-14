@@ -1,0 +1,108 @@
+================================================================================
+BusinessX Canada Lead Nurture Campaign - Architecture Overview
+================================================================================
+
+┌─────────────┐
+│ Website     │
+│ Form        │
+└──────┬──────┘
+       │
+       ├─────────────────POST /webhook/signup─────────────────┐
+       │                                                        │
+       │                                                        ▼
+       │                                             ┌──────────────────────┐
+       │                                             │ Signup Handler Flow  │
+       │                                             │                      │
+       │                                             │ - Search contact     │
+       │                                             │ - Create/Update      │
+       │                                             └──────────┬───────────┘
+       │                                                        │
+       │                                                        ▼
+       │                                             ┌──────────────────────┐
+       │                                             │  Notion Database     │
+       │                                             │  (Contacts)          │
+       │                                             └──────────────────────┘
+       │
+       │
+       └─────────────POST /webhook/assessment────────────────┐
+                                                              │
+                                                              ▼
+                                                   ┌───────────────────────┐
+                                                   │Assessment Handler Flow│
+                                                   │                       │
+                                                   │ - Find contact        │
+                                                   │ - Classify segment    │
+                                                   │ - Update database     │
+                                                   └─────────┬─────────────┘
+                                                             │
+                  ┌──────────────────────────────────────────┼──────────────────┐
+                  │                                          │                  │
+                  │ (CRITICAL only)                          │                  │
+                  ▼                                          │                  │
+       ┌──────────────────┐                                 │                  │
+       │  Discord         │                                 │                  │
+       │  (Hot Leads)     │                                 │                  │
+       └──────────────────┘                                 │                  │
+                                                             │                  │
+                                                             ▼                  ▼
+                                                  ┌──────────────────┐   ┌─────────────┐
+                                                  │Notion (Templates)│   │Email Sequence│
+                                                  │Fetch templates   │◄──┤Flow          │
+                                                  └──────────────────┘   │              │
+                                                                         │- Email 1     │
+                                                                         │  Wait 24h    │
+                                                                         │- Email 2 (seg)│
+                                                                         │  Wait 48h    │
+                                                                         │- Email 3     │
+                                                                         │  Wait 48h    │
+                                                                         │- Email 4     │
+                                                                         │  Wait 48h    │
+                                                                         │- Email 5 (seg)│
+                                                                         └──────┬───────┘
+                                                                                │
+                                                                                ▼
+                                                                         ┌──────────────┐
+                                                                         │ Resend API   │
+                                                                         │ (Send emails)│
+                                                                         └──────────────┘
+
+================================================================================
+Flow Relationships
+================================================================================
+
+1. SIGNUP FLOW
+   Input:  Website form submission (email, name, business_name)
+   Action: Create/update contact in Notion
+   Output: Contact page ID
+
+2. ASSESSMENT FLOW
+   Input:  Assessment completion (email, red_systems, orange_systems, etc.)
+   Action: Classify segment + update Notion + notify Discord (CRITICAL only)
+   Output: Segment classification + triggers Email Sequence
+
+3. EMAIL SEQUENCE FLOW
+   Input:  Email, segment, contact_id
+   Action: Send 5 emails with wait times between each
+   Output: 5 emails delivered over 7 days
+
+================================================================================
+Segment Classification Logic
+================================================================================
+
+IF red_systems >= 2:
+    segment = "CRITICAL"    # Immediate attention needed → Discord alert
+ELSE IF red_systems == 1 OR orange_systems >= 2:
+    segment = "URGENT"      # Action needed soon
+ELSE:
+    segment = "OPTIMIZE"    # Growth opportunities
+
+================================================================================
+Wait Times (configurable via TESTING_MODE env var)
+================================================================================
+
+Email 1 → 2:  Testing: 1 min  | Production: 24 hours
+Email 2 → 3:  Testing: 2 min  | Production: 48 hours
+Email 3 → 4:  Testing: 3 min  | Production: 48 hours
+Email 4 → 5:  Testing: 4 min  | Production: 48 hours
+
+Total:        Testing: ~10min | Production: ~7 days

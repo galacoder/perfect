@@ -1,0 +1,131 @@
+================================================================================
+Assessment Handler Flow - Detailed Task Breakdown
+================================================================================
+
+Entry Point: FastAPI POST /webhook/assessment
+Parameters: email, red_systems, orange_systems, yellow_systems, green_systems,
+            assessment_score
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      ASSESSMENT HANDLER FLOW                            │
+└─────────────────────────────────────────────────────────────────────────┘
+
+START
+  │
+  ▼
+┌───────────────────────────────────┐
+│ @task: search_contact_by_email    │
+│                                   │
+│ Input:  email                     │
+│ Output: contact or None           │
+│                                   │
+│ Retries: 3 (60s delay)            │
+└──────────────┬────────────────────┘
+               │
+               ▼
+         Contact found?
+               │
+      ┌────────┴────────┐
+      │                 │
+     YES               NO
+      │                 │
+      │                 └──► ERROR: Contact not found
+      │                     (Must signup first)
+      ▼
+┌──────────────────────────────────┐
+│ @task: classify_segment          │
+│                                  │
+│ Input:  red, orange, yellow,     │
+│         green system counts      │
+│                                  │
+│ Logic:                           │
+│   if red >= 2:                   │
+│       return "CRITICAL"          │
+│   elif red == 1 or orange >= 2:  │
+│       return "URGENT"            │
+│   else:                          │
+│       return "OPTIMIZE"          │
+│                                  │
+│ Output: segment ("CRITICAL",     │
+│         "URGENT", or "OPTIMIZE") │
+└──────────────┬───────────────────┘
+               │
+               ▼
+┌───────────────────────────────────┐
+│ @task: update_contact             │
+│                                   │
+│ Update Notion with:               │
+│ - assessment_completed = true     │
+│ - assessment_score                │
+│ - red_systems                     │
+│ - orange_systems                  │
+│ - yellow_systems                  │
+│ - green_systems                   │
+│ - segment                         │
+│                                   │
+│ Retries: 3 (60s delay)            │
+└──────────────┬────────────────────┘
+               │
+               ▼
+       Segment == "CRITICAL"?
+               │
+      ┌────────┴────────┐
+      │                 │
+     YES               NO
+      │                 │
+      ▼                 │
+┌──────────────┐        │
+│ @task: send_ │        │
+│ discord_     │        │
+│ notification │        │
+│              │        │
+│ Send hot     │        │
+│ lead alert   │        │
+│              │        │
+│ Retries: 2   │        │
+└──────┬───────┘        │
+       │                │
+       └────────┬───────┘
+                │
+                ▼
+     ┌──────────────────────────┐
+     │ @flow: email_sequence_   │
+     │        flow              │
+     │                          │
+     │ Trigger with:            │
+     │ - email                  │
+     │ - segment                │
+     │ - contact_id             │
+     │                          │
+     │ (Runs async - 5 emails)  │
+     └──────────────────────────┘
+                │
+                ▼
+              END
+
+================================================================================
+Segment-Specific Actions
+================================================================================
+
+CRITICAL Segment (red_systems >= 2):
+  - Immediate Discord notification to sales team
+  - High-priority email sequence with urgency language
+  - Email 2A and 5A variants (segment-specific content)
+
+URGENT Segment (red_systems == 1 OR orange_systems >= 2):
+  - Standard email sequence
+  - Email 2B and 5B variants
+  - No Discord notification
+
+OPTIMIZE Segment (all others):
+  - Growth-focused email sequence
+  - Email 2C and 5C variants
+  - Educational tone
+
+================================================================================
+Error Handling
+================================================================================
+
+- Contact not found: Return 404 error (must signup first)
+- Discord webhook failure: Logged but doesn't block email sequence
+- Email sequence trigger failure: Retry 3 times

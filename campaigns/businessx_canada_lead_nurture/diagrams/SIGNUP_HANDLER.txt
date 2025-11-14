@@ -1,0 +1,83 @@
+================================================================================
+Signup Handler Flow - Detailed Task Breakdown
+================================================================================
+
+Entry Point: FastAPI POST /webhook/signup
+Parameters: email, name, first_name, business_name
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         SIGNUP HANDLER FLOW                             │
+└─────────────────────────────────────────────────────────────────────────┘
+
+START
+  │
+  ▼
+┌─────────────────────────────────────┐
+│ @task: search_contact_by_email      │
+│                                     │
+│ Input:  email                       │
+│ Query:  Notion Contacts DB          │
+│ Output: existing_contact or None    │
+│                                     │
+│ Retries: 3 (60s delay)              │
+└──────────────┬──────────────────────┘
+               │
+               ▼
+         Contact exists?
+               │
+      ┌────────┴────────┐
+      │                 │
+     YES               NO
+      │                 │
+      ▼                 ▼
+┌─────────────┐   ┌──────────────────┐
+│ @task:      │   │ @task:           │
+│ update_     │   │ create_contact   │
+│ contact     │   │                  │
+│             │   │ Input:           │
+│ Update:     │   │ - email          │
+│ - name      │   │ - name           │
+│ - first_name│   │ - first_name     │
+│ - business  │   │ - business_name  │
+│   _name     │   │ - signup_date    │
+│ - signup    │   │ - signup_source  │
+│   _date     │   │                  │
+│             │   │ Retries: 3       │
+└──────┬──────┘   └────────┬─────────┘
+       │                   │
+       └─────────┬─────────┘
+                 │
+                 ▼
+           ┌─────────────┐
+           │  Return:    │
+           │  page_id    │
+           └─────────────┘
+                 │
+                 ▼
+               END
+
+================================================================================
+Task Details
+================================================================================
+
+1. search_contact_by_email(email: str) -> dict | None
+   - Queries Notion database with email filter
+   - Returns contact object if found, None otherwise
+   - Handles rate limiting with retry
+
+2. create_contact(properties: dict) -> str
+   - Creates new page in Notion Contacts DB
+   - Returns page_id
+   - Properties: email, name, first_name, business_name, signup_date
+
+3. update_contact(page_id: str, properties: dict) -> None
+   - Updates existing contact with new information
+   - Preserves assessment data if exists
+
+================================================================================
+Error Handling
+================================================================================
+
+- Notion API errors: 3 retries with 60-second delay
+- Invalid email: Validation at webhook level (Pydantic)
+- Database timeout: Logged and raised for manual intervention
