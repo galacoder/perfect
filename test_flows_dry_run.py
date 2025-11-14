@@ -15,9 +15,9 @@ print("🧪 Testing Prefect flows (dry-run)...\n")
 # Test 1: Import all flows
 print("1️⃣ Testing flow imports...")
 try:
-    from flows.signup_handler import signup_handler_flow
-    from flows.assessment_handler import assessment_handler_flow
-    from flows.email_sequence import email_sequence_flow
+    from campaigns.businessx_canada_lead_nurture.flows.signup_handler import signup_handler_flow
+    from campaigns.businessx_canada_lead_nurture.flows.assessment_handler import assessment_handler_flow
+    from campaigns.businessx_canada_lead_nurture.flows.email_sequence import email_sequence_flow
     print("   ✅ All flows imported successfully")
 except Exception as e:
     print(f"   ❌ Import error: {e}")
@@ -45,23 +45,23 @@ except AssertionError as e:
 # Test 3: Import all tasks
 print("\n3️⃣ Testing task imports...")
 try:
-    from tasks.notion_operations import (
+    from campaigns.businessx_canada_lead_nurture.tasks.notion_operations import (
         search_contact_by_email,
         create_contact,
         update_contact,
         get_contact
     )
-    from tasks.resend_operations import (
+    from campaigns.businessx_canada_lead_nurture.tasks.resend_operations import (
         send_email,
         substitute_variables,
         send_template_email
     )
-    from tasks.routing import (
+    from campaigns.businessx_canada_lead_nurture.tasks.routing import (
         determine_segment,
         select_email_template,
         get_wait_duration
     )
-    from tasks.template_operations import (
+    from campaigns.businessx_canada_lead_nurture.tasks.template_operations import (
         fetch_template_from_notion,
         fetch_template_cached,
         list_all_templates,
@@ -77,7 +77,7 @@ except Exception as e:
 print("\n4️⃣ Testing routing logic...")
 try:
     # Test segment classification
-    from tasks.routing import determine_segment
+    from campaigns.businessx_canada_lead_nurture.tasks.routing import determine_segment
 
     segment_critical = determine_segment(red_systems=2, orange_systems=1)
     assert segment_critical == "CRITICAL"
@@ -98,7 +98,7 @@ except Exception as e:
 # Test 5: Verify email template selection
 print("\n5️⃣ Testing email template selection...")
 try:
-    from tasks.routing import select_email_template
+    from campaigns.businessx_canada_lead_nurture.tasks.routing import select_email_template
 
     # Email #1 (universal)
     email_1 = select_email_template(email_number=1, segment="CRITICAL")
@@ -125,7 +125,7 @@ except Exception as e:
 # Test 6: Verify wait duration logic
 print("\n6️⃣ Testing wait duration logic...")
 try:
-    from tasks.routing import get_wait_duration
+    from campaigns.businessx_canada_lead_nurture.tasks.routing import get_wait_duration
 
     # Production mode
     wait_prod_1 = get_wait_duration(email_number=1, testing_mode=False)
@@ -144,7 +144,7 @@ except Exception as e:
 # Test 7: Verify variable substitution
 print("\n7️⃣ Testing variable substitution...")
 try:
-    from tasks.resend_operations import substitute_variables
+    from campaigns.businessx_canada_lead_nurture.tasks.resend_operations import substitute_variables
 
     template = "Hello {{first_name}}, welcome to {{business_name}}!"
     variables = {"first_name": "John", "business_name": "Acme Corp"}

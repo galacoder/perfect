@@ -38,14 +38,14 @@ def test_signup_flow(use_mock=True):
     print("-" * 60)
 
     try:
-        from flows.signup_handler import signup_handler_flow
+        from campaigns.businessx_canada_lead_nurture.flows.signup_handler import signup_handler_flow
 
         if use_mock:
             print("   Using mocked Notion API...")
             # Mock Notion client
             from unittest.mock import Mock, patch
 
-            with patch('tasks.notion_operations.notion') as mock_notion:
+            with patch('campaigns.businessx_canada_lead_nurture.tasks.notion_operations.notion') as mock_notion:
                 # Mock search returns no existing contact
                 mock_notion.databases.query.return_value = {"results": []}
 
@@ -95,16 +95,16 @@ def test_assessment_flow(use_mock=True, page_id=None):
     print("-" * 60)
 
     try:
-        from flows.assessment_handler import assessment_handler_flow
+        from campaigns.businessx_canada_lead_nurture.flows.assessment_handler import assessment_handler_flow
 
         if use_mock:
             print("   Using mocked Notion/Resend APIs...")
             from unittest.mock import Mock, patch
 
             # Mock Notion
-            with patch('tasks.notion_operations.notion') as mock_notion, \
-                 patch('tasks.resend_operations.httpx.Client') as mock_httpx, \
-                 patch('tasks.template_operations.notion') as mock_template_notion:
+            with patch('campaigns.businessx_canada_lead_nurture.tasks.notion_operations.notion') as mock_notion, \
+                 patch('campaigns.businessx_canada_lead_nurture.tasks.resend_operations.httpx.Client') as mock_httpx, \
+                 patch('campaigns.businessx_canada_lead_nurture.tasks.template_operations.notion') as mock_template_notion:
 
                 # Mock search finds contact
                 mock_notion.databases.query.return_value = {
@@ -197,15 +197,15 @@ def test_email_sequence_flow(use_mock=True):
     print("-" * 60)
 
     try:
-        from flows.email_sequence import email_sequence_flow
+        from campaigns.businessx_canada_lead_nurture.flows.email_sequence import email_sequence_flow
 
         if use_mock:
             print("   Using mocked Notion/Resend APIs...")
             from unittest.mock import Mock, patch
 
-            with patch('tasks.notion_operations.notion') as mock_notion, \
-                 patch('tasks.resend_operations.httpx.Client') as mock_httpx, \
-                 patch('tasks.template_operations.notion') as mock_template_notion:
+            with patch('campaigns.businessx_canada_lead_nurture.tasks.notion_operations.notion') as mock_notion, \
+                 patch('campaigns.businessx_canada_lead_nurture.tasks.resend_operations.httpx.Client') as mock_httpx, \
+                 patch('campaigns.businessx_canada_lead_nurture.tasks.template_operations.notion') as mock_template_notion:
 
                 # Mock Notion updates
                 mock_notion.pages.update.return_value = {"id": "test-page-123"}

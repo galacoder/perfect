@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv
 from config.email_templates import TEMPLATES
-from tasks.template_operations import seed_templates_to_notion
+from campaigns.businessx_canada_lead_nurture.tasks.template_operations import seed_templates_to_notion
 
 # Load environment variables
 load_dotenv()

@@ -6,7 +6,7 @@ Tests all Prefect tasks for fetching email templates from Notion Templates DB.
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from tasks.template_operations import (
+from campaigns.businessx_canada_lead_nurture.tasks.template_operations import (
     fetch_template_from_notion,
     fetch_template_cached,
     list_all_templates,
@@ -18,7 +18,7 @@ from tasks.template_operations import (
 @pytest.fixture
 def mock_notion_client():
     """Mock Notion client for testing."""
-    with patch('tasks.template_operations.notion') as mock_client:
+    with patch('campaigns.businessx_canada_lead_nurture.tasks.template_operations.notion') as mock_client:
         yield mock_client
 
 
@@ -187,7 +187,7 @@ class TestFetchTemplateCached:
         mock_notion_client.databases.query.return_value = mock_response
 
         # Clear cache before test
-        from tasks import template_operations
+        from campaigns.businessx_canada_lead_nurture.tasks import template_operations
         template_operations._template_cache.clear()
 
         # Act - First call (should hit API)
@@ -223,7 +223,7 @@ class TestFetchTemplateCached:
         mock_notion_client.databases.query.side_effect = mock_query
 
         # Clear cache
-        from tasks import template_operations
+        from campaigns.businessx_canada_lead_nurture.tasks import template_operations
         template_operations._template_cache.clear()
 
         # Act
@@ -457,7 +457,7 @@ class TestGetTemplate:
         mock_notion_client.databases.query.return_value = mock_response
 
         # Clear cache
-        from tasks import template_operations
+        from campaigns.businessx_canada_lead_nurture.tasks import template_operations
         template_operations._template_cache.clear()
 
         # Act
@@ -490,7 +490,7 @@ class TestRetryLogic:
     def test_retry_annotation_exists(self):
         """Verify all tasks have retry annotations."""
         import inspect
-        from tasks import template_operations
+        from campaigns.businessx_canada_lead_nurture.tasks import template_operations
 
         # Get all functions that should be tasks
         task_functions = [

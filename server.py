@@ -32,8 +32,8 @@ import os
 from datetime import datetime
 
 # Import Prefect flows
-from flows.signup_handler import signup_handler_flow
-from flows.assessment_handler import assessment_handler_flow
+from campaigns.businessx_canada_lead_nurture.flows.signup_handler import signup_handler_flow
+from campaigns.businessx_canada_lead_nurture.flows.assessment_handler import assessment_handler_flow
 
 # Configure logging
 logging.basicConfig(
@@ -251,7 +251,7 @@ async def assessment_webhook(
 
     try:
         # Determine segment for quick response
-        from tasks.routing import determine_segment
+        from campaigns.businessx_canada_lead_nurture.tasks.routing import determine_segment
 
         segment = determine_segment(
             red_systems=request.red_systems,
