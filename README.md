@@ -88,27 +88,36 @@ Notion Database (Contacts, Templates) + Resend API (Email Delivery)
 
 ## Project Structure
 
+**New Campaign-Based Structure** (as of migration):
+
 ```
 perfect/
-├── flows/                    # Prefect flows
-│   ├── __init__.py
-│   ├── signup_handler.py    # Handle new signups
-│   ├── assessment_handler.py # Handle assessments
-│   ├── email_sequence.py    # 5-email sequence
-│   └── deploy.py            # Prefect deployment config
-├── tasks/                    # Prefect tasks
-│   ├── __init__.py
-│   ├── notion_operations.py # Notion CRUD
-│   ├── resend_operations.py # Email sending
-│   ├── routing.py           # Segment classification
-│   └── template_operations.py # Dynamic template fetching
+├── campaigns/                           # Campaign-based organization
+│   └── businessx_canada_lead_nurture/   # BusOS Lead Nurture Campaign
+│       ├── README.md                    # Campaign overview
+│       ├── ARCHITECTURE.md              # Technical architecture
+│       ├── flows/                       # Prefect flows (3 flows)
+│       │   ├── signup_handler.py        # Handle new signups
+│       │   ├── assessment_handler.py    # Handle assessments
+│       │   └── email_sequence.py        # 5-email sequence
+│       ├── tasks/                       # Prefect tasks (4 modules)
+│       │   ├── notion_operations.py     # Notion CRUD
+│       │   ├── resend_operations.py     # Email sending
+│       │   ├── routing.py               # Segment classification
+│       │   └── template_operations.py   # Dynamic template fetching
+│       ├── tests/                       # Unit tests (93 tests)
+│       │   ├── test_notion_operations.py
+│       │   ├── test_resend_operations.py
+│       │   └── test_routing.py
+│       └── diagrams/                    # ASCII workflow diagrams
+│           ├── CAMPAIGN_OVERVIEW.txt    # High-level architecture
+│           ├── SIGNUP_HANDLER.txt       # Signup flow diagram
+│           ├── ASSESSMENT_HANDLER.txt   # Assessment flow diagram
+│           └── EMAIL_SEQUENCE.txt       # Complete email sequence
+├── flows/                    # Backward compatibility shims (deprecated)
+├── tasks/                    # Backward compatibility shims (deprecated)
 ├── config/                   # Configuration
 │   └── email_templates.py   # Static templates (fallback)
-├── tests/                    # Unit tests (93 tests)
-│   ├── test_notion_operations.py
-│   ├── test_resend_operations.py
-│   ├── test_routing.py
-│   └── test_template_operations.py
 ├── scripts/                  # Utility scripts
 │   └── seed_templates.py    # Seed Notion templates
 ├── server.py                 # FastAPI webhook server
@@ -116,9 +125,18 @@ perfect/
 ├── test_integration_e2e.py  # Integration tests
 ├── requirements.txt          # Python dependencies
 ├── DEPLOYMENT.md             # Deployment guide
+├── MIGRATION_GUIDE.md        # Campaign migration guide
 ├── .env                      # Environment config (gitignored)
 └── .gitignore
 ```
+
+**Why Campaign-Based Structure?**
+- ✅ Scale to multiple campaigns without file conflicts
+- ✅ Self-documenting with campaign-specific README and diagrams
+- ✅ Easier team collaboration (clear ownership)
+- ✅ Better code organization (all related files together)
+
+**Migration Status**: Backward compatibility maintained through shims in `/flows/` and `/tasks/`. See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for details.
 
 ## Email Sequence
 
