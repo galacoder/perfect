@@ -282,7 +282,7 @@ def fetch_email_template(template_id: str) -> Optional[Dict[str, Any]]:
     Fetch email template from Notion Email Templates database.
 
     Args:
-        template_id: Template identifier (e.g., "christmas_email_1", "christmas_email_2a_critical")
+        template_id: Template identifier (e.g., "christmas_email_1", "christmas_email_2")
 
     Returns:
         Template data dict with 'subject' and 'html_body' keys, or None if not found
@@ -297,8 +297,8 @@ def fetch_email_template(template_id: str) -> Optional[Dict[str, Any]]:
         response = notion.databases.query(
             database_id=NOTION_EMAIL_TEMPLATES_DB_ID,
             filter={
-                "property": "template_id",
-                "rich_text": {
+                "property": "Template Name",
+                "title": {
                     "equals": template_id
                 }
             }
@@ -311,11 +311,19 @@ def fetch_email_template(template_id: str) -> Optional[Dict[str, Any]]:
         page = response["results"][0]
         props = page["properties"]
 
+        # Extract subject from "Subject Line" rich_text property
+        subject_prop = props.get("Subject Line", {}).get("rich_text", [])
+        subject = "".join([text["plain_text"] for text in subject_prop]) if subject_prop else ""
+
+        # Extract HTML body from "Email Body HTML" rich_text property
+        html_prop = props.get("Email Body HTML", {}).get("rich_text", [])
+        html_body = "".join([text["plain_text"] for text in html_prop]) if html_prop else ""
+
         # Extract template data
         template_data = {
             "template_id": template_id,
-            "subject": props.get("subject", {}).get("title", [{}])[0].get("text", {}).get("content", ""),
-            "html_body": props.get("html_body", {}).get("rich_text", [{}])[0].get("text", {}).get("content", "")
+            "subject": subject,
+            "html_body": html_body
         }
 
         print(f"✅ Fetched template: {template_id}")

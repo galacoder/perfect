@@ -35,3 +35,15 @@
 - Duration: 1.5 hours
 - Status: ✅ COMPLETE
 
+### Wave 3: Integration Testing with Notion API (COMPLETE ✅)
+- 2025-11-18 - Discovered database schema mismatch (template_id vs Template Name)
+- 2025-11-18 - Updated upload script to match existing database schema
+- 2025-11-18 - Fixed property names (Template Name, Subject Line, Email Body HTML, Email Number, Status, Segment)
+- 2025-11-18 - Updated fetch_email_template() in notion_operations.py to use correct properties
+- 2025-11-18 - Successfully uploaded all 7 templates to Notion (7/7 ✅)
+- 2025-11-18 - Verified template fetching with {{variable}} preservation
+- 2025-11-18 - Tested idempotency (update existing templates, no duplicates)
+- 2025-11-18 - All templates accessible in Notion database
+- Duration: 45 minutes
+- Status: ✅ COMPLETE
+

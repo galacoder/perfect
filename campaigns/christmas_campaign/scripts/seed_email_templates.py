@@ -51,7 +51,7 @@ def validate_environment() -> None:
 
 def find_existing_template(template_id: str) -> Optional[Dict[str, Any]]:
     """
-    Find existing template in Notion by template_id.
+    Find existing template in Notion by Template Name.
 
     Args:
         template_id: Template identifier (e.g., 'christmas_email_1')
@@ -60,12 +60,12 @@ def find_existing_template(template_id: str) -> Optional[Dict[str, Any]]:
         Notion page object if found, None otherwise
     """
     try:
-        # Query database for template with matching template_id
+        # Query database for template with matching Template Name
         response = notion.databases.query(
             database_id=NOTION_EMAIL_TEMPLATES_DB_ID,
             filter={
-                "property": "template_id",
-                "rich_text": {"equals": template_id}
+                "property": "Template Name",
+                "title": {"equals": template_id}
             }
         )
 
@@ -90,31 +90,31 @@ def create_template(template_id: str, template_data: Dict[str, Any]) -> str:
         Notion page ID of created template
     """
     try:
-        # Build properties for Notion page
+        # Build properties for Notion page matching database schema
         properties = {
-            "template_id": {
-                "rich_text": [{"type": "text", "text": {"content": template_id}}]
+            "Template Name": {
+                "title": [{"type": "text", "text": {"content": template_id}}]
             },
-            "subject": {
-                "title": [{"type": "text", "text": {"content": template_data["subject"]}}]
+            "Subject Line": {
+                "rich_text": [{"type": "text", "text": {"content": template_data["subject"]}}]
             },
-            "html_body": {
+            "Email Body HTML": {
                 "rich_text": [{"type": "text", "text": {"content": template_data["html_body"][:2000]}}]
             },
-            "campaign": {
-                "select": {"name": template_data["campaign"]}
-            },
-            "email_number": {
+            "Email Number": {
                 "number": template_data["email_number"]
             },
-            "active": {
-                "checkbox": template_data["active"]
+            "Status": {
+                "select": {"name": "Active" if template_data["active"] else "Inactive"}
+            },
+            "Template Type": {
+                "select": {"name": "Nurture Sequence"}
             }
         }
 
         # Add segment if it's a multi-select property
         if "segment" in template_data and template_data["segment"]:
-            properties["segment"] = {
+            properties["Segment"] = {
                 "multi_select": [{"name": seg} for seg in template_data["segment"]]
             }
 
@@ -146,28 +146,28 @@ def update_template(page_id: str, template_id: str, template_data: Dict[str, Any
         Notion page ID of updated template
     """
     try:
-        # Build properties for update
+        # Build properties for update matching database schema
         properties = {
-            "subject": {
-                "title": [{"type": "text", "text": {"content": template_data["subject"]}}]
+            "Subject Line": {
+                "rich_text": [{"type": "text", "text": {"content": template_data["subject"]}}]
             },
-            "html_body": {
+            "Email Body HTML": {
                 "rich_text": [{"type": "text", "text": {"content": template_data["html_body"][:2000]}}]
             },
-            "campaign": {
-                "select": {"name": template_data["campaign"]}
-            },
-            "email_number": {
+            "Email Number": {
                 "number": template_data["email_number"]
             },
-            "active": {
-                "checkbox": template_data["active"]
+            "Status": {
+                "select": {"name": "Active" if template_data["active"] else "Inactive"}
+            },
+            "Template Type": {
+                "select": {"name": "Nurture Sequence"}
             }
         }
 
         # Add segment if applicable
         if "segment" in template_data and template_data["segment"]:
-            properties["segment"] = {
+            properties["Segment"] = {
                 "multi_select": [{"name": seg} for seg in template_data["segment"]]
             }
 
