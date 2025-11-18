@@ -14,6 +14,10 @@ from notion_client import Client
 from datetime import datetime
 import os
 from typing import Optional, Dict, Any
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Load environment variables
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
@@ -92,8 +96,8 @@ def create_contact(
     """
     try:
         properties = {
+            "Name": {"title": [{"text": {"content": name}}]},  # Title property (primary key)
             "Email": {"email": email},
-            "Name": {"rich_text": [{"text": {"content": name}}]},
             "First Name": {"rich_text": [{"text": {"content": first_name}}]},
             "Business Name": {"rich_text": [{"text": {"content": business_name}}]},
             "Signup Date": {"date": {"start": datetime.now().isoformat()}},

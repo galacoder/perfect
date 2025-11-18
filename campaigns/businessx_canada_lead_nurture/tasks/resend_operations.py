@@ -13,6 +13,10 @@ from prefect import task
 import httpx
 import os
 from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Load environment variables
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")

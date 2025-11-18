@@ -18,6 +18,10 @@ from prefect import task
 from notion_client import Client
 import os
 from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Load environment variables
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
@@ -63,9 +67,9 @@ def fetch_template_from_notion(template_name: str) -> Dict[str, str]:
                         }
                     },
                     {
-                        "property": "Active",
-                        "checkbox": {
-                            "equals": True
+                        "property": "Status",
+                        "select": {
+                            "equals": "Active"
                         }
                     }
                 ]
@@ -75,7 +79,7 @@ def fetch_template_from_notion(template_name: str) -> Dict[str, str]:
         if not response["results"]:
             raise ValueError(
                 f"Template '{template_name}' not found or not active in Notion Templates DB. "
-                f"Please create template in Notion with Template Name = '{template_name}' and Active = checked."
+                f"Please create template in Notion with Template Name = '{template_name}' and Status = 'Active'."
             )
 
         # Extract template data from first result
@@ -161,9 +165,9 @@ def list_all_templates() -> list[Dict[str, Any]]:
         response = notion.databases.query(
             database_id=NOTION_TEMPLATES_DB_ID,
             filter={
-                "property": "Active",
-                "checkbox": {
-                    "equals": True
+                "property": "Status",
+                "select": {
+                    "equals": "Active"
                 }
             },
             sorts=[
@@ -261,8 +265,8 @@ def seed_templates_to_notion(templates: Dict[str, Dict[str, str]]) -> Dict[str, 
                     # Note: Notion rich_text has 2000 char limit per block
                     # For long HTML, may need to split or use Code block
                 },
-                "Active": {
-                    "checkbox": True
+                "Status": {
+                    "select": {"name": "Active"}
                 }
             }
 

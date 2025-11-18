@@ -93,9 +93,6 @@ def assessment_handler_flow(
     # Prepare Notion properties update
     assessment_properties = {
         "Assessment Completed": {"checkbox": True},
-        "Assessment Date": {
-            "date": {"start": assessment_date or datetime.now().isoformat()}
-        },
         "Red Systems": {"number": red_systems},
         "Orange Systems": {"number": orange_systems},
         "Yellow Systems": {"number": yellow_systems},
@@ -151,15 +148,8 @@ def assessment_handler_flow(
     except Exception as e:
         print(f"   ❌ Error triggering email sequence: {e}")
 
-        # Update Notion with error
-        update_contact(
-            page_id=page_id,
-            properties={
-                "Email Sequence Error": {
-                    "rich_text": [{"text": {"content": str(e)}}]
-                }
-            }
-        )
+        # Note: Email Sequence Error property doesn't exist in the database
+        # Error is logged above and returned in response
 
         return {
             "status": "error",
