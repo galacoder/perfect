@@ -269,6 +269,12 @@ def mock_future_time():
 # Environment Fixtures
 # ==============================================================================
 
+@pytest.fixture(autouse=True)
+def prefect_test_mode(monkeypatch):
+    """Disable Prefect tracking for unit tests."""
+    monkeypatch.setenv("PREFECT_API_URL", "")  # Disable Prefect API connection
+
+
 @pytest.fixture
 def testing_mode_enabled(monkeypatch):
     """Enable testing mode for fast email sequences."""

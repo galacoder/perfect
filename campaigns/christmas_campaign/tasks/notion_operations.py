@@ -30,6 +30,7 @@ NOTION_BUSINESSX_DB_ID = os.getenv("NOTION_BUSINESSX_DB_ID")
 NOTION_CUSTOMER_PROJECTS_DB_ID = os.getenv("NOTION_CUSTOMER_PROJECTS_DB_ID")
 NOTION_EMAIL_TEMPLATES_DB_ID = os.getenv("NOTION_EMAIL_TEMPLATES_DB_ID")
 NOTION_EMAIL_ANALYTICS_DB_ID = os.getenv("NOTION_EMAIL_ANALYTICS_DB_ID")
+NOTION_EMAIL_SEQUENCE_DB_ID = os.getenv("NOTION_EMAIL_SEQUENCE_DB_ID")
 
 # Initialize Notion client
 notion = Client(auth=NOTION_TOKEN)
@@ -269,6 +270,208 @@ def update_booking_status(
 
     except Exception as e:
         print(f"❌ Error updating booking status for {page_id}: {e}")
+        raise
+
+
+# ==============================================================================
+# Email Sequence Tracking Operations
+# ==============================================================================
+
+@task(retries=3, retry_delay_seconds=60, name="christmas-search-email-sequence")
+def search_email_sequence_by_email(email: str) -> Optional[Dict[str, Any]]:
+    """
+    Search for existing email sequence record in Email Sequence database by email.
+
+    This function checks if the contact is already in the email nurture sequence,
+    which is critical for:
+    - Idempotency: Prevent duplicate sequence starts
+    - State portability: Track which emails have been sent across server switches
+    - Resume capability: Continue sequence after interruptions
+
+    Args:
+        email: Contact email address to search for
+
+    Returns:
+        Email sequence record if found, None if not found
+
+    Example:
+        sequence = search_email_sequence_by_email("sarah@example.com")
+        if sequence:
+            sequence_id = sequence["id"]
+            email_1_sent = sequence["properties"]["Email 1 Sent"]["date"]
+            campaign = sequence["properties"]["Campaign"]["select"]["name"]
+    """
+    try:
+        response = notion.databases.query(
+            database_id=NOTION_EMAIL_SEQUENCE_DB_ID,
+            filter={
+                "property": "Email",
+                "email": {
+                    "equals": email
+                }
+            }
+        )
+
+        if response["results"]:
+            return response["results"][0]
+        return None
+
+    except Exception as e:
+        print(f"❌ Error searching email sequence for {email}: {e}")
+        raise
+
+
+@task(retries=3, retry_delay_seconds=60, name="christmas-create-email-sequence")
+def create_email_sequence(
+    email: str,
+    first_name: str,
+    business_name: str,
+    assessment_score: int,
+    red_systems: int = 0,
+    orange_systems: int = 0,
+    yellow_systems: int = 0,
+    green_systems: int = 0,
+    segment: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    Create new email sequence tracking record in Email Sequence database.
+
+    This function creates the master record for tracking all email sends
+    for this contact in the Christmas campaign.
+
+    Args:
+        email: Contact email address
+        first_name: Contact first name
+        business_name: Business name
+        assessment_score: Overall BusOS score (0-100)
+        red_systems: Number of red (broken) systems
+        orange_systems: Number of orange (struggling) systems
+        yellow_systems: Number of yellow (functional) systems
+        green_systems: Number of green (optimized) systems
+        segment: Classified segment (CRITICAL/URGENT/OPTIMIZE)
+
+    Returns:
+        Created email sequence record
+
+    Example:
+        sequence = create_email_sequence(
+            email="sarah@example.com",
+            first_name="Sarah",
+            business_name="Sarah's Salon",
+            assessment_score=52,
+            red_systems=2,
+            orange_systems=1,
+            yellow_systems=2,
+            green_systems=3,
+            segment="URGENT"
+        )
+        sequence_id = sequence["id"]
+    """
+    try:
+        properties = {
+            "Email": {"email": email},
+            "First Name": {"rich_text": [{"text": {"content": first_name}}]},
+            "Business Name": {"rich_text": [{"text": {"content": business_name}}]},
+            "Assessment Score": {"number": assessment_score},
+            "Red Systems": {"number": red_systems},
+            "Orange Systems": {"number": orange_systems},
+            "Yellow Systems": {"number": yellow_systems},
+            "Green Systems": {"number": green_systems},
+            "Campaign": {"select": {"name": "Christmas 2025"}},
+            "Signup Date": {"date": {"start": datetime.now().isoformat()}},
+            "Sequence Completed": {"checkbox": False},
+            "Assessment Completed": {"checkbox": True}
+        }
+
+        if segment:
+            properties["Segment"] = {"select": {"name": segment}}
+
+        response = notion.pages.create(
+            parent={"database_id": NOTION_EMAIL_SEQUENCE_DB_ID},
+            properties=properties
+        )
+
+        print(f"✅ Created email sequence record for {email} (Campaign: Christmas 2025)")
+        return response
+
+    except Exception as e:
+        print(f"❌ Error creating email sequence for {email}: {e}")
+        raise
+
+
+@task(retries=3, retry_delay_seconds=60, name="christmas-update-email-sequence")
+def update_email_sequence(
+    sequence_id: str,
+    email_number: Optional[int] = None,
+    sequence_completed: Optional[bool] = None,
+    **additional_properties
+) -> Dict[str, Any]:
+    """
+    Update email sequence tracking record after sending an email.
+
+    This function is called AFTER each email is successfully sent to update
+    the "Email X Sent" timestamp field. This ensures state portability - if
+    we switch servers, we know exactly which emails have been sent.
+
+    Args:
+        sequence_id: Notion page ID of email sequence record
+        email_number: Email number just sent (1-7, optional)
+        sequence_completed: Mark sequence as complete (optional)
+        **additional_properties: Additional Notion properties to update
+
+    Returns:
+        Updated email sequence record
+
+    Example:
+        # After sending Email 1
+        update_email_sequence(
+            sequence_id="abc123",
+            email_number=1
+        )
+
+        # After sending final email
+        update_email_sequence(
+            sequence_id="abc123",
+            email_number=7,
+            sequence_completed=True
+        )
+
+        # Custom update
+        update_email_sequence(
+            sequence_id="abc123",
+            **{"Custom Field": {"rich_text": [{"text": {"content": "value"}}]}}
+        )
+    """
+    try:
+        properties = {}
+
+        # Update email sent timestamp
+        if email_number:
+            properties[f"Email {email_number} Sent"] = {
+                "date": {"start": datetime.now().isoformat()}
+            }
+
+        # Mark sequence completion
+        if sequence_completed is not None:
+            properties["Sequence Completed"] = {"checkbox": sequence_completed}
+
+        # Add any additional properties
+        properties.update(additional_properties)
+
+        response = notion.pages.update(
+            page_id=sequence_id,
+            properties=properties
+        )
+
+        if email_number:
+            print(f"✅ Updated email sequence {sequence_id}: Email {email_number} sent")
+        else:
+            print(f"✅ Updated email sequence {sequence_id}")
+
+        return response
+
+    except Exception as e:
+        print(f"❌ Error updating email sequence {sequence_id}: {e}")
         raise
 
 

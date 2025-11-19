@@ -129,6 +129,64 @@ class AssessmentRequest(BaseModel):
         }
 
 
+class ChristmasSignupRequest(BaseModel):
+    """
+    Christmas campaign signup webhook payload.
+
+    Triggered when customer completes assessment and signs up for Christmas campaign.
+    Includes both contact info and assessment data.
+
+    Example:
+        {
+            "email": "sarah@example.com",
+            "first_name": "Sarah",
+            "business_name": "Sarah's Salon",
+            "assessment_score": 52,
+            "red_systems": 2,
+            "orange_systems": 1,
+            "yellow_systems": 2,
+            "green_systems": 3,
+            "gps_score": 45,
+            "money_score": 38,
+            "weakest_system_1": "GPS",
+            "weakest_system_2": "Money",
+            "revenue_leak_total": 14700
+        }
+    """
+    email: EmailStr = Field(..., description="Customer email address")
+    first_name: str = Field(..., description="Customer first name")
+    business_name: Optional[str] = Field(None, description="Business name")
+    assessment_score: int = Field(..., ge=0, le=100, description="Overall BusOS score")
+    red_systems: int = Field(default=0, ge=0, le=8, description="Number of broken systems")
+    orange_systems: int = Field(default=0, ge=0, le=8, description="Number of struggling systems")
+    yellow_systems: int = Field(default=0, ge=0, le=8, description="Number of functional systems")
+    green_systems: int = Field(default=0, ge=0, le=8, description="Number of optimized systems")
+    gps_score: Optional[int] = Field(None, ge=0, le=100, description="GPS system score")
+    money_score: Optional[int] = Field(None, ge=0, le=100, description="Money system score")
+    weakest_system_1: Optional[str] = Field(None, description="Weakest system name")
+    weakest_system_2: Optional[str] = Field(None, description="Second weakest system")
+    revenue_leak_total: Optional[int] = Field(None, description="Total revenue leak estimate")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "sarah@example.com",
+                "first_name": "Sarah",
+                "business_name": "Sarah's Salon",
+                "assessment_score": 52,
+                "red_systems": 2,
+                "orange_systems": 1,
+                "yellow_systems": 2,
+                "green_systems": 3,
+                "gps_score": 45,
+                "money_score": 38,
+                "weakest_system_1": "GPS",
+                "weakest_system_2": "Money",
+                "revenue_leak_total": 14700
+            }
+        }
+
+
 # ===== Health Check Endpoint =====
 
 @app.get("/health")
@@ -298,6 +356,90 @@ async def assessment_webhook(
         raise HTTPException(
             status_code=500,
             detail=f"Error processing assessment: {str(e)}"
+        )
+
+
+@app.post("/webhook/christmas-signup")
+async def christmas_signup_webhook(
+    request: ChristmasSignupRequest,
+    background_tasks: BackgroundTasks
+):
+    """
+    Handle Christmas campaign signup webhook.
+
+    This endpoint:
+    1. Validates signup data (via Pydantic)
+    2. Triggers signup_handler_flow in background
+    3. Creates/updates contact in BusinessX Canada Database
+    4. Creates entry in Email Sequence Database with Campaign="Christmas 2025"
+    5. Schedules 7-email nurture sequence via Prefect Deployment
+    6. Returns immediately with 202 Accepted
+
+    Args:
+        request: Christmas signup data validated by Pydantic
+
+    Returns:
+        Acceptance confirmation with request ID
+
+    Example:
+        curl -X POST http://localhost:8000/webhook/christmas-signup \\
+          -H "Content-Type: application/json" \\
+          -d '{
+            "email": "sarah@example.com",
+            "first_name": "Sarah",
+            "business_name": "Sarah's Salon",
+            "assessment_score": 52,
+            "red_systems": 2,
+            "orange_systems": 1,
+            "yellow_systems": 2,
+            "green_systems": 3,
+            "gps_score": 45,
+            "money_score": 38,
+            "weakest_system_1": "GPS",
+            "weakest_system_2": "Money",
+            "revenue_leak_total": 14700
+          }'
+    """
+    logger.info(f"📥 Received Christmas signup webhook for {request.email}")
+    logger.info(f"   Assessment Score: {request.assessment_score}, Red Systems: {request.red_systems}")
+
+    try:
+        # Import Christmas campaign signup handler
+        from campaigns.christmas_campaign.flows.signup_handler import signup_handler_flow
+
+        # Trigger Prefect flow in background
+        background_tasks.add_task(
+            signup_handler_flow,
+            email=request.email,
+            first_name=request.first_name,
+            business_name=request.business_name or "your business",
+            assessment_score=request.assessment_score,
+            red_systems=request.red_systems,
+            orange_systems=request.orange_systems,
+            yellow_systems=request.yellow_systems,
+            green_systems=request.green_systems,
+            gps_score=request.gps_score,
+            money_score=request.money_score,
+            weakest_system_1=request.weakest_system_1,
+            weakest_system_2=request.weakest_system_2,
+            revenue_leak_total=request.revenue_leak_total
+        )
+
+        logger.info(f"✅ Christmas signup flow queued for {request.email}")
+
+        return {
+            "status": "accepted",
+            "message": "Christmas signup received and email sequence will begin shortly",
+            "email": request.email,
+            "campaign": "Christmas 2025",
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Error processing Christmas signup for {request.email}: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing Christmas signup: {str(e)}"
         )
 
 
