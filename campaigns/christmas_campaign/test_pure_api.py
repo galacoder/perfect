@@ -104,6 +104,9 @@ def test_complete_flow():
         "first_name": first_name,
         "email": to_email,
         "GPSScore": "45",
+        "GenerateScore": "40",  # GPS subscore - Generate
+        "PersuadeScore": "45",  # GPS subscore - Persuade
+        "ServeScore": "50",     # GPS subscore - Serve
         "MoneyScore": "38",
         "PeopleScore": "65",
         "WeakestSystem1": "GPS",
