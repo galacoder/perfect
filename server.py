@@ -187,6 +187,62 @@ class ChristmasSignupRequest(BaseModel):
         }
 
 
+class CalcomBookingRequest(BaseModel):
+    """
+    Cal.com booking webhook payload.
+
+    Triggered when customer books a diagnostic meeting via Cal.com.
+    Used to schedule pre-call prep email sequence.
+
+    Example:
+        {
+            "triggerEvent": "BOOKING_CREATED",
+            "payload": {
+                "booking": {
+                    "id": 12345,
+                    "uid": "booking-uid-123",
+                    "title": "BusOS Diagnostic Call",
+                    "startTime": "2025-11-25T14:00:00.000Z",
+                    "endTime": "2025-11-25T15:00:00.000Z",
+                    "attendees": [
+                        {
+                            "email": "customer@example.com",
+                            "name": "Customer Name",
+                            "timeZone": "America/Toronto"
+                        }
+                    ]
+                }
+            }
+        }
+    """
+    triggerEvent: str = Field(..., description="Cal.com event type (e.g., BOOKING_CREATED)")
+    payload: dict = Field(..., description="Cal.com booking payload")
+
+    class Config:
+        extra = "allow"  # Allow extra fields from Cal.com
+        schema_extra = {
+            "example": {
+                "triggerEvent": "BOOKING_CREATED",
+                "payload": {
+                    "booking": {
+                        "id": 12345,
+                        "uid": "booking-uid-123",
+                        "title": "BusOS Diagnostic Call",
+                        "startTime": "2025-11-25T14:00:00.000Z",
+                        "endTime": "2025-11-25T15:00:00.000Z",
+                        "attendees": [
+                            {
+                                "email": "customer@example.com",
+                                "name": "Customer Name",
+                                "timeZone": "America/Toronto"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+
 # ===== Health Check Endpoint =====
 
 @app.get("/health")
@@ -440,6 +496,116 @@ async def christmas_signup_webhook(
         raise HTTPException(
             status_code=500,
             detail=f"Error processing Christmas signup: {str(e)}"
+        )
+
+
+@app.post("/webhook/calcom-booking")
+async def calcom_booking_webhook(
+    request: CalcomBookingRequest,
+    background_tasks: BackgroundTasks
+):
+    """
+    Handle Cal.com booking webhook.
+
+    This endpoint:
+    1. Validates Cal.com booking event (via Pydantic)
+    2. Only processes BOOKING_CREATED events
+    3. Extracts customer email, name, meeting time from payload
+    4. Triggers precall_prep_flow in background
+    5. Updates Notion with meeting booking status
+    6. Returns immediately with 202 Accepted
+
+    Args:
+        request: Cal.com booking data validated by Pydantic
+
+    Returns:
+        Acceptance confirmation with booking details
+
+    Example:
+        curl -X POST http://localhost:8000/webhook/calcom-booking \\
+          -H "Content-Type: application/json" \\
+          -d '{
+            "triggerEvent": "BOOKING_CREATED",
+            "payload": {
+              "booking": {
+                "id": 12345,
+                "startTime": "2025-11-25T14:00:00Z",
+                "endTime": "2025-11-25T15:00:00Z",
+                "attendees": [
+                  {
+                    "email": "customer@example.com",
+                    "name": "Customer Name"
+                  }
+                ]
+              }
+            }
+          }'
+    """
+    logger.info(f"📥 Received Cal.com webhook: {request.triggerEvent}")
+
+    # Only handle BOOKING_CREATED events
+    if request.triggerEvent != "BOOKING_CREATED":
+        logger.info(f"⏭️  Ignoring non-booking event: {request.triggerEvent}")
+        return {
+            "status": "ignored",
+            "event": request.triggerEvent,
+            "message": "Only BOOKING_CREATED events are processed"
+        }
+
+    try:
+        # Extract customer data from Cal.com payload
+        booking = request.payload.get("booking", {})
+        attendees = booking.get("attendees", [])
+
+        if not attendees:
+            logger.error("❌ No attendees found in Cal.com payload")
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid Cal.com payload: no attendees found"
+            )
+
+        customer_email = attendees[0].get("email")
+        customer_name = attendees[0].get("name")
+        meeting_time = booking.get("startTime")
+
+        if not all([customer_email, customer_name, meeting_time]):
+            logger.error(f"❌ Missing required fields in Cal.com payload")
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid Cal.com payload: missing email, name, or startTime"
+            )
+
+        logger.info(f"📅 Booking details: {customer_email}, meeting at {meeting_time}")
+
+        # Import pre-call prep flow
+        from campaigns.christmas_campaign.flows.precall_prep_flow import precall_prep_flow_sync
+
+        # Trigger Prefect flow in background
+        background_tasks.add_task(
+            precall_prep_flow_sync,
+            email=customer_email,
+            name=customer_name,
+            meeting_time=meeting_time
+        )
+
+        logger.info(f"✅ Pre-call prep flow queued for {customer_email}")
+
+        return {
+            "status": "accepted",
+            "message": "Booking received and pre-call sequence will begin shortly",
+            "email": customer_email,
+            "meeting_time": meeting_time,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error processing Cal.com booking: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing Cal.com booking: {str(e)}"
         )
 
 
