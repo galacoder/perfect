@@ -28,19 +28,16 @@ Author: Christmas Campaign Team
 Created: 2025-11-19 (Wave 2)
 """
 
-from prefect import deploy
 from campaigns.christmas_campaign.flows.send_email_flow import send_email_flow
 
 
 if __name__ == "__main__":
     print("🚀 Deploying Christmas Campaign Email Flow to Prefect...")
 
-    # Deploy send_email_flow
-    deployment = deploy(
-        send_email_flow,
+    # Deploy send_email_flow using flow.deploy() method (Prefect v3)
+    deployment_id = send_email_flow.deploy(
         name="christmas-send-email",
-        work_pool_name="default-pool",
-        cron=None,  # No cron schedule - triggered programmatically
+        work_pool_name=None,  # Use default work pool
         tags=["christmas", "email", "nurture", "christmas-2025"],
         description="Send individual email from Christmas campaign 7-email sequence (triggered by signup_handler)",
         version="1.0.0",
@@ -57,7 +54,7 @@ if __name__ == "__main__":
 
     print(f"\n✅ Deployment created successfully!")
     print(f"   Deployment Name: christmas-send-email/christmas-send-email")
-    print(f"   Deployment ID: {deployment.id}")
+    print(f"   Deployment ID: {deployment_id}")
     print(f"   Work Pool: default-pool")
     print(f"   Tags: christmas, email, nurture, christmas-2025")
     print(f"\n📋 Deployment Details:")
