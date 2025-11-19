@@ -272,7 +272,38 @@ def mock_future_time():
 @pytest.fixture(autouse=True)
 def prefect_test_mode(monkeypatch):
     """Disable Prefect tracking for unit tests."""
-    monkeypatch.setenv("PREFECT_API_URL", "")  # Disable Prefect API connection
+    # Use ephemeral API (in-memory, no server needed)
+    monkeypatch.setenv("PREFECT_API_URL", "http://ephemeral/api")
+    monkeypatch.setenv("PREFECT_API_ENABLE_HTTP2", "false")
+
+
+@pytest.fixture(autouse=True)
+def mock_schedule_email_sequence(monkeypatch):
+    """
+    Mock schedule_email_sequence for all tests.
+
+    This prevents tests from trying to connect to Prefect API when testing
+    signup_handler flow. Returns a successful scheduling result by default.
+    """
+    from unittest.mock import Mock
+
+    mock_return = [
+        {
+            "email_number": i,
+            "flow_run_id": f"test-flow-run-{i}",
+            "scheduled_time": "2025-11-19T10:00:00",
+            "delay_hours": i * 24
+        }
+        for i in range(1, 8)
+    ]
+
+    mock_func = Mock(return_value=mock_return)
+    monkeypatch.setattr(
+        "campaigns.christmas_campaign.flows.signup_handler.schedule_email_sequence",
+        mock_func
+    )
+
+    return mock_func
 
 
 @pytest.fixture
