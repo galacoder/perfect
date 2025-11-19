@@ -1,38 +1,50 @@
 """
-Single email sender flow for Christmas Campaign.
+Individual Email Send Flow for Christmas Campaign.
 
-This is an atomic operation that sends ONE email and tracks its delivery.
-Each email in the 7-email sequence has its own deployment of this flow.
+This flow sends a SINGLE email from the 7-email sequence and tracks it in the
+Email Sequence DB for state portability.
+
+Key Features (Wave 2):
+- Idempotency: Checks Email Sequence DB before sending
+- State Tracking: Updates "Email X Sent" field in Notion Email Sequence DB
+- Segment-Aware: Uses correct template based on segment (CRITICAL/URGENT/OPTIMIZE)
+- Retry Logic: 3 retries with exponential backoff (1min, 5min, 15min)
+- Template Fetching: Pulls templates from Notion with fallback support
 
 Flow responsibilities:
-1. Fetch contact data from Notion
+1. Idempotency check via Email Sequence DB
 2. Determine template ID based on email number and segment
 3. Fetch template from Notion (with fallback)
-4. Substitute variables
+4. Substitute variables with customer data
 5. Send email via Resend
-6. Track delivery in Notion
+6. Update Email Sequence DB with "Email X Sent" timestamp
 7. Log analytics
 
 Author: Christmas Campaign Team
 Created: 2025-11-16
+Updated: 2025-11-19 (Wave 2 - Email Sequence DB tracking)
 """
 
 from prefect import flow, get_run_logger
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
-# Import tasks
+# Import Notion operations (Wave 2: Email Sequence DB)
 from campaigns.christmas_campaign.tasks.notion_operations import (
-    search_contact_by_email,
+    search_email_sequence_by_email,  # Search Email Sequence DB (not Contacts DB)
+    update_email_sequence,            # Update Email Sequence DB
     fetch_email_template,
-    track_email_sent,
     log_email_analytics
 )
+
+# Import Resend operations
 from campaigns.christmas_campaign.tasks.resend_operations import (
     send_template_email,
     get_email_variables,
     get_fallback_template
 )
+
+# Import routing utilities
 from campaigns.christmas_campaign.tasks.routing import get_email_template_id
 
 
@@ -82,20 +94,37 @@ def send_email_flow(
     logger.info(f"🚀 Starting email #{email_number} send for {email}")
 
     try:
-        # Step 1: Fetch contact from Notion (to get page_id and verify contact exists)
-        logger.info(f"📋 Fetching contact: {email}")
-        contact = search_contact_by_email(email)
+        # Step 1: Fetch Email Sequence record (idempotency check + get sequence_id)
+        logger.info(f"📋 Fetching Email Sequence record: {email}")
+        sequence = search_email_sequence_by_email(email)
 
-        if not contact:
-            logger.error(f"❌ Contact not found: {email}")
+        if not sequence:
+            logger.error(f"❌ Email Sequence not found for: {email}")
+            logger.error(f"   Email sequence must be created before sending emails")
             return {
                 "status": "failed",
-                "error": "Contact not found",
+                "error": "Email sequence not found - signup_handler must run first",
                 "email_number": email_number
             }
 
-        page_id = contact["id"]
-        logger.info(f"✅ Contact found: {page_id}")
+        sequence_id = sequence["id"]
+        logger.info(f"✅ Email Sequence found: {sequence_id}")
+
+        # Step 1b: Idempotency check - verify email hasn't been sent yet
+        email_sent_field = f"Email {email_number} Sent"
+        if sequence["properties"].get(email_sent_field, {}).get("date"):
+            sent_at = sequence["properties"][email_sent_field]["date"]["start"]
+            logger.warning(f"⚠️ Email #{email_number} already sent at {sent_at}")
+            logger.warning(f"   Skipping duplicate send (idempotency)")
+            return {
+                "status": "skipped",
+                "reason": "already_sent",
+                "email_number": email_number,
+                "sent_at": sent_at,
+                "sequence_id": sequence_id
+            }
+
+        logger.info(f"✅ Idempotency check passed - Email #{email_number} not yet sent")
 
         # Step 2: Get template ID based on email number and segment
         logger.info(f"🎯 Determining template for email #{email_number}, segment: {segment}")
@@ -133,9 +162,13 @@ def send_email_flow(
         )
         logger.info(f"✅ Email sent: {resend_email_id}")
 
-        # Step 6: Track email sent in Notion contact record
-        logger.info(f"📝 Tracking email #{email_number} sent in Notion")
-        track_email_sent(page_id, email_number)
+        # Step 6: Update Email Sequence DB with "Email X Sent" timestamp
+        logger.info(f"📝 Updating Email Sequence DB: Email #{email_number} sent")
+        update_email_sequence(
+            sequence_id=sequence_id,
+            email_number=email_number
+        )
+        logger.info(f"✅ Email Sequence DB updated: {sequence_id}")
 
         # Step 7: Log email analytics
         logger.info("📊 Logging email analytics")
@@ -151,6 +184,7 @@ def send_email_flow(
         return {
             "status": "success",
             "email_number": email_number,
+            "sequence_id": sequence_id,
             "resend_email_id": resend_email_id,
             "template_id": template_id,
             "sent_at": datetime.now().isoformat()

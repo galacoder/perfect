@@ -15,10 +15,13 @@ Created: 2025-11-19
 """
 
 from prefect import flow, get_run_logger
-from typing import Optional
+from prefect.client.schemas.schedules import IntervalSchedule
+from prefect.client.orchestration import PrefectClient
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
+import asyncio
 
 # Import Notion operations
 from campaigns.christmas_campaign.tasks.notion_operations import (
@@ -33,6 +36,152 @@ load_dotenv()
 
 # Configuration
 TESTING_MODE = os.getenv("TESTING_MODE", "false").lower() == "true"
+
+
+# ==============================================================================
+# Helper Function: Schedule Email Sequence via Prefect Deployment
+# ==============================================================================
+
+def schedule_email_sequence(
+    email: str,
+    first_name: str,
+    business_name: str,
+    segment: str,
+    assessment_score: int,
+    red_systems: int = 0,
+    orange_systems: int = 0,
+    yellow_systems: int = 0,
+    green_systems: int = 0,
+    gps_score: Optional[int] = None,
+    money_score: Optional[int] = None,
+    weakest_system_1: Optional[str] = None,
+    weakest_system_2: Optional[str] = None,
+    revenue_leak_total: Optional[int] = None
+) -> List[Dict[str, Any]]:
+    """
+    Schedule all 7 emails using Prefect Deployment.
+
+    This function creates 7 separate flow runs of the send_email_flow, each scheduled
+    at the appropriate delay from now. The delay timing depends on TESTING_MODE:
+    - Production: [0h, 24h, 72h, 120h, 168h, 216h, 264h] (11 days total)
+    - Testing: [0min, 1min, 2min, 3min, 4min, 5min, 6min] (~6 minutes total)
+
+    Args:
+        email: Customer email address
+        first_name: Customer first name
+        business_name: Business name
+        segment: CRITICAL/URGENT/OPTIMIZE
+        assessment_score: Overall BusOS score
+        red_systems: Number of red systems
+        orange_systems: Number of orange systems
+        yellow_systems: Number of yellow systems
+        green_systems: Number of green systems
+        gps_score: GPS system score (optional)
+        money_score: Money system score (optional)
+        weakest_system_1: Weakest system name (optional)
+        weakest_system_2: Second weakest system (optional)
+        revenue_leak_total: Revenue leak estimate (optional)
+
+    Returns:
+        List of scheduled flow run details (email_number, flow_run_id, scheduled_time)
+
+    Example:
+        scheduled = schedule_email_sequence(
+            email="sarah@example.com",
+            first_name="Sarah",
+            business_name="Sarah's Salon",
+            segment="CRITICAL",
+            assessment_score=52,
+            red_systems=2
+        )
+        # Returns: [
+        #   {"email_number": 1, "flow_run_id": "...", "scheduled_time": "2025-11-19T10:00:00"},
+        #   {"email_number": 2, "flow_run_id": "...", "scheduled_time": "2025-11-20T10:00:00"},
+        #   ...
+        # ]
+    """
+    logger = get_run_logger()
+
+    # Email timing (hours from now)
+    # Production: Day 0, Day 1, Day 3, Day 5, Day 7, Day 9, Day 11
+    # Testing: 0min, 1min, 2min, 3min, 4min, 5min, 6min
+    if TESTING_MODE:
+        delays_hours = [0, 1/60, 2/60, 3/60, 4/60, 5/60, 6/60]  # Minutes converted to hours
+        logger.info("⚡ TESTING MODE: Using fast delays (minutes)")
+    else:
+        delays_hours = [0, 24, 72, 120, 168, 216, 264]  # Production delays
+        logger.info("🚀 PRODUCTION MODE: Using standard delays (days)")
+
+    scheduled_flows = []
+
+    # Use async context to interact with Prefect API
+    async def schedule_all_emails():
+        async with PrefectClient() as client:
+            # Find the deployment
+            try:
+                deployment = await client.read_deployment_by_name(
+                    "christmas-send-email/christmas-send-email"
+                )
+                logger.info(f"✅ Found deployment: {deployment.id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to find deployment: {e}")
+                logger.error(f"   Make sure to run: python campaigns/christmas_campaign/deployments/deploy_christmas.py")
+                raise
+
+            # Schedule each of the 7 emails
+            for email_number in range(1, 8):
+                delay_hours = delays_hours[email_number - 1]
+                scheduled_time = datetime.now() + timedelta(hours=delay_hours)
+
+                logger.info(
+                    f"📧 Scheduling Email #{email_number} for {scheduled_time.strftime('%Y-%m-%d %H:%M:%S')} "
+                    f"({delay_hours:.2f} hours from now)"
+                )
+
+                # Create flow run with scheduled time
+                flow_run = await client.create_flow_run_from_deployment(
+                    deployment_id=deployment.id,
+                    parameters={
+                        "email_number": email_number,
+                        "email": email,
+                        "first_name": first_name,
+                        "business_name": business_name,
+                        "segment": segment,
+                        "assessment_score": assessment_score,
+                        "red_systems": red_systems,
+                        "orange_systems": orange_systems,
+                        "yellow_systems": yellow_systems,
+                        "green_systems": green_systems,
+                        "gps_score": gps_score,
+                        "money_score": money_score,
+                        "weakest_system_1": weakest_system_1,
+                        "weakest_system_2": weakest_system_2,
+                        "revenue_leak_total": revenue_leak_total
+                    },
+                    state={
+                        "type": "SCHEDULED",
+                        "timestamp": scheduled_time.isoformat()
+                    }
+                )
+
+                scheduled_flows.append({
+                    "email_number": email_number,
+                    "flow_run_id": str(flow_run.id),
+                    "scheduled_time": scheduled_time.isoformat(),
+                    "delay_hours": delay_hours
+                })
+
+                logger.info(f"   ✅ Email #{email_number} scheduled: {flow_run.id}")
+
+        return scheduled_flows
+
+    # Run the async function
+    try:
+        result = asyncio.run(schedule_all_emails())
+        return result
+    except Exception as e:
+        logger.error(f"❌ Error scheduling email sequence: {e}")
+        raise
 
 
 @flow(
@@ -204,29 +353,49 @@ def signup_handler_flow(
     # Step 5: Schedule 7-email nurture sequence via Prefect Deployment
     # ==============================================================================
 
-    logger.info(f"🚀 Email sequence scheduling will be implemented in Wave 2")
-    logger.info(f"   For now, signup handler completes successfully")
+    logger.info(f"🚀 Scheduling 7-email sequence via Prefect Deployment")
     logger.info(f"   Sequence ID: {sequence_id}, Segment: {segment}")
 
-    # TODO: Wave 2 - Implement Prefect Deployment scheduling
-    # This will be implemented in Wave 2 when we create the deployment-based
-    # email scheduler that schedules all 7 emails with correct timing.
-    #
-    # Expected implementation:
-    # orchestrator_result = schedule_email_sequence(
-    #     email=email,
-    #     sequence_id=sequence_id,
-    #     segment=segment,
-    #     assessment_score=assessment_score,
-    #     ...
-    # )
+    try:
+        scheduled_flows = schedule_email_sequence(
+            email=email,
+            first_name=first_name,
+            business_name=business_name,
+            segment=segment,
+            assessment_score=assessment_score,
+            red_systems=red_systems,
+            orange_systems=orange_systems,
+            yellow_systems=yellow_systems,
+            green_systems=green_systems,
+            gps_score=gps_score,
+            money_score=money_score,
+            weakest_system_1=weakest_system_1,
+            weakest_system_2=weakest_system_2,
+            revenue_leak_total=revenue_leak_total
+        )
 
-    # Placeholder result for Wave 1
-    orchestrator_result = {
-        "status": "pending_wave_2_implementation",
-        "scheduled_count": 0,
-        "note": "Email scheduling will be implemented in Wave 2"
-    }
+        logger.info(f"✅ Scheduled {len(scheduled_flows)} email flows")
+        for flow_info in scheduled_flows:
+            logger.info(
+                f"   Email #{flow_info['email_number']}: "
+                f"{flow_info['flow_run_id']} @ {flow_info['scheduled_time']}"
+            )
+
+        orchestrator_result = {
+            "status": "success",
+            "scheduled_count": len(scheduled_flows),
+            "scheduled_flows": scheduled_flows
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Failed to schedule email sequence: {e}")
+        logger.error(f"   Continuing with signup - emails will need to be scheduled manually")
+        orchestrator_result = {
+            "status": "failed",
+            "scheduled_count": 0,
+            "error": str(e),
+            "note": "Signup succeeded but email scheduling failed - check deployment"
+        }
 
     # ==============================================================================
     # Return result

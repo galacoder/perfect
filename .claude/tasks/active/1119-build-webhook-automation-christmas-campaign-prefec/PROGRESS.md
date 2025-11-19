@@ -77,7 +77,51 @@ Tasks:
 ---
 
 ## Commits
-(Will be updated as waves complete)
+
+### Wave 1 Commit ✅
+**Commit**: `01c4df9`
+**Message**: `feat(christmas): implement Wave 1 - webhook endpoint and signup handler`
+**Date**: 2025-11-19
+**Files Changed**: 9 files, 3545 insertions(+)
+
+New files:
+- `campaigns/christmas_campaign/flows/signup_handler.py` (270 lines)
+- `campaigns/christmas_campaign/tests/test_signup_handler.py` (490 lines)
+- `.claude/tasks/active/1119-build-webhook-automation-christmas-campaign-prefec/*` (task tracking)
+
+Modified files:
+- `server.py` (ChristmasSignupRequest + /webhook/christmas-signup endpoint)
+- `campaigns/christmas_campaign/tasks/notion_operations.py` (Email Sequence DB operations)
+- `campaigns/christmas_campaign/tests/conftest.py` (Prefect test mode)
+
+### Wave 2: Email Scheduling with Prefect Deployments 🚧 IN PROGRESS
+**Started**: 2025-11-19
+**Status**: 🚧 IN PROGRESS
+
+Tasks:
+- [x] 2.1: Create/update send_email_flow.py (individual email sender) ✅
+  - Updated to use Email Sequence DB tracking (not BusinessX Canada DB)
+  - Added idempotency check via "Email X Sent" field
+  - Calls `search_email_sequence_by_email()` for state lookup
+  - Calls `update_email_sequence(sequence_id, email_number)` after send
+  - Returns sequence_id in response for tracking
+- [x] 2.2: Create deploy_christmas.py (Prefect deployment script) ✅
+  - Created deployment script in `campaigns/christmas_campaign/deployments/`
+  - Deploys send_email_flow as "christmas-send-email/christmas-send-email"
+  - No cron schedule - triggered programmatically via signup_handler
+  - Includes comprehensive usage documentation and test commands
+- [x] 2.3: Update signup_handler to schedule 7 emails via Deployment ✅
+  - Added `schedule_email_sequence()` helper function
+  - Uses PrefectClient to create 7 scheduled flow runs
+  - Respects TESTING_MODE for fast/production delays
+  - Production: [0h, 24h, 72h, 120h, 168h, 216h, 264h] (11 days)
+  - Testing: [0min, 1min, 2min, 3min, 4min, 5min, 6min] (6 minutes)
+  - Returns flow_run_ids for all 7 scheduled emails
+  - Graceful error handling - signup succeeds even if scheduling fails
+- [x] 2.4: Add Notion tracking after each email send ✅ (completed in 2.1)
+- [ ] 2.5: Testing and validation
+
+**Goal**: Schedule 7 separate email flows using Prefect Deployments with Notion state tracking
 
 ---
 
