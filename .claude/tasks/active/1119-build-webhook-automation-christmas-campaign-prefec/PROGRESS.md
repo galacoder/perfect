@@ -237,9 +237,53 @@ Tasks:
 
 ---
 
+### Wave 4: Sales Funnel Integration & Production Deployment 🚧 IN PROGRESS
+**Started**: 2025-11-19
+**Status**: 🚧 IN PROGRESS
+
+Tasks:
+- [x] 4.1: Integrate webhook into sales funnel (xmas-a01/assessment.tsx) ✅
+  - Replaced Resend API with Prefect webhook in `/api/assessment/complete.ts`
+  - Removed all Resend email generation code (385 lines → 204 lines)
+  - Added `calculateSystemCounts()` function to count red/orange/yellow/green systems
+  - Added `calculateOverallScore()` function to calculate average score
+  - Added `triggerPrefectWebhook()` function to POST to Prefect endpoint
+  - Updated API handler to call Prefect webhook with full assessment data
+  - Updated frontend `assessment.tsx` to pass businessName from localStorage
+  - Created comprehensive setup documentation (`PREFECT_WEBHOOK_SETUP.md`)
+  - Verified webhook payload matches ChristmasSignupRequest schema
+
+- [x] 4.2: Test webhook integration end-to-end ✅
+  - Created comprehensive E2E test script (`test_wave4_e2e.sh`)
+  - Tests include: prerequisite checks, direct webhook, Prefect UI, Notion tracking, idempotency, segment classification
+  - Created detailed testing guide (`WAVE4_TESTING_GUIDE.md`)
+  - Testing guide includes: 3 testing methods (automated/manual/full flow), verification checklists, 4 test scenarios, troubleshooting
+  - All test scenarios documented: CRITICAL, URGENT, OPTIMIZE segments + idempotency
+  - Success criteria defined with 8 checkpoints
+  - Ready for execution (automated script + manual verification)
+
+- [ ] 4.3: Production deployment and monitoring
+
+**Goal**: Replace Resend email automation with Prefect webhook in sales funnel
+
+**Key Files Modified**:
+- `/Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss/pages/api/assessment/complete.ts` - Lines 1-204 (Prefect webhook integration)
+- `/Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss/pages/en/flows/businessX/dfu/xmas-a01/assessment.tsx` - Lines 142-196 (businessName + webhook call)
+- `/Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss/PREFECT_WEBHOOK_SETUP.md` - NEW FILE (setup documentation)
+- `campaigns/christmas_campaign/tests/test_wave4_e2e.sh` - NEW FILE (automated E2E test script, 490 lines)
+- `campaigns/christmas_campaign/WAVE4_TESTING_GUIDE.md` - NEW FILE (comprehensive testing guide, 690 lines)
+
+**Integration Points**:
+- ✅ Frontend passes: email, firstName, lastName, businessName, scores, totalRevenueLeak, weakestSystem1, weakestSystem2
+- ✅ API calculates: overallScore, systemCounts (red/orange/yellow/green)
+- ✅ Webhook payload matches: ChristmasSignupRequest Pydantic model
+- ✅ Environment variable: PREFECT_WEBHOOK_URL (defaults to localhost:8000)
+
+---
+
 ## Time Tracking
-- **Total**: ~6 hours
-- Wave 1: ~2 hours
-- Wave 2: ~2 hours
-- Wave 3: In progress
-- Wave 4: Not started
+- **Total**: ~10 hours (estimated)
+- Wave 1: ~2 hours ✅
+- Wave 2: ~2 hours ✅
+- Wave 3: ~2 hours ✅
+- Wave 4: ~2 hours (Task 4.1 complete)
