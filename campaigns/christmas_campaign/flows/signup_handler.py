@@ -139,6 +139,8 @@ def schedule_email_sequence(
                 )
 
                 # Create flow run with scheduled time
+                from prefect.client.schemas.states import Scheduled
+
                 flow_run = await client.create_flow_run_from_deployment(
                     deployment_id=deployment.id,
                     parameters={
@@ -158,10 +160,7 @@ def schedule_email_sequence(
                         "weakest_system_2": weakest_system_2,
                         "revenue_leak_total": revenue_leak_total
                     },
-                    state={
-                        "type": "SCHEDULED",
-                        "timestamp": scheduled_time.isoformat()
-                    }
+                    state=Scheduled(scheduled_time=scheduled_time)
                 )
 
                 scheduled_flows.append({
