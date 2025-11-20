@@ -1,0 +1,27 @@
+# Prefect Deployment Configuration
+name: perfect
+prefect-version: 3.4.1
+
+# Pull step - tells Prefect how to retrieve the flow code
+pull:
+- prefect.deployments.steps.set_working_directory:
+    directory: /Users/sangle/Dev/action/projects/perfect
+
+# Build, push, and pull are optional
+build: null
+push: null
+
+# Deployments configuration
+deployments:
+- name: christmas-signup-handler
+  entrypoint: campaigns/christmas_campaign/flows/signup_handler.py:signup_handler_flow
+  work_pool:
+    name: default-pool
+  schedule: null
+  parameters: {}
+  tags:
+  - christmas
+  - christmas-2025
+  - email-nurture
+  description: Christmas Campaign signup handler - creates email sequence for new signups
+  version: 1.0.0
