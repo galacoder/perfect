@@ -2,10 +2,14 @@
 name: perfect
 prefect-version: 3.4.1
 
-# Pull step - tells Prefect how to retrieve the flow code
+# Pull step - tells Prefect how to retrieve the flow code from GitHub
 pull:
+- prefect.deployments.steps.git_clone:
+    id: clone-step
+    repository: https://github.com/galacoder/perfect.git
+    branch: main
 - prefect.deployments.steps.set_working_directory:
-    directory: /home/sangle/perfect
+    directory: "{{ clone-step.directory }}"
 
 # Build, push, and pull are optional
 build: null
