@@ -16,7 +16,6 @@ Created: 2025-11-19
 
 from prefect import flow, get_run_logger
 from prefect.client.schemas.schedules import IntervalSchedule
-from prefect.client.orchestration import PrefectClient
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import os
@@ -116,7 +115,8 @@ def schedule_email_sequence(
 
     # Use async context to interact with Prefect API
     async def schedule_all_emails():
-        async with PrefectClient() as client:
+        from prefect.client.orchestration import get_client
+        async with get_client() as client:
             # Find the deployment
             try:
                 deployment = await client.read_deployment_by_name(
