@@ -13,17 +13,25 @@ Created: 2025-11-16
 """
 
 from prefect import task
+from prefect.blocks.system import Secret
 import resend
 import os
 import re
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables (fallback for local development)
 load_dotenv()
 
 # Configure Resend API
-RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+# Try Prefect Secret blocks first, fallback to environment variables
+try:
+    RESEND_API_KEY = Secret.load("resend-api-key").get()
+    print("✅ Loaded Resend API key from Prefect Secret blocks")
+except Exception as e:
+    print(f"⚠️  Failed to load from Secret blocks, using environment variables: {e}")
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+
 resend.api_key = RESEND_API_KEY
 
 # Sender configuration

@@ -78,8 +78,7 @@ def main():
     # Required secrets
     required_secrets = [
         ("notion-token", "NOTION_TOKEN"),
-        ("notion-contacts-db-id", "NOTION_CONTACTS_DB_ID"),
-        ("notion-templates-db-id", "NOTION_TEMPLATES_DB_ID"),
+        ("notion-email-templates-db-id", "NOTION_EMAIL_TEMPLATES_DB_ID"),
         ("notion-email-sequence-db-id", "NOTION_EMAIL_SEQUENCE_DB_ID"),
         ("resend-api-key", "RESEND_API_KEY"),
     ]
