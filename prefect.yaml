@@ -16,7 +16,7 @@ deployments:
 - name: christmas-signup-handler
   entrypoint: campaigns/christmas_campaign/flows/signup_handler.py:signup_handler_flow
   work_pool:
-    name: default-pool
+    name: default
   schedule: null
   parameters: {}
   tags:
@@ -29,7 +29,7 @@ deployments:
 - name: christmas-send-email
   entrypoint: campaigns/christmas_campaign/flows/send_email_flow.py:send_email_flow
   work_pool:
-    name: default-pool
+    name: default
   schedule: null
   parameters: {}
   tags:
