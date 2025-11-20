@@ -9,7 +9,7 @@ pull:
     repository: https://github.com/galacoder/perfect.git
     branch: main
 - prefect.deployments.steps.set_working_directory:
-    directory: "{{ steps.clone-step.directory }}"
+    directory: "{{ clone-step.directory }}"
 
 # Build, push, and pull are optional
 build: null
