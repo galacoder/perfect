@@ -139,7 +139,7 @@ def schedule_email_sequence(
                 )
 
                 # Create flow run with scheduled time
-                from prefect.client.schemas.states import Scheduled
+                from prefect.states import Scheduled
 
                 flow_run = await client.create_flow_run_from_deployment(
                     deployment_id=deployment.id,
