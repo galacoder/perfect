@@ -12,12 +12,15 @@ Coverage target: 100% of resend_operations.py (with mocking for API calls)
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 from campaigns.christmas_campaign.tasks.resend_operations import (
     substitute_variables,
     get_email_variables,
     get_fallback_template
 )
+
+# Import for mocking tests
+import campaigns.christmas_campaign.tasks.resend_operations as resend_ops
 
 
 # ===== substitute_variables() tests =====
@@ -340,3 +343,138 @@ class TestResendIntegration:
         assert "</html>" in final_body or "</HTML>" in final_body.upper()
         assert "John" in final_body
         assert "Test Corp" in final_body
+
+
+# ===== Mocked API tests =====
+
+class TestSendEmailMocked:
+    """Test send_email() with mocked Resend API."""
+
+    @patch('campaigns.christmas_campaign.tasks.resend_operations.resend.Emails.send')
+    def test_send_email_success(self, mock_send):
+        """Successful email send returns email ID."""
+        # Mock successful API response
+        mock_send.return_value = {"id": "email-id-123"}
+
+        from campaigns.christmas_campaign.tasks.resend_operations import send_email
+
+        # Call function
+        email_id = send_email.fn(
+            to_email="test@example.com",
+            subject="Test Subject",
+            html_body="<html><body>Test</body></html>"
+        )
+
+        # Verify result
+        assert email_id == "email-id-123"
+
+        # Verify API called correctly
+        mock_send.assert_called_once()
+        call_args = mock_send.call_args[0][0]
+        assert call_args["to"] == ["test@example.com"]
+        assert call_args["subject"] == "Test Subject"
+        assert call_args["html"] == "<html><body>Test</body></html>"
+        assert "Sang Le - BusOS" in call_args["from"]
+
+    @patch('campaigns.christmas_campaign.tasks.resend_operations.resend.Emails.send')
+    def test_send_email_failure_raises_exception(self, mock_send):
+        """Email send failure raises exception."""
+        # Mock API failure
+        mock_send.side_effect = Exception("API Error")
+
+        from campaigns.christmas_campaign.tasks.resend_operations import send_email
+
+        # Call should raise exception
+        with pytest.raises(Exception) as exc_info:
+            send_email.fn(
+                to_email="test@example.com",
+                subject="Test",
+                html_body="Test"
+            )
+
+        assert "API Error" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.resend_operations.resend.Emails.send')
+    def test_send_email_with_html_content(self, mock_send):
+        """HTML content passed through correctly."""
+        mock_send.return_value = {"id": "email-123"}
+
+        from campaigns.christmas_campaign.tasks.resend_operations import send_email
+
+        html = "<html><head><title>Test</title></head><body><h1>Hello</h1></body></html>"
+        send_email.fn(
+            to_email="test@example.com",
+            subject="HTML Test",
+            html_body=html
+        )
+
+        call_args = mock_send.call_args[0][0]
+        assert call_args["html"] == html
+
+
+class TestSendTemplateEmailMocked:
+    """Test send_template_email() with mocked send_email."""
+
+    @patch('campaigns.christmas_campaign.tasks.resend_operations.send_email')
+    def test_send_template_email_substitutes_variables(self, mock_send_email):
+        """Template variables substituted before sending."""
+        # Mock send_email task
+        mock_send_email.return_value = "email-id-123"
+
+        from campaigns.christmas_campaign.tasks.resend_operations import send_template_email
+
+        # Call with template and variables
+        result = send_template_email.fn(
+            to_email="john@testcorp.com",
+            subject="Hi {{first_name}}!",
+            template="<html><body>Hi {{first_name}} from {{business_name}}</body></html>",
+            variables={"first_name": "John", "business_name": "Test Corp"}
+        )
+
+        # Verify result
+        assert result == "email-id-123"
+
+        # Verify send_email called with substituted content
+        mock_send_email.assert_called_once_with(
+            "john@testcorp.com",
+            "Hi John!",  # Subject substituted
+            "<html><body>Hi John from Test Corp</body></html>"  # Body substituted
+        )
+
+    @patch('campaigns.christmas_campaign.tasks.resend_operations.send_email')
+    def test_send_template_email_with_missing_variables(self, mock_send_email):
+        """Missing variables remain as placeholders."""
+        mock_send_email.return_value = "email-id-456"
+
+        from campaigns.christmas_campaign.tasks.resend_operations import send_template_email
+
+        send_template_email.fn(
+            to_email="test@example.com",
+            subject="Test {{first_name}}",
+            template="Hi {{first_name}}, score: {{assessment_score}}",
+            variables={"first_name": "Jane"}  # Missing assessment_score
+        )
+
+        # Verify substituted content
+        call_args = mock_send_email.call_args[0]
+        assert call_args[1] == "Test Jane"  # Subject
+        assert "Jane" in call_args[2]  # Body has Jane
+        assert "{{assessment_score}}" in call_args[2]  # Placeholder remains
+
+    @patch('campaigns.christmas_campaign.tasks.resend_operations.send_email')
+    def test_send_template_email_with_numeric_variables(self, mock_send_email):
+        """Numeric variables converted to strings."""
+        mock_send_email.return_value = "email-id-789"
+
+        from campaigns.christmas_campaign.tasks.resend_operations import send_template_email
+
+        send_template_email.fn(
+            to_email="test@example.com",
+            subject="Score: {{score}}",
+            template="Your score is {{score}}/100",
+            variables={"score": 85}
+        )
+
+        call_args = mock_send_email.call_args[0]
+        assert call_args[1] == "Score: 85"
+        assert "85/100" in call_args[2]
