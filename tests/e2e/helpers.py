@@ -204,6 +204,86 @@ def cancel_scheduled_flows(
             print(f"⚠️  Error cancelling flow runs: {e}")
 
 
+def get_scheduled_email_flows(
+    email: str,
+    prefect_api_url: str = "https://prefect.galatek.dev/api"
+) -> List[Dict[str, Any]]:
+    """
+    Get all scheduled email flows for a test email.
+
+    Args:
+        email: Test email to filter flow runs
+        prefect_api_url: Prefect API base URL
+
+    Returns:
+        list: List of scheduled flow run objects with scheduled_time
+
+    Example:
+        >>> flows = get_scheduled_email_flows("test@example.com")
+        >>> assert len(flows) == 7  # Christmas campaign
+        >>> assert all("scheduled_time" in f for f in flows)
+    """
+    with httpx.Client(timeout=10.0) as client:
+        try:
+            response = client.get(
+                f"{prefect_api_url}/flow_runs",
+                params={"limit": 100, "sort": "CREATED_DESC"}
+            )
+
+            if response.status_code != 200:
+                print(f"⚠️  Failed to fetch flow runs: {response.status_code}")
+                return []
+
+            flow_runs = response.json()
+            scheduled_flows = []
+
+            for run in flow_runs:
+                params = run.get("parameters", {})
+                if params.get("email") == email:
+                    state = run.get("state", {})
+                    state_type = state.get("type")
+
+                    if state_type == "SCHEDULED":
+                        scheduled_time = state.get("state_details", {}).get("scheduled_time")
+                        scheduled_flows.append({
+                            "id": run["id"],
+                            "name": run.get("name"),
+                            "scheduled_time": scheduled_time,
+                            "parameters": params
+                        })
+
+            # Sort by scheduled_time
+            scheduled_flows.sort(key=lambda x: x["scheduled_time"])
+            return scheduled_flows
+
+        except httpx.RequestError as e:
+            print(f"⚠️  Error fetching scheduled flows: {e}")
+            return []
+
+
+def verify_prefect_flow_scheduled(
+    email: str,
+    expected_count: int = 7,
+    prefect_api_url: str = "https://prefect.galatek.dev/api"
+) -> bool:
+    """
+    Verify correct number of flows scheduled for email.
+
+    Args:
+        email: Test email to filter flow runs
+        expected_count: Expected number of scheduled flows (default: 7)
+        prefect_api_url: Prefect API base URL
+
+    Returns:
+        bool: True if correct number of flows scheduled
+
+    Example:
+        >>> assert verify_prefect_flow_scheduled("test@example.com", expected_count=7)
+    """
+    flows = get_scheduled_email_flows(email, prefect_api_url)
+    return len(flows) == expected_count
+
+
 # ===== Notion Record Verification =====
 
 def verify_notion_contact(
@@ -451,5 +531,32 @@ def get_assessment_test_data(email: str, first_name: str = "TestUser", business_
         "weakest_system_2": "GPS",
 
         # Metadata
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
+
+        # 16 assessment answers (CRITICAL segment profile)
+        # GPS Generate (2 questions)
+        "gps_generate_q1": False,  # No clear lead generation process
+        "gps_generate_q2": True,   # Have some marketing but inconsistent
+
+        # GPS Persuade (2 questions)
+        "gps_persuade_q3": False,  # No sales system
+        "gps_persuade_q4": True,   # Follow up but manually
+
+        # GPS Serve (4 questions)
+        "gps_serve_q5": False,  # No onboarding process
+        "gps_serve_q6": True,   # Deliver service but ad-hoc
+        "gps_serve_q7": True,   # Good at the work
+
+        # Money (4 questions)
+        "money_q8": False,   # Don't track metrics
+        "money_q9": False,   # No pricing strategy
+        "money_q10": True,   # Have some revenue
+        "money_q11": False,  # Unpredictable cash flow
+
+        # Marketing (4 questions)
+        "marketing_q12": True,   # Have website/social
+        "marketing_q13": True,   # Some content marketing
+        "marketing_q14": True,   # Email list exists
+        "marketing_q15": False,  # Not measuring ROI
+        "marketing_q16": True,   # Active on social
     }
