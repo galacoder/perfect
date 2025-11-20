@@ -26,22 +26,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Notion credentials and database IDs
-# Try Prefect Secret blocks first, fallback to environment variables
+# Load ALL from Prefect Secret blocks (fallback to environment variables for local dev)
 try:
     NOTION_TOKEN = Secret.load("notion-token").get()
     NOTION_EMAIL_TEMPLATES_DB_ID = Secret.load("notion-email-templates-db-id").get()
     NOTION_EMAIL_SEQUENCE_DB_ID = Secret.load("notion-email-sequence-db-id").get()
-    print("✅ Loaded Notion credentials from Prefect Secret blocks")
+    NOTION_BUSINESSX_DB_ID = Secret.load("notion-businessx-db-id").get()
+    NOTION_CUSTOMER_PROJECTS_DB_ID = Secret.load("notion-customer-projects-db-id").get()
+    NOTION_EMAIL_ANALYTICS_DB_ID = Secret.load("notion-email-analytics-db-id").get()
+    print("✅ Loaded all Notion configuration from Prefect Secret blocks")
 except Exception as e:
     print(f"⚠️  Failed to load from Secret blocks, using environment variables: {e}")
     NOTION_TOKEN = os.getenv("NOTION_TOKEN")
     NOTION_EMAIL_TEMPLATES_DB_ID = os.getenv("NOTION_EMAIL_TEMPLATES_DB_ID")
     NOTION_EMAIL_SEQUENCE_DB_ID = os.getenv("NOTION_EMAIL_SEQUENCE_DB_ID")
-
-# Database IDs that don't need to be secret (fallback to env vars)
-NOTION_BUSINESSX_DB_ID = os.getenv("NOTION_BUSINESSX_DB_ID")
-NOTION_CUSTOMER_PROJECTS_DB_ID = os.getenv("NOTION_CUSTOMER_PROJECTS_DB_ID")
-NOTION_EMAIL_ANALYTICS_DB_ID = os.getenv("NOTION_EMAIL_ANALYTICS_DB_ID")
+    NOTION_BUSINESSX_DB_ID = os.getenv("NOTION_BUSINESSX_DB_ID")
+    NOTION_CUSTOMER_PROJECTS_DB_ID = os.getenv("NOTION_CUSTOMER_PROJECTS_DB_ID")
+    NOTION_EMAIL_ANALYTICS_DB_ID = os.getenv("NOTION_EMAIL_ANALYTICS_DB_ID")
 
 # Initialize Notion client
 notion = Client(auth=NOTION_TOKEN)
