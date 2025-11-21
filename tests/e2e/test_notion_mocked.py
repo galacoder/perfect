@@ -513,6 +513,170 @@ class TestLogEmailAnalytics:
         assert "Error Message" in props
 
 
+# ===== Error handling tests =====
+
+class TestNotionErrorHandling:
+    """Test error handling paths in Notion operations."""
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_update_assessment_error_handling(self, mock_client):
+        """Test exception handling in update_assessment_data."""
+        mock_client.pages.update.side_effect = Exception("Notion API error")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import update_assessment_data
+
+        with pytest.raises(Exception) as exc_info:
+            update_assessment_data.fn(
+                page_id="page-123",
+                assessment_score=45,
+                segment="CRITICAL"
+            )
+
+        assert "Notion API error" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_track_email_sent_error_handling(self, mock_client):
+        """Test exception handling in track_email_sent."""
+        mock_client.pages.update.side_effect = Exception("Update failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import track_email_sent
+
+        with pytest.raises(Exception) as exc_info:
+            track_email_sent.fn(page_id="page-123", email_number=1)
+
+        assert "Update failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_update_contact_phase_error_handling(self, mock_client):
+        """Test exception handling in update_contact_phase."""
+        mock_client.pages.update.side_effect = Exception("Phase update failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import update_contact_phase
+
+        with pytest.raises(Exception) as exc_info:
+            update_contact_phase.fn(page_id="page-123", phase="Phase 2A Done-For-You")
+
+        assert "Phase update failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_update_booking_status_error_handling(self, mock_client):
+        """Test exception handling in update_booking_status."""
+        mock_client.pages.update.side_effect = Exception("Booking update failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import update_booking_status
+
+        with pytest.raises(Exception) as exc_info:
+            update_booking_status.fn(page_id="page-123", status="Booked")
+
+        assert "Booking update failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_search_email_sequence_error_handling(self, mock_client):
+        """Test exception handling in search_email_sequence_by_email."""
+        mock_client.databases.query.side_effect = Exception("Search failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import search_email_sequence_by_email
+
+        with pytest.raises(Exception) as exc_info:
+            search_email_sequence_by_email.fn("test@example.com")
+
+        assert "Search failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_create_email_sequence_error_handling(self, mock_client):
+        """Test exception handling in create_email_sequence."""
+        mock_client.pages.create.side_effect = Exception("Create failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import create_email_sequence
+
+        with pytest.raises(Exception) as exc_info:
+            create_email_sequence.fn(
+                email="test@example.com",
+                first_name="Test",
+                business_name="Test Corp",
+                assessment_score=50
+            )
+
+        assert "Create failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_update_email_sequence_error_handling(self, mock_client):
+        """Test exception handling in update_email_sequence."""
+        mock_client.pages.update.side_effect = Exception("Update failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import update_email_sequence
+
+        with pytest.raises(Exception) as exc_info:
+            update_email_sequence.fn(sequence_id="seq-123", email_number=1)
+
+        assert "Update failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_fetch_email_template_error_handling(self, mock_client):
+        """Test exception handling in fetch_email_template."""
+        mock_client.databases.query.side_effect = Exception("Template fetch failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import fetch_email_template
+
+        with pytest.raises(Exception) as exc_info:
+            fetch_email_template.fn("christmas_email_1")
+
+        assert "Template fetch failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_create_customer_portal_error_handling(self, mock_client):
+        """Test exception handling in create_customer_portal."""
+        mock_client.pages.create.side_effect = Exception("Portal creation failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import create_customer_portal
+
+        with pytest.raises(Exception) as exc_info:
+            create_customer_portal.fn(
+                email="test@example.com",
+                first_name="Test",
+                business_name="Test Corp",
+                call_date="2025-11-25",
+                next_steps="Phase 2A Done-For-You"
+            )
+
+        assert "Portal creation failed" in str(exc_info.value)
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_log_email_analytics_error_handling(self, mock_client):
+        """Test exception handling in log_email_analytics (should not raise)."""
+        mock_client.pages.create.side_effect = Exception("Analytics failed")
+
+        from campaigns.christmas_campaign.tasks.notion_operations import log_email_analytics
+
+        # Should NOT raise - analytics errors should be caught
+        result = log_email_analytics.fn(
+            email="test@example.com",
+            template_id="christmas_email_1",
+            email_number=1,
+            status="sent"
+        )
+
+        assert result is None  # Returns None on error
+
+    @patch('campaigns.christmas_campaign.tasks.notion_operations.notion')
+    def test_update_email_sequence_without_email_number(self, mock_client):
+        """Test update_email_sequence with only sequence_completed flag."""
+        mock_client.pages.update.return_value = {"id": "seq-123"}
+
+        from campaigns.christmas_campaign.tasks.notion_operations import update_email_sequence
+
+        result = update_email_sequence.fn(
+            sequence_id="seq-123",
+            sequence_completed=True
+        )
+
+        assert result["id"] == "seq-123"
+
+        call_kwargs = mock_client.pages.update.call_args.kwargs
+        props = call_kwargs["properties"]
+        assert props["Sequence Completed"]["checkbox"] is True
+
+
 # ===== Integration tests =====
 
 class TestNotionIntegration:
