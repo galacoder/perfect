@@ -60,7 +60,17 @@ def send_email_flow(
     first_name: str = "there",
     business_name: str = "your business",
     segment: str = "OPTIMIZE",
-    assessment_score: Optional[int] = None
+    assessment_score: Optional[int] = None,
+    # Additional parameters passed from signup_handler (for template variables)
+    red_systems: Optional[int] = None,
+    orange_systems: Optional[int] = None,
+    yellow_systems: Optional[int] = None,
+    green_systems: Optional[int] = None,
+    gps_score: Optional[int] = None,
+    money_score: Optional[int] = None,
+    weakest_system_1: Optional[str] = None,
+    weakest_system_2: Optional[str] = None,
+    revenue_leak_total: Optional[int] = None
 ) -> dict:
     """
     Send single email in the Christmas campaign nurture sequence.
@@ -75,6 +85,15 @@ def send_email_flow(
         business_name: Business name (for personalization)
         segment: Contact segment (CRITICAL/URGENT/OPTIMIZE)
         assessment_score: BusOS score (optional)
+        red_systems: Number of red (critical) systems (optional)
+        orange_systems: Number of orange (warning) systems (optional)
+        yellow_systems: Number of yellow systems (optional)
+        green_systems: Number of green (healthy) systems (optional)
+        gps_score: GPS system score (optional)
+        money_score: Money system score (optional)
+        weakest_system_1: First weakest system name (optional)
+        weakest_system_2: Second weakest system name (optional)
+        revenue_leak_total: Total revenue leak estimate (optional)
 
     Returns:
         Dict with status, resend_email_id, and metadata
