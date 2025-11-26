@@ -1,0 +1,80 @@
+{
+  "task_id": "1126-e2e-christmas-email-sequence-test",
+  "domain": "coding",
+  "status": "blocked",
+  "current_phase": "CODE",
+  "current_wave": 4,
+  "created_at": "2025-11-26T00:00:00Z",
+  "updated_at": "2025-11-26T23:10:00Z",
+  "meta": {
+    "title": "E2E Christmas Campaign Email Sequence Test",
+    "description": "Test complete email sequence by sending to lengobaosang@gmail.com",
+    "test_email": "lengobaosang@gmail.com",
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    },
+    "blocker": {
+      "issue": "Worker missing resend module",
+      "error": "ModuleNotFoundError: No module named 'resend'",
+      "fix_required": "Install resend package on worker server"
+    }
+  },
+  "waves": [
+    {"id": 1, "name": "Infrastructure Verification", "objective": "Verify Prefect, Notion, Resend connectivity", "status": "completed"},
+    {"id": 2, "name": "Signup Flow Testing", "objective": "Test signup webhook with real email", "status": "completed"},
+    {"id": 3, "name": "Assessment Flow", "objective": "Test FastAPI webhook (optional)", "status": "skipped"},
+    {"id": 4, "name": "Email Sequence", "objective": "Monitor all 7 emails sent and delivered", "status": "blocked"},
+    {"id": 5, "name": "Validation", "objective": "Document results, verify production readiness", "status": "pending"}
+  ],
+  "features": [
+    {"id": "1.1", "wave": 1, "name": "Check Prefect worker status", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.2", "wave": 1, "name": "Verify Prefect deployments exist", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.3", "wave": 1, "name": "Test Secret blocks accessible", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.4", "wave": 1, "name": "Test Notion API connectivity", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.5", "wave": 1, "name": "Test Resend API connectivity", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.6", "wave": 1, "name": "Verify email templates in Notion", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "2.1", "wave": 2, "name": "Check for existing sequence", "status": "completed", "priority": "medium", "tests_required": false},
+    {"id": "2.2", "wave": 2, "name": "Trigger Prefect API flow run", "status": "completed", "priority": "high", "tests_required": false, "result": {"flow_run_id": "b83bd8fc-3ba5-4ba3-b473-226c912ca880"}},
+    {"id": "2.3", "wave": 2, "name": "Monitor flow execution", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "2.4", "wave": 2, "name": "Verify email sequence in Notion", "status": "completed", "priority": "high", "tests_required": false, "result": {"page_id": "2b77c374-1115-8137-8109-ef5a551a4229", "segment": "CRITICAL"}},
+    {"id": "3.1", "wave": 3, "name": "Health check FastAPI", "status": "skipped", "priority": "low", "tests_required": false},
+    {"id": "3.2", "wave": 3, "name": "Test Christmas signup webhook", "status": "skipped", "priority": "low", "tests_required": false},
+    {"id": "4.1", "wave": 4, "name": "List scheduled flow runs", "status": "completed", "priority": "high", "tests_required": false, "result": {"flows_scheduled": 7}},
+    {"id": "4.2", "wave": 4, "name": "Monitor Email 1-7 delivery", "status": "blocked", "priority": "high", "tests_required": false, "result": {"email_1_status": "CRASHED", "error": "ModuleNotFoundError: No module named 'resend'"}},
+    {"id": "4.3", "wave": 4, "name": "Verify Notion status updates", "status": "pending", "priority": "high", "tests_required": false},
+    {"id": "4.4", "wave": 4, "name": "Verify inbox delivery", "status": "pending", "priority": "high", "tests_required": false},
+    {"id": "5.1", "wave": 5, "name": "Record all flow run IDs", "status": "completed", "priority": "medium", "tests_required": false},
+    {"id": "5.2", "wave": 5, "name": "Create TEST_RESULTS.md", "status": "completed", "priority": "medium", "tests_required": false},
+    {"id": "5.3", "wave": 5, "name": "Screenshot evidence", "status": "pending", "priority": "low", "tests_required": false}
+  ],
+  "flow_run_ids": {
+    "signup_handler": "b83bd8fc-3ba5-4ba3-b473-226c912ca880",
+    "email_1": "2aff8491-6ddf-4f18-8c8a-8c55799ad62e",
+    "email_2": "861c5d62-ab26-49cf-be47-1e33fa706f2c",
+    "email_3": "7ba20da4-fc20-40dd-9df8-708e9fa2599f",
+    "email_4": "a70f0a3c-e76f-49e8-9532-e8ec5231376f",
+    "email_5": "2f497c64-fa61-4b7f-be67-d7352ee7322e",
+    "email_6": "8036543e-924b-4dc4-a394-abc4cb7a851a",
+    "email_7": "3ea34ee4-33bb-4650-8ba5-07e048159e5a"
+  },
+  "progress": {
+    "total_features": 19,
+    "completed_features": 12,
+    "total_waves": 5,
+    "completed_waves": 2,
+    "percentage": 63
+  },
+  "session_log": [
+    {"timestamp": "2025-11-26T00:00:00Z", "action": "Task initialized via /start-coding"},
+    {"timestamp": "2025-11-26T00:00:00Z", "action": "EXPLORE phase complete"},
+    {"timestamp": "2025-11-26T00:00:00Z", "action": "PLAN phase complete - awaiting approval"},
+    {"timestamp": "2025-11-26T00:00:00Z", "action": "JSON state files created per Anthropic best practices"},
+    {"timestamp": "2025-11-26T23:00:00Z", "action": "Wave 1 COMPLETE: All 6 infrastructure tests passed"},
+    {"timestamp": "2025-11-26T23:03:00Z", "action": "Wave 2 COMPLETE: Signup flow successful, 7 emails scheduled"},
+    {"timestamp": "2025-11-26T23:05:00Z", "action": "Wave 3 SKIPPED: Wave 2 succeeded with direct Prefect API"},
+    {"timestamp": "2025-11-26T23:10:00Z", "action": "Wave 4 BLOCKED: Email #1 crashed - worker missing resend module"},
+    {"timestamp": "2025-11-26T23:10:00Z", "action": "Created TEST_RESULTS.md with blocker documentation"}
+  ]
+}

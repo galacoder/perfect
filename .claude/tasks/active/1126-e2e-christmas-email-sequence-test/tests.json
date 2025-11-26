@@ -1,0 +1,14 @@
+{
+  "task_id": "1126-e2e-christmas-email-sequence-test",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 0,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 19
+  },
+  "suites": [],
+  "failures": [],
+  "history": []
+}

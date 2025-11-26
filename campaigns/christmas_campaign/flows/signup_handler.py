@@ -33,26 +33,8 @@ from campaigns.christmas_campaign.tasks.notion_operations import (
 # Load environment variables
 load_dotenv()
 
-# Configuration - try Secret block first, fall back to environment variable
-def get_testing_mode() -> bool:
-    """Get testing mode from Prefect Secret block or environment variable."""
-    try:
-        from prefect.blocks.system import Secret
-        import asyncio
-        # Use sync loading for module-level initialization
-        secret = asyncio.get_event_loop().run_until_complete(Secret.load("testing-mode"))
-        value = secret.get()
-        print(f"✅ Loaded TESTING_MODE from Secret block: {value}")
-        # Handle both boolean and string values
-        if isinstance(value, bool):
-            return value
-        return str(value).lower() == "true"
-    except Exception as e:
-        # Fall back to environment variable
-        print(f"⚠️  Failed to load from Secret blocks, using environment variables: {e}")
-        return os.getenv("TESTING_MODE", "false").lower() == "true"
-
-TESTING_MODE = get_testing_mode()
+# Note: TESTING_MODE is loaded inside schedule_email_sequence async context
+# to properly access Prefect Secret blocks within the flow runtime
 
 
 # ==============================================================================
@@ -119,21 +101,38 @@ def schedule_email_sequence(
     """
     logger = get_run_logger()
 
-    # Email timing (hours from now)
-    # Production: Day 0, Day 1, Day 3, Day 5, Day 7, Day 9, Day 11
-    # Testing: 0min, 1min, 2min, 3min, 4min, 5min, 6min
-    if TESTING_MODE:
-        delays_hours = [0, 1/60, 2/60, 3/60, 4/60, 5/60, 6/60]  # Minutes converted to hours
-        logger.info("⚡ TESTING MODE: Using fast delays (minutes)")
-    else:
-        delays_hours = [0, 24, 72, 120, 168, 216, 264]  # Production delays
-        logger.info("🚀 PRODUCTION MODE: Using standard delays (days)")
-
     scheduled_flows = []
 
     # Use async context to interact with Prefect API
     async def schedule_all_emails():
         from prefect.client.orchestration import get_client
+        from prefect.blocks.system import Secret
+
+        # Load TESTING_MODE from Secret block inside async context
+        testing_mode = False
+        try:
+            secret = await Secret.load("testing-mode")
+            value = secret.get()
+            logger.info(f"✅ Loaded TESTING_MODE from Secret block: {value}")
+            # Handle both boolean and string values
+            if isinstance(value, bool):
+                testing_mode = value
+            else:
+                testing_mode = str(value).lower() == "true"
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to load testing-mode Secret: {e}")
+            testing_mode = os.getenv("TESTING_MODE", "false").lower() == "true"
+
+        # Email timing (hours from now)
+        # Production: Day 0, Day 1, Day 3, Day 5, Day 7, Day 9, Day 11
+        # Testing: 0min, 1min, 2min, 3min, 4min, 5min, 6min
+        if testing_mode:
+            delays_hours = [0, 1/60, 2/60, 3/60, 4/60, 5/60, 6/60]  # Minutes converted to hours
+            logger.info("⚡ TESTING MODE: Using fast delays (minutes)")
+        else:
+            delays_hours = [0, 24, 72, 120, 168, 216, 264]  # Production delays
+            logger.info("🚀 PRODUCTION MODE: Using standard delays (days)")
+
         async with get_client() as client:
             # Find the deployment
             try:
