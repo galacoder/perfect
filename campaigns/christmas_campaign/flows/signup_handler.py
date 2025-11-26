@@ -108,10 +108,10 @@ def schedule_email_sequence(
         from prefect.client.orchestration import get_client
         from prefect.blocks.system import Secret
 
-        # Load TESTING_MODE from Secret block inside async context
+        # Load TESTING_MODE from Secret block (sync call within async context)
         testing_mode = False
         try:
-            secret = await Secret.load("testing-mode")
+            secret = Secret.load("testing-mode")
             value = secret.get()
             logger.info(f"✅ Loaded TESTING_MODE from Secret block: {value}")
             # Handle both boolean and string values
