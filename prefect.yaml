@@ -3,10 +3,16 @@ name: perfect
 prefect-version: 3.4.1
 
 # Pull step - tells Prefect how to retrieve the flow code from GitHub
+# Step 1: Clone the repository
+# Step 2: Install Python dependencies from requirements.txt
 pull:
 - prefect.deployments.steps.git_clone:
+    id: clone-step
     repository: https://github.com/galacoder/perfect.git
     branch: main
+- prefect.deployments.steps.pip_install_requirements:
+    directory: "{{ clone-step.directory }}"
+    requirements_file: requirements.txt
 
 # Build, push, and pull are optional
 build: null

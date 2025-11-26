@@ -33,8 +33,18 @@ from campaigns.christmas_campaign.tasks.notion_operations import (
 # Load environment variables
 load_dotenv()
 
-# Configuration
-TESTING_MODE = os.getenv("TESTING_MODE", "false").lower() == "true"
+# Configuration - try Secret block first, fall back to environment variable
+def get_testing_mode() -> bool:
+    """Get testing mode from Prefect Secret block or environment variable."""
+    try:
+        from prefect.blocks.system import Secret
+        value = Secret.load("testing-mode").get()
+        return value.lower() == "true"
+    except Exception:
+        # Fall back to environment variable
+        return os.getenv("TESTING_MODE", "false").lower() == "true"
+
+TESTING_MODE = get_testing_mode()
 
 
 # ==============================================================================
