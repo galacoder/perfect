@@ -43,7 +43,10 @@ def get_testing_mode() -> bool:
         secret = asyncio.get_event_loop().run_until_complete(Secret.load("testing-mode"))
         value = secret.get()
         print(f"✅ Loaded TESTING_MODE from Secret block: {value}")
-        return value.lower() == "true"
+        # Handle both boolean and string values
+        if isinstance(value, bool):
+            return value
+        return str(value).lower() == "true"
     except Exception as e:
         # Fall back to environment variable
         print(f"⚠️  Failed to load from Secret blocks, using environment variables: {e}")
