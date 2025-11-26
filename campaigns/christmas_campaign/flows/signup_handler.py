@@ -38,10 +38,15 @@ def get_testing_mode() -> bool:
     """Get testing mode from Prefect Secret block or environment variable."""
     try:
         from prefect.blocks.system import Secret
-        value = Secret.load("testing-mode").get()
+        import asyncio
+        # Use sync loading for module-level initialization
+        secret = asyncio.get_event_loop().run_until_complete(Secret.load("testing-mode"))
+        value = secret.get()
+        print(f"✅ Loaded TESTING_MODE from Secret block: {value}")
         return value.lower() == "true"
-    except Exception:
+    except Exception as e:
         # Fall back to environment variable
+        print(f"⚠️  Failed to load from Secret blocks, using environment variables: {e}")
         return os.getenv("TESTING_MODE", "false").lower() == "true"
 
 TESTING_MODE = get_testing_mode()
