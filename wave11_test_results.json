@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-11-27T14:35:40.006685",
+  "test_email": "lengobaosang@gmail.com",
+  "results": {
+    "lead_nurture": {
+      "success": true,
+      "flow_run_id": null,
+      "emails": 7
+    },
+    "noshow_recovery": {
+      "success": true,
+      "flow_run_id": null,
+      "emails": 3
+    },
+    "postcall_maybe": {
+      "success": true,
+      "flow_run_id": null,
+      "emails": 3
+    },
+    "onboarding": {
+      "success": true,
+      "flow_run_id": null,
+      "emails": 3
+    }
+  },
+  "summary": {
+    "successful_sequences": 4,
+    "total_emails": 16
+  }
+}
