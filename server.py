@@ -669,7 +669,9 @@ class CalendlyNoShowRequest(BaseModel):
             "first_name": "Sarah",
             "business_name": "Sarah's Salon",
             "calendly_event_uri": "https://calendly.com/events/ABC123",
-            "scheduled_time": "2025-12-01T14:00:00Z"
+            "scheduled_time": "2025-12-01T14:00:00Z",
+            "event_type": "Discovery Call - $2997 Diagnostic",
+            "reschedule_url": "https://calendly.com/reschedule/ABC123"
         }
     """
     email: EmailStr = Field(..., description="Contact email address")
@@ -677,6 +679,8 @@ class CalendlyNoShowRequest(BaseModel):
     business_name: str = Field(..., description="Business name")
     calendly_event_uri: str = Field(..., description="Calendly event URI")
     scheduled_time: str = Field(..., description="Original scheduled time (ISO format)")
+    event_type: str = Field(default="Discovery Call - $2997 Diagnostic", description="Type of event that was missed")
+    reschedule_url: Optional[str] = Field(default=None, description="URL to reschedule the call")
 
     class Config:
         schema_extra = {
@@ -685,7 +689,9 @@ class CalendlyNoShowRequest(BaseModel):
                 "first_name": "Sarah",
                 "business_name": "Sarah's Salon",
                 "calendly_event_uri": "https://calendly.com/events/ABC123",
-                "scheduled_time": "2025-12-01T14:00:00Z"
+                "scheduled_time": "2025-12-01T14:00:00Z",
+                "event_type": "Discovery Call - $2997 Diagnostic",
+                "reschedule_url": "https://calendly.com/reschedule/ABC123"
             }
         }
 
@@ -807,7 +813,8 @@ async def calendly_noshow_webhook(request: CalendlyNoShowRequest, background_tas
                 business_name=request.business_name,
                 calendly_event_uri=request.calendly_event_uri,
                 scheduled_time=request.scheduled_time,
-                missed_time=datetime.now().isoformat()
+                event_type=request.event_type,
+                reschedule_url=request.reschedule_url
             )
             logger.info(f"✅ No-show recovery flow completed: {result.get('status')}")
 

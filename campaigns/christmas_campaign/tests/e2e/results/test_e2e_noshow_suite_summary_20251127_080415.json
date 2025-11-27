@@ -1,0 +1,37 @@
+{
+  "test_name": "test_e2e_noshow_suite_summary",
+  "status": "passed",
+  "start_time": "2025-11-27T08:04:15.738521",
+  "end_time": "2025-11-27T08:04:15.738703",
+  "duration_seconds": 0.000182,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "No-Show Recovery E2E Test Suite",
+      "timestamp": "2025-11-27T08:04:15.738609"
+    },
+    {
+      "note": "Tests covered:",
+      "timestamp": "2025-11-27T08:04:15.738611"
+    },
+    {
+      "note": "  - Webhook validation (valid/invalid payloads)",
+      "timestamp": "2025-11-27T08:04:15.738612"
+    },
+    {
+      "note": "  - Flow triggering",
+      "timestamp": "2025-11-27T08:04:15.738613"
+    },
+    {
+      "note": "  - Sequence record creation (manual verification)",
+      "timestamp": "2025-11-27T08:04:15.738614"
+    },
+    {
+      "note": "  - Email timing (manual verification in testing mode)",
+      "timestamp": "2025-11-27T08:04:15.738615"
+    }
+  ]
+}

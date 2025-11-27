@@ -37,7 +37,7 @@ if __name__ == "__main__":
     # Deploy send_email_flow using flow.deploy() method (Prefect v3)
     deployment_id = send_email_flow.deploy(
         name="christmas-send-email",
-        work_pool_name=None,  # Use default work pool
+        work_pool_name="local-process",  # Use local process pool
         tags=["christmas", "email", "nurture", "christmas-2025"],
         description="Send individual email from Christmas campaign 7-email sequence (triggered by signup_handler)",
         version="1.0.0",

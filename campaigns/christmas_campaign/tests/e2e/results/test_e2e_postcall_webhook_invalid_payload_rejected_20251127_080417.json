@@ -1,0 +1,35 @@
+{
+  "test_name": "test_e2e_postcall_webhook_invalid_payload_rejected",
+  "status": "passed",
+  "start_time": "2025-11-27T08:04:17.770904",
+  "end_time": "2025-11-27T08:04:17.771750",
+  "duration_seconds": 0.000846,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "email"
+            ],
+            "msg": "Field required",
+            "input": {
+              "first_name": "PostCall Test",
+              "business_name": "PostCall Test Salon",
+              "call_date": "2025-12-01T14:30:00Z"
+            }
+          }
+        ]
+      },
+      "timestamp": "2025-11-27T08:04:17.771588"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

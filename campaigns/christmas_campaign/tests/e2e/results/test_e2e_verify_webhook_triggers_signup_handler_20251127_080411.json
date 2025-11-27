@@ -1,0 +1,21 @@
+{
+  "test_name": "test_e2e_verify_webhook_triggers_signup_handler",
+  "status": "passed",
+  "start_time": "2025-11-27T08:04:11.610719",
+  "end_time": "2025-11-27T08:04:13.616617",
+  "duration_seconds": 2.005898,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Flow triggered for e2e-flow-trigger-1764248651610@e2e-test.example.com",
+      "timestamp": "2025-11-27T08:04:13.616367"
+    },
+    {
+      "note": "Verify in Prefect UI: signup_handler_flow run created",
+      "timestamp": "2025-11-27T08:04:13.616375"
+    }
+  ]
+}

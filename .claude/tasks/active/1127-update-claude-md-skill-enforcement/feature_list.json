@@ -1,0 +1,63 @@
+{
+  "task_id": "1127-update-claude-md-skill-enforcement",
+  "domain": "meta",
+  "status": "completed",
+  "current_phase": "VERIFY",
+  "current_wave": 3,
+  "created_at": "2025-11-27T08:30:00Z",
+  "updated_at": "2025-11-27T08:45:00Z",
+  "meta": {
+    "title": "Update CLAUDE.md with Mandatory Skill Enforcement",
+    "description": "Based on Anthropic blog article best practices, add mandatory skill usage section to ensure prefect-marketing-automation skill is always used",
+    "source_article": "https://claude.com/blog/using-claude-md-files",
+    "model_selection": {
+      "planning": "opus",
+      "execution": "opus",
+      "verification": "opus"
+    }
+  },
+  "waves": [
+    {"id": 1, "name": "Add Mandatory Skills Section", "objective": "Add prominent skill enforcement section near top of CLAUDE.md", "status": "completed"},
+    {"id": 2, "name": "Update Workflow Entry Points", "objective": "Add skill reminders at each workflow section", "status": "completed"},
+    {"id": 3, "name": "Add Context Management Section", "objective": "Add subagent isolation and context clearing guidance", "status": "completed"}
+  ],
+  "features": [
+    {"id": "1.1", "wave": 1, "name": "Add MANDATORY: Skill Usage Rules section after Tech Stack", "status": "completed", "priority": "critical", "tests_required": false},
+    {"id": "1.2", "wave": 1, "name": "Add skill usage table (task type -> required skill)", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.3", "wave": 1, "name": "Add subagent requirements for skill inheritance", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "1.4", "wave": 1, "name": "Add anti-pattern examples (never do this)", "status": "completed", "priority": "medium", "tests_required": false},
+    {"id": "2.1", "wave": 2, "name": "Update 'When Editing Flows' with skill reminder", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "2.2", "wave": 2, "name": "Update 'When Editing Tasks' with skill reminder", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "2.3", "wave": 2, "name": "Update 'When Adding New Features' with skill reminder", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "2.4", "wave": 2, "name": "Update 'When Adding New Campaigns' with skill reminder", "status": "completed", "priority": "high", "tests_required": false},
+    {"id": "3.1", "wave": 3, "name": "Add Context Management section", "status": "completed", "priority": "medium", "tests_required": false},
+    {"id": "3.2", "wave": 3, "name": "Add subagent isolation guidance", "status": "completed", "priority": "medium", "tests_required": false},
+    {"id": "3.3", "wave": 3, "name": "Update Last Updated date", "status": "completed", "priority": "low", "tests_required": false}
+  ],
+  "progress": {
+    "total_features": 11,
+    "completed_features": 11,
+    "total_waves": 3,
+    "completed_waves": 3,
+    "percentage": 100
+  },
+  "changes_made": [
+    {"file": "CLAUDE.md", "change": "Added '⚡ MANDATORY: Skill Usage Rules' section after Tech Stack (lines 28-73)"},
+    {"file": "CLAUDE.md", "change": "Added skill requirement table with 4 task types"},
+    {"file": "CLAUDE.md", "change": "Added subagent requirements guidance"},
+    {"file": "CLAUDE.md", "change": "Added anti-pattern example with Prefect import error"},
+    {"file": "CLAUDE.md", "change": "Added 🔴 BEFORE CODING reminder to 'When Editing Flows'"},
+    {"file": "CLAUDE.md", "change": "Added 🔴 BEFORE CODING reminder to 'When Editing Tasks'"},
+    {"file": "CLAUDE.md", "change": "Added 🔴 BEFORE CODING reminder to 'When Adding New Features'"},
+    {"file": "CLAUDE.md", "change": "Added 🔴 BEFORE CODING reminder to 'When Adding New Campaigns'"},
+    {"file": "CLAUDE.md", "change": "Added 'Context Management' section (lines 511-550)"},
+    {"file": "CLAUDE.md", "change": "Updated Last Updated date to November 27, 2025"}
+  ],
+  "session_log": [
+    {"timestamp": "2025-11-27T08:30:00Z", "action": "Task created based on blog article analysis"},
+    {"timestamp": "2025-11-27T08:30:00Z", "action": "Identified gap: skill enforcement buried in section 4, not prominent"},
+    {"timestamp": "2025-11-27T08:35:00Z", "action": "Wave 1 COMPLETE: Added mandatory skills section near top"},
+    {"timestamp": "2025-11-27T08:40:00Z", "action": "Wave 2 COMPLETE: Added skill reminders to all 4 workflow entry points"},
+    {"timestamp": "2025-11-27T08:45:00Z", "action": "Wave 3 COMPLETE: Added Context Management section with subagent guidance"}
+  ]
+}

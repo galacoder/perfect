@@ -1,8 +1,8 @@
 # Claude Code Project Guide
 
 **Project**: Perfect - Marketing Automation Platform (Prefect v3)
-**Last Updated**: November 19, 2025
-**Structure**: Campaign-Based Organization
+**Last Updated**: November 27, 2025
+**Structure**: Campaign-Based Organization + Mandatory Skill Enforcement
 
 ---
 
@@ -22,6 +22,54 @@ This is a marketing automation platform built with Prefect v3, managing multiple
 - **Email**: Resend API
 - **Notifications**: Discord (hot leads)
 - **Testing**: pytest (93+ unit tests)
+
+---
+
+## ⚡ MANDATORY: Skill Usage Rules
+
+**CRITICAL**: Before implementing ANY Prefect-related code, you MUST:
+
+1. **Load the `prefect-marketing-automation` skill** - Use `Skill: prefect-marketing-automation`
+2. **Research API patterns** before writing any Prefect code
+3. **Pass skill requirements to subagents** when delegating tasks
+
+### When to Use Which Skill
+
+| Task Type | REQUIRED Skill | Reason |
+|-----------|---------------|--------|
+| **Prefect flows/tasks/deployments** | `prefect-marketing-automation` | Campaign-based patterns, correct API imports |
+| **Python library research** | `library-docs-pure` | Accurate API usage for any library |
+| **Notion operations** | `notion-integration` | Rate limits, pagination, error handling |
+| **Browser automation/testing** | `playwright-skill` | E2E funnel testing |
+
+### Subagent Requirements
+
+**IMPORTANT**: Subagents do NOT inherit skill context - skills must be explicitly invoked.
+
+When using `/start`, `/execute`, `/start-coding`, `/execute-coding`, or Task tool:
+- **ALWAYS include in prompt**: "Use `prefect-marketing-automation` skill before writing any Prefect code"
+- Subagents have isolated context and won't see this CLAUDE.md's skill guidance
+
+### Anti-Pattern (NEVER DO)
+
+```python
+# ❌ WRONG: Guessing Prefect API without research
+from prefect.client.schemas.states import Scheduled  # Doesn't exist in v3.4.1!
+
+# ✅ CORRECT: Use skill first, then code
+# Step 1: Invoke prefect-marketing-automation skill
+# Step 2: Find correct import: from prefect.states import Scheduled
+# Step 3: Implement with verified pattern
+```
+
+### Why This Matters
+
+**Christmas Campaign Deployment (Nov 19, 2025)** - We wasted hours debugging because:
+- ❌ Assumed `from prefect.client.schemas.states import Scheduled` existed (it doesn't)
+- ❌ Tried dict-based state `{"type": "SCHEDULED", ...}` (causes 'dict' object has no attribute 'data')
+- ✅ Correct pattern found via skill: `from prefect.states import Scheduled`
+
+**Rule**: When unsure about ANY library API, use the appropriate skill FIRST.
 
 ---
 
@@ -236,6 +284,8 @@ Contacts are classified into 3 segments based on assessment results:
 
 ### When Editing Flows
 
+**🔴 BEFORE CODING**: Invoke `prefect-marketing-automation` skill to verify Prefect patterns
+
 **Location**: `campaigns/businessx_canada_lead_nurture/flows/`
 
 **Key files**:
@@ -253,6 +303,8 @@ python test_integration_e2e.py --mode mock
 ```
 
 ### When Editing Tasks
+
+**🔴 BEFORE CODING**: Invoke `prefect-marketing-automation` skill for Prefect tasks, `notion-integration` for Notion operations
 
 **Location**: `campaigns/businessx_canada_lead_nurture/tasks/`
 
@@ -273,6 +325,8 @@ pytest campaigns/businessx_canada_lead_nurture/tests/ -v
 
 ### When Adding New Features
 
+**🔴 BEFORE CODING**: Invoke appropriate skill (`prefect-marketing-automation`, `notion-integration`, or `library-docs-pure`)
+
 1. **Create new task** in `campaigns/.../tasks/your_task.py`
 2. **Write unit tests** in `campaigns/.../tests/test_your_task.py`
 3. **Use task in flow** by importing from campaign path
@@ -280,6 +334,8 @@ pytest campaigns/businessx_canada_lead_nurture/tests/ -v
 5. **Document in README** at `campaigns/.../README.md`
 
 ### When Adding New Campaigns
+
+**🔴 BEFORE CODING**: Invoke `prefect-marketing-automation` skill - copy existing campaign patterns
 
 ```bash
 # Create campaign structure
@@ -449,6 +505,49 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete guide.
 - **Email send fails**: Retry 3×, then log for manual follow-up
 - **Discord fails**: Log but don't block email sequence
 - **Contact not found**: Return 404 error (assessment requires existing contact)
+
+---
+
+## Context Management
+
+### Clear Context Between Tasks
+
+Use `/clear` between distinct tasks to reset the context window while preserving CLAUDE.md instructions.
+
+**When to clear context**:
+- After debugging authentication → before implementing new API endpoint
+- After completing one campaign → before starting another
+- After exploring codebase → before implementing features
+
+### Subagent Isolation
+
+Use Task tool with specialized agents for distinct phases:
+- **Exploration**: Fresh perspective on codebase structure
+- **Implementation**: Focused on specific patterns (invoke skills!)
+- **Review**: Isolated security/quality checks
+
+**CRITICAL**: Subagents don't inherit skills or context:
+- Explicitly require skill usage in prompts
+- Pass relevant context as prompt parameters
+- Don't assume subagents read CLAUDE.md
+
+### Example: Passing Skill Requirements to Subagent
+
+```
+Task(
+  subagent_type: "coding",
+  prompt: "
+    Implement email scheduling feature.
+
+    MANDATORY: Before writing any Prefect code:
+    1. Invoke prefect-marketing-automation skill
+    2. Verify import paths match Prefect v3.4.1
+    3. Use Secret blocks (not environment variables)
+
+    Follow patterns in campaigns/christmas_campaign/flows/
+  "
+)
+```
 
 ---
 
@@ -899,5 +998,5 @@ Proprietary - Sang Le Scaling Labs
 
 ---
 
-**Last Updated**: November 16, 2025
-**Project Version**: Campaign-Based Structure (Post-Migration)
+**Last Updated**: November 27, 2025
+**Project Version**: Campaign-Based Structure (Post-Migration) + Mandatory Skill Enforcement
