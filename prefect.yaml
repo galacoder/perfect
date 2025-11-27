@@ -45,3 +45,42 @@ deployments:
   - email-nurture
   description: Christmas Campaign individual email sender - sends single email in 7-email sequence
   version: 1.0.0
+
+- name: christmas-noshow-recovery-handler
+  entrypoint: campaigns/christmas_campaign/flows/noshow_recovery_handler.py:noshow_recovery_handler_flow
+  work_pool:
+    name: default
+  schedule: null
+  parameters: {}
+  tags:
+  - christmas
+  - christmas-2025
+  - noshow-recovery
+  description: Christmas Campaign no-show recovery handler - triggers 3-email recovery sequence
+  version: 1.0.0
+
+- name: christmas-postcall-maybe-handler
+  entrypoint: campaigns/christmas_campaign/flows/postcall_maybe_handler.py:postcall_maybe_handler_flow
+  work_pool:
+    name: default
+  schedule: null
+  parameters: {}
+  tags:
+  - christmas
+  - christmas-2025
+  - postcall-followup
+  description: Christmas Campaign post-call maybe handler - triggers 3-email follow-up sequence
+  version: 1.0.0
+
+- name: christmas-onboarding-handler
+  entrypoint: campaigns/christmas_campaign/flows/onboarding_handler.py:onboarding_handler_flow
+  work_pool:
+    name: default
+  schedule: null
+  parameters: {}
+  tags:
+  - christmas
+  - christmas-2025
+  - onboarding
+  description: Christmas Campaign onboarding handler - triggers 3-email welcome sequence
+  version: 1.0.0
