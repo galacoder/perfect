@@ -6,9 +6,62 @@
     "total": 0,
     "passing": 0,
     "failing": 0,
-    "not_started": 19
+    "not_started": 29
   },
   "suites": [],
   "failures": [],
-  "history": []
+  "history": [],
+  "wave9_test_requirements": {
+    "description": "Wave 9 adds 10 new features with comprehensive test scenarios",
+    "features_with_tests": [
+      {
+        "feature_id": "9.1",
+        "test_scenarios": ["Verify dev server running", "Check browser console for errors", "Inspect assessment.tsx component", "Check localStorage initialization"]
+      },
+      {
+        "feature_id": "9.2",
+        "test_scenarios": ["Apply fix to assessment component", "Verify page loads correctly", "Test state transitions", "Verify no console errors"]
+      },
+      {
+        "feature_id": "9.3",
+        "test_scenarios": ["Navigate to landing page", "Fill form fields", "Submit form", "Verify redirect to thank-you"]
+      },
+      {
+        "feature_id": "9.4",
+        "test_scenarios": ["Navigate to assessment", "Answer all 16 questions", "Verify completion triggers webhook", "Verify redirect to results"]
+      },
+      {
+        "feature_id": "9.5",
+        "test_scenarios": ["Check Prefect flow triggered", "Verify email sequence created in Notion", "Check segment classification"]
+      },
+      {
+        "feature_id": "9.6",
+        "test_scenarios": ["Trigger christmas-signup-handler", "Monitor 7 emails scheduled", "Wait for all 7 emails sent", "Verify all delivered"]
+      },
+      {
+        "feature_id": "9.7",
+        "test_scenarios": ["Trigger calendly-no-show webhook", "Monitor 3 emails scheduled", "Wait for all 3 emails sent", "Verify all delivered"]
+      },
+      {
+        "feature_id": "9.8",
+        "test_scenarios": ["Trigger post-call-maybe webhook", "Monitor 3 emails scheduled", "Wait for all 3 emails sent", "Verify all delivered"]
+      },
+      {
+        "feature_id": "9.9",
+        "test_scenarios": ["Trigger onboarding webhook", "Monitor 3 emails scheduled", "Wait for all 3 emails sent", "Verify all delivered"]
+      },
+      {
+        "feature_id": "9.10",
+        "test_scenarios": ["Check Resend API for all emails", "Verify delivery status for all 16", "Document any bounces or failures", "Screenshot evidence"]
+      }
+    ],
+    "total_test_scenarios": 40,
+    "email_sequences_to_test": [
+      {"name": "Lead Nurture", "email_count": 7},
+      {"name": "No-Show Recovery", "email_count": 3},
+      {"name": "Post-Call Maybe", "email_count": 3},
+      {"name": "Onboarding", "email_count": 3}
+    ],
+    "total_emails_expected": 16
+  }
 }

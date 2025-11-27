@@ -844,3 +844,262 @@ For Prefect worker:
 ```bash
 TESTING_MODE=true  # Fast email intervals (1-6 min)
 ```
+
+---
+
+## Wave 9: Full Funnel + All Email Sequences Test (ADDED)
+
+### 9.1 Objective
+Fix frontend assessment loading bug, complete E2E sales funnel via Puppeteer, and test all 4 email sequences (16 emails total) to lengobaosang@gmail.com.
+
+### 9.2 Pre-Conditions
+- Frontend project at: `/Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss`
+- Assessment page path: `pages/en/flows/businessX/dfu/xmas-a01`
+- FastAPI server running at localhost:8000
+- Prefect deployments active with TESTING_MODE=true
+- Test email: lengobaosang@gmail.com
+
+### 9.3 Tasks
+
+#### Task 9.1: Investigate Frontend Assessment Loading Bug (CRITICAL)
+**Issue**: Assessment page stuck on "Preparing your 8-System Assessment..." loading screen
+
+**Investigation Steps**:
+1. Verify dev server running at localhost:3005
+2. Open browser DevTools and check console for errors
+3. Inspect `assessment.tsx` component for initialization issues
+4. Check localStorage for missing/corrupted user data
+
+**Test Scenarios**:
+- [ ] Verify dev server running
+- [ ] Check browser console for errors
+- [ ] Inspect assessment.tsx component
+- [ ] Check localStorage initialization
+
+**Estimated Time**: 30 minutes
+
+#### Task 9.2: Fix Frontend Assessment Bug (CRITICAL)
+**Once root cause identified, apply fix**
+
+**Test Scenarios**:
+- [ ] Apply fix to assessment component
+- [ ] Verify page loads correctly
+- [ ] Test state transitions
+- [ ] Verify no console errors
+
+**Estimated Time**: 30 minutes
+
+#### Task 9.3: Puppeteer E2E - Opt-In Form Submission
+```javascript
+// Navigate to landing page
+await page.goto('http://localhost:3005/en/flows/businessX/dfu/xmas-a01');
+
+// Fill opt-in form
+await page.fill('#firstName', 'E2E Test User');
+await page.fill('#email', 'lengobaosang@gmail.com');
+await page.selectOption('#monthlyRevenue', '10k-20k');
+await page.selectOption('#biggestChallenge', 'scaling');
+await page.check('#privacy');
+
+// Submit
+await page.click('button[type="submit"]');
+await page.waitForURL(/thank-you/);
+```
+
+**Test Scenarios**:
+- [ ] Navigate to landing page
+- [ ] Fill form fields
+- [ ] Submit form
+- [ ] Verify redirect to thank-you
+
+**Estimated Time**: 15 minutes
+
+#### Task 9.4: Puppeteer E2E - Complete 16-Question Assessment
+```javascript
+// Navigate to assessment
+await page.click('a[href*="/assessment"]');
+await page.waitForURL(/assessment/);
+
+// Answer 16 questions (varied pattern)
+for (let i = 0; i < 16; i++) {
+  if (i % 3 === 0) {
+    await page.click('button:has-text("YES")');
+  } else {
+    await page.click('button:has-text("NO")');
+  }
+  await page.waitForTimeout(600);
+}
+```
+
+**Test Scenarios**:
+- [ ] Navigate to assessment
+- [ ] Answer all 16 questions
+- [ ] Verify completion triggers webhook
+- [ ] Verify redirect to results
+
+**Estimated Time**: 20 minutes
+
+#### Task 9.5: Verify Webhook Triggers and Notion Records
+```bash
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+from notion_client import Client
+import os
+notion = Client(auth=os.getenv('NOTION_TOKEN'))
+r = notion.databases.query(
+    database_id=os.getenv('NOTION_EMAIL_SEQUENCE_DB_ID'),
+    filter={'property': 'Email', 'email': {'equals': 'lengobaosang@gmail.com'}}
+)
+if r['results']:
+    seq = r['results'][0]
+    print(f'SEQUENCE ID: {seq[\"id\"]}')
+    print(f'Campaign: {seq[\"properties\"][\"Campaign\"][\"select\"][\"name\"]}')
+    print(f'Segment: {seq[\"properties\"].get(\"Segment\", {}).get(\"select\", {}).get(\"name\", \"N/A\")}')
+"
+```
+
+**Test Scenarios**:
+- [ ] Check Prefect flow triggered
+- [ ] Verify email sequence created in Notion
+- [ ] Check segment classification
+
+**Estimated Time**: 10 minutes
+
+#### Task 9.6: Send Lead Nurture Email Sequence (7 emails)
+**Trigger**: Via website opt-in + assessment completion (Tasks 9.3-9.5)
+**Email Count**: 7
+**Expected Time**: ~6 minutes with TESTING_MODE
+
+**Test Scenarios**:
+- [ ] Trigger christmas-signup-handler
+- [ ] Monitor 7 emails scheduled
+- [ ] Wait for all 7 emails sent (~6 min with TESTING_MODE)
+- [ ] Verify all delivered
+
+**Estimated Time**: 15 minutes
+
+#### Task 9.7: Send No-Show Recovery Email Sequence (3 emails)
+**Trigger**: POST /webhook/calendly-no-show
+```bash
+curl -X POST http://localhost:8000/webhook/calendly-no-show \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Bao Sang",
+    "business_name": "Test Salon",
+    "event_name": "BusinessX Discovery Call",
+    "event_time": "2025-11-27T14:00:00Z"
+  }'
+```
+**Email Count**: 3
+
+**Test Scenarios**:
+- [ ] Trigger calendly-no-show webhook
+- [ ] Monitor 3 emails scheduled
+- [ ] Wait for all 3 emails sent
+- [ ] Verify all delivered
+
+**Estimated Time**: 10 minutes
+
+#### Task 9.8: Send Post-Call Maybe Email Sequence (3 emails)
+**Trigger**: POST /webhook/post-call-maybe
+```bash
+curl -X POST http://localhost:8000/webhook/post-call-maybe \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Bao Sang",
+    "business_name": "Test Salon",
+    "call_date": "2025-11-27"
+  }'
+```
+**Email Count**: 3
+
+**Test Scenarios**:
+- [ ] Trigger post-call-maybe webhook
+- [ ] Monitor 3 emails scheduled
+- [ ] Wait for all 3 emails sent
+- [ ] Verify all delivered
+
+**Estimated Time**: 10 minutes
+
+#### Task 9.9: Send Onboarding Email Sequence (3 emails)
+**Trigger**: POST /webhook/onboarding-phase1
+```bash
+curl -X POST http://localhost:8000/webhook/onboarding-phase1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Bao Sang",
+    "business_name": "Test Salon",
+    "client_since": "2025-11-27"
+  }'
+```
+**Email Count**: 3
+
+**Test Scenarios**:
+- [ ] Trigger onboarding webhook
+- [ ] Monitor 3 emails scheduled
+- [ ] Wait for all 3 emails sent
+- [ ] Verify all delivered
+
+**Estimated Time**: 10 minutes
+
+#### Task 9.10: Verify All 16 Emails in Resend Dashboard (CRITICAL)
+**Check Resend API for all sent emails**:
+```bash
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+import resend
+import os
+resend.api_key = os.getenv('RESEND_API_KEY')
+
+# List recent emails
+emails = resend.Emails.list()
+target_email = 'lengobaosang@gmail.com'
+
+count = 0
+for email in emails.data[:50]:  # Check last 50
+    if email.to and target_email in str(email.to):
+        count += 1
+        print(f'{count}. {email.subject[:50]} - {email.status}')
+
+print(f'\\nTotal emails to {target_email}: {count}')
+print(f'Expected: 16 (7 Lead + 3 NoShow + 3 Maybe + 3 Onboard)')
+"
+```
+
+**Test Scenarios**:
+- [ ] Check Resend API for all emails
+- [ ] Verify delivery status for all 16
+- [ ] Document any bounces or failures
+- [ ] Screenshot evidence
+
+**Expected Emails**: 16 total
+**Estimated Time**: 15 minutes
+
+### 9.4 Email Sequence Summary
+
+| Sequence | Email Count | Trigger | Wait Times (TESTING_MODE) |
+|----------|-------------|---------|---------------------------|
+| Lead Nurture | 7 | Website funnel completion | 0, 1, 2, 3, 4, 5, 6 min |
+| No-Show Recovery | 3 | calendly-no-show webhook | 0, 1, 2 min |
+| Post-Call Maybe | 3 | post-call-maybe webhook | 0, 1, 2 min |
+| Onboarding Phase 1 | 3 | onboarding-phase1 webhook | 0, 1, 2 min |
+| **TOTAL** | **16** | | |
+
+### 9.5 Expected Outcomes
+- Frontend bug fixed and assessment loads correctly
+- Complete E2E funnel passes via Puppeteer
+- All 16 emails sent and delivered to lengobaosang@gmail.com
+- Resend dashboard confirms all 16 emails delivered
+- No bounces or failures
+
+### 9.6 Total Estimated Time
+- Frontend bug investigation/fix: 60 minutes
+- E2E funnel test: 45 minutes
+- Email sequences (4 total): 45 minutes
+- Resend verification: 15 minutes
+- **Total Wave 9**: ~2.5 hours
