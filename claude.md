@@ -508,6 +508,57 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete guide.
 
 ---
 
+## ⚠️ CRITICAL: E2E Testing Requirements
+
+### Mandatory Test Email
+**ALWAYS use this email for ALL testing:**
+```
+lengobaosang@gmail.com
+```
+
+**DO NOT use random/fake emails** - they will bounce and waste resources.
+
+### Development & Production URLs
+
+| Environment | URL | Purpose |
+|-------------|-----|---------|
+| **Local Dev Server** | `http://localhost:3005/en/flows/businessX/dfu/xmas-a01` | Frontend testing (Next.js) |
+| **Production Site** | `https://sangletech.com/en/flows/businessX/dfu/xmas-a01` | Live user funnel |
+| **Production Prefect** | `https://prefect.galatek.dev/api` | Workflow orchestration |
+| **Local FastAPI** | `http://localhost:8000` | Webhook server (development) |
+
+### Email Template Rules
+
+**CRITICAL**: Email templates MUST come from Notion database, NOT hardcoded.
+
+```python
+# ✅ CORRECT: Fetch from Notion
+template = await fetch_template_from_notion(template_name)
+
+# ❌ WRONG: Hardcoded template
+template = "Some hardcoded email content..."
+```
+
+**Template Database**: Use Secret block `notion-email-templates-db-id` for template fetching.
+
+### Webhook Testing Checklist
+
+When testing webhooks, verify these endpoints trigger Prefect flows:
+
+| Webhook | Deployment | Emails |
+|---------|------------|--------|
+| `/webhook/christmas-signup` | `christmas-signup-handler` | 7 |
+| `/webhook/calendly-noshow` | `christmas-noshow-recovery-handler` | 3 |
+| `/webhook/postcall-maybe` | `christmas-postcall-maybe-handler` | 3 |
+| `/webhook/onboarding-start` | `christmas-onboarding-handler` | 3 |
+
+**After each test, verify:**
+1. Flow run appears in Prefect dashboard
+2. Emails scheduled in Notion sequence tracker
+3. Emails delivered to `lengobaosang@gmail.com` (check Resend dashboard)
+
+---
+
 ## Context Management
 
 ### Clear Context Between Tasks

@@ -1,0 +1,95 @@
+{
+  "task_id": "1127-e2e-puppeteer-sales-funnel-email-verification",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 0,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 10
+  },
+  "test_approach": "E2E Integration Testing",
+  "test_categories": [
+    {
+      "category": "Browser Automation",
+      "description": "Puppeteer-based funnel navigation tests",
+      "estimated_tests": 4,
+      "tests": [
+        {
+          "name": "test_navigate_to_landing_page",
+          "description": "Navigate to sangletech.com funnel URL",
+          "status": "not_started"
+        },
+        {
+          "name": "test_fill_optin_form",
+          "description": "Fill form with lengobaosang@gmail.com",
+          "status": "not_started"
+        },
+        {
+          "name": "test_complete_assessment",
+          "description": "Complete 16-question assessment for CRITICAL segment",
+          "status": "not_started"
+        },
+        {
+          "name": "test_verify_results_page",
+          "description": "Verify results page shows correct segment",
+          "status": "not_started"
+        }
+      ]
+    },
+    {
+      "category": "Webhook Verification",
+      "description": "API endpoint and Prefect flow verification",
+      "estimated_tests": 3,
+      "tests": [
+        {
+          "name": "test_webhook_triggered",
+          "description": "Verify webhook POST to /webhook/christmas-signup",
+          "status": "not_started"
+        },
+        {
+          "name": "test_prefect_flow_created",
+          "description": "Verify Prefect flow run created",
+          "status": "not_started"
+        },
+        {
+          "name": "test_notion_sequence_created",
+          "description": "Verify email sequence record in Notion",
+          "status": "not_started"
+        }
+      ]
+    },
+    {
+      "category": "Email Delivery",
+      "description": "Email delivery verification tests",
+      "estimated_tests": 3,
+      "tests": [
+        {
+          "name": "test_email_1_immediate",
+          "description": "Verify Email 1 delivered immediately",
+          "status": "not_started"
+        },
+        {
+          "name": "test_emails_2_through_7",
+          "description": "Verify Emails 2-7 delivered at 1-minute intervals",
+          "status": "not_started"
+        },
+        {
+          "name": "test_all_emails_received",
+          "description": "Verify all 7 emails in test inbox",
+          "status": "not_started"
+        }
+      ]
+    }
+  ],
+  "test_files": [
+    {
+      "path": "campaigns/christmas_campaign/tests/e2e/test_puppeteer_funnel_e2e.py",
+      "status": "to_create",
+      "description": "Main Puppeteer E2E test file"
+    }
+  ],
+  "suites": [],
+  "failures": [],
+  "history": []
+}
