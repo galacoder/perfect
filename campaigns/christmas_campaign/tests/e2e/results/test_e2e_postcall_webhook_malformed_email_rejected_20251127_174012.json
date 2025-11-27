@@ -1,0 +1,34 @@
+{
+  "test_name": "test_e2e_postcall_webhook_malformed_email_rejected",
+  "status": "passed",
+  "start_time": "2025-11-27T17:40:12.275575",
+  "end_time": "2025-11-27T17:40:12.276317",
+  "duration_seconds": 0.000742,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "value_error",
+            "loc": [
+              "body",
+              "email"
+            ],
+            "msg": "value is not a valid email address: An email address must have an @-sign.",
+            "input": "invalid-email-format",
+            "ctx": {
+              "reason": "An email address must have an @-sign."
+            }
+          }
+        ]
+      },
+      "timestamp": "2025-11-27T17:40:12.276163"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

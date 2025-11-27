@@ -1,0 +1,112 @@
+{
+  "task_id": "1127-fix-asyncio-remove-hardcoded-production-e2e",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 12,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 12
+  },
+  "suites": [
+    {
+      "name": "Wave 1: AsyncIO Fix Verification",
+      "tests": [
+        {
+          "id": "T1.1",
+          "feature_id": "1.4",
+          "name": "First flow run succeeds without NotImplementedError",
+          "status": "not_started",
+          "type": "integration"
+        }
+      ]
+    },
+    {
+      "name": "Wave 2: Template Removal Unit Tests",
+      "tests": [
+        {
+          "id": "T2.1",
+          "feature_id": "2.1",
+          "name": "get_fallback_template function removed",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T2.2",
+          "feature_id": "2.2",
+          "name": "send_email_flow raises error on missing template",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T2.3",
+          "feature_id": "2.3",
+          "name": "Updated unit tests pass",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T2.4",
+          "feature_id": "2.4",
+          "name": "Full pytest suite passes",
+          "status": "not_started",
+          "type": "unit"
+        }
+      ]
+    },
+    {
+      "name": "Wave 3: E2E Production Tests",
+      "tests": [
+        {
+          "id": "T3.1",
+          "feature_id": "3.1",
+          "name": "Production funnel accessible via Puppeteer",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T3.2",
+          "feature_id": "3.4",
+          "name": "Webhook triggers signup_handler flow",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T3.3",
+          "feature_id": "3.5",
+          "name": "All 7 email flow runs complete successfully",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T3.4",
+          "feature_id": "3.6",
+          "name": "All 7 emails delivered via Resend",
+          "status": "not_started",
+          "type": "e2e"
+        }
+      ]
+    },
+    {
+      "name": "Wave 4: Final Verification",
+      "tests": [
+        {
+          "id": "T4.1",
+          "feature_id": "4.1",
+          "name": "Full pytest suite passes with template changes",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T4.2",
+          "feature_id": "4.2",
+          "name": "STATUS.md updated with production-ready status",
+          "status": "not_started",
+          "type": "documentation"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "history": []
+}

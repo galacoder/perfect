@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_onboarding_webhook_triggers_prefect_flow",
+  "status": "passed",
+  "start_time": "2025-11-27T17:43:57.458593",
+  "end_time": "2025-11-27T17:43:59.461436",
+  "duration_seconds": 2.002843,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/onboarding-start",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Onboarding welcome sequence will begin shortly",
+        "email": "e2e-onboarding-flow-1764283437458@e2e-test.example.com",
+        "payment_amount": 2997.0,
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-27T17:43:57.459857"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Flow triggered for e2e-onboarding-flow-1764283437458@e2e-test.example.com - verify in Prefect UI",
+      "timestamp": "2025-11-27T17:43:59.461194"
+    }
+  ]
+}

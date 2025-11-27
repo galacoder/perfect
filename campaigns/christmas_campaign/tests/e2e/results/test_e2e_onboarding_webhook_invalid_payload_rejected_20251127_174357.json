@@ -1,0 +1,37 @@
+{
+  "test_name": "test_e2e_onboarding_webhook_invalid_payload_rejected",
+  "status": "passed",
+  "start_time": "2025-11-27T17:43:57.456132",
+  "end_time": "2025-11-27T17:43:57.456855",
+  "duration_seconds": 0.000723,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/onboarding-start",
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "email"
+            ],
+            "msg": "Field required",
+            "input": {
+              "first_name": "No Email",
+              "business_name": "No Email Salon",
+              "payment_confirmed": true,
+              "payment_amount": 2997.0,
+              "payment_date": "2025-12-01T15:00:00Z"
+            }
+          }
+        ]
+      },
+      "timestamp": "2025-11-27T17:43:57.456750"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

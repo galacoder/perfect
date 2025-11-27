@@ -1,0 +1,398 @@
+{
+  "task_id": "1127-fix-asyncio-remove-hardcoded-production-e2e",
+  "domain": "coding",
+  "status": "in_progress",
+  "current_phase": "CODE",
+  "current_wave": 1,
+  "current_feature_id": "1.1",
+  "created_at": "2025-11-27T15:00:00Z",
+  "updated_at": "2025-11-27T18:30:00Z",
+  "meta": {
+    "title": "Fix AsyncIO, Remove Hardcoded Templates, E2E Production Test",
+    "description": "Fix Python 3.12 asyncio event loop issue on production workers, remove all hardcoded/fallback email templates so templates come from Notion ONLY, and run full E2E production test via Puppeteer",
+    "estimated_hours": 5,
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    },
+    "test_email": "lengobaosang@gmail.com",
+    "production_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+    "prefect_url": "https://prefect.galatek.dev"
+  },
+  "waves": [
+    {
+      "id": 0,
+      "name": "Populate Missing Notion Templates",
+      "objective": "Add HTML content to 9 missing email templates in Notion (No-Show, Post-Call, Onboarding)",
+      "status": "complete",
+      "priority": "critical",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:30:00Z"
+    },
+    {
+      "id": 1,
+      "name": "Fix Python 3.12 AsyncIO Issue",
+      "objective": "Remove uvloop or upgrade Prefect on production workers to fix asyncio.get_child_watcher() NotImplementedError",
+      "status": "pending",
+      "priority": "critical"
+    },
+    {
+      "id": 2,
+      "name": "Remove Hardcoded Templates",
+      "objective": "Remove get_fallback_template() function and all fallback logic - templates must come from Notion ONLY",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": 3,
+      "name": "E2E Production Test via Puppeteer",
+      "objective": "Complete full production funnel test with real assessment, verify 7/7 emails delivered",
+      "status": "pending",
+      "priority": "high"
+    },
+    {
+      "id": 4,
+      "name": "Verification & Documentation",
+      "objective": "Run full test suite, update STATUS.md, create deployment summary",
+      "status": "pending",
+      "priority": "medium"
+    }
+  ],
+  "features": [
+    {
+      "id": "0.1",
+      "wave": 0,
+      "name": "Populate noshow_recovery_email_1 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to No-Show Recovery Email 1 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:15:00Z",
+      "page_id": "2b87c374-1115-819a-87ae-f423aa27defc"
+    },
+    {
+      "id": "0.2",
+      "wave": 0,
+      "name": "Populate noshow_recovery_email_2 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to No-Show Recovery Email 2 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:15:00Z",
+      "page_id": "2b87c374-1115-8183-ab29-c0886b14f75f"
+    },
+    {
+      "id": "0.3",
+      "wave": 0,
+      "name": "Populate noshow_recovery_email_3 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to No-Show Recovery Email 3 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:15:00Z",
+      "page_id": "2b87c374-1115-812d-80cd-c96a6189fe70"
+    },
+    {
+      "id": "0.4",
+      "wave": 0,
+      "name": "Populate postcall_maybe_email_1 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to Post-Call Follow-Up Email 1 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:20:00Z",
+      "page_id": "2b87c374-1115-813c-b459-fe56bd1ad946"
+    },
+    {
+      "id": "0.5",
+      "wave": 0,
+      "name": "Populate postcall_maybe_email_2 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to Post-Call Follow-Up Email 2 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:20:00Z",
+      "page_id": "2b87c374-1115-8139-8583-d0c9f5a668f1"
+    },
+    {
+      "id": "0.6",
+      "wave": 0,
+      "name": "Populate postcall_maybe_email_3 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to Post-Call Follow-Up Email 3 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:20:00Z",
+      "page_id": "2b87c374-1115-81c5-80f8-f71107480d1e"
+    },
+    {
+      "id": "0.7",
+      "wave": 0,
+      "name": "Populate onboarding_phase1_email_1 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to Onboarding Email 1 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:25:00Z",
+      "page_id": "2b87c374-1115-8150-8914-d11d29ca0e72"
+    },
+    {
+      "id": "0.8",
+      "wave": 0,
+      "name": "Populate onboarding_phase1_email_2 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to Onboarding Email 2 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:25:00Z",
+      "page_id": "2b87c374-1115-81db-b680-fcb92438139d"
+    },
+    {
+      "id": "0.9",
+      "wave": 0,
+      "name": "Populate onboarding_phase1_email_3 HTML",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Add HTML body to Onboarding Email 3 in Notion",
+      "started_at": "2025-11-27T18:00:00Z",
+      "completed_at": "2025-11-27T18:30:00Z",
+      "page_id": "2b87c374-1115-813b-ba6c-ed049a329ee2"
+    },
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Access production server via Coolify",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Use Coolify skill or SSH to access Hublab server running Prefect workers"
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Uninstall uvloop package",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Run 'pip uninstall uvloop -y' on worker server to remove Python 3.12 incompatible package"
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Restart Prefect workers",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": false,
+      "description": "Kill and restart Prefect workers to apply the uvloop removal fix"
+    },
+    {
+      "id": "1.4",
+      "wave": 1,
+      "name": "Verify fix with test flow run",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Run test flow to confirm first email no longer crashes with NotImplementedError"
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Remove get_fallback_template() function",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Delete get_fallback_template() function (lines 215-271) from resend_operations.py",
+      "file": "campaigns/christmas_campaign/tasks/resend_operations.py"
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Update send_email_flow.py to error on missing template",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Remove fallback import and usage, raise error when template not found in Notion",
+      "file": "campaigns/christmas_campaign/flows/send_email_flow.py"
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Update unit tests for new behavior",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Update test_resend_operations.py to expect errors instead of fallbacks"
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Run test suite and verify all pass",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Run pytest to ensure all tests pass with new template behavior"
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Navigate to production funnel via Puppeteer",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Use Puppeteer MCP to navigate to https://sangletech.com/en/flows/businessX/dfu/xmas-a01"
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Complete BusOS assessment with test data",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Fill out assessment form with test data to generate real assessment results"
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Submit form with mandatory test email",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Submit form with lengobaosang@gmail.com as required test email"
+    },
+    {
+      "id": "3.4",
+      "wave": 3,
+      "name": "Verify webhook triggered signup_handler flow",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Check Prefect dashboard for christmas-signup-handler flow execution"
+    },
+    {
+      "id": "3.5",
+      "wave": 3,
+      "name": "Wait for and verify 7 email flow runs",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Monitor 7 scheduled email flows (1-minute intervals in TESTING_MODE)"
+    },
+    {
+      "id": "3.6",
+      "wave": 3,
+      "name": "Verify emails delivered via Resend",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Confirm all 7 emails have Resend IDs and delivered status"
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Run full test suite (pytest)",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "description": "Run pytest on all Christmas campaign tests to verify codebase integrity"
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Update STATUS.md with production-ready status",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Update STATUS.md to reflect E2E test results and production readiness"
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Generate E2E test report",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Create comprehensive E2E test report with flow run IDs and Resend confirmation"
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "Create git commit with all changes",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Commit template removal changes and documentation updates"
+    }
+  ],
+  "progress": {
+    "total_features": 27,
+    "completed_features": 9,
+    "total_waves": 5,
+    "completed_waves": 1,
+    "percentage": 33.33
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-27T15:00:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-27T15:10:00Z",
+      "action": "EXPLORE phase complete - analyzed codebase, dependencies, and requirements"
+    },
+    {
+      "timestamp": "2025-11-27T15:20:00Z",
+      "action": "PLAN phase complete - 4 waves with 18 features defined"
+    },
+    {
+      "timestamp": "2025-11-27T15:30:00Z",
+      "action": "User selected Option A: Add HTML content to 9 missing templates first"
+    },
+    {
+      "timestamp": "2025-11-27T16:00:00Z",
+      "action": "Added Wave 0 with 9 template population features"
+    },
+    {
+      "timestamp": "2025-11-27T18:00:00Z",
+      "action": "Executing Wave 0 - Populate Missing Notion Templates"
+    },
+    {
+      "timestamp": "2025-11-27T18:15:00Z",
+      "action": "Completed features 0.1-0.3: No-Show Recovery templates populated"
+    },
+    {
+      "timestamp": "2025-11-27T18:20:00Z",
+      "action": "Completed features 0.4-0.6: Post-Call Follow-Up templates populated"
+    },
+    {
+      "timestamp": "2025-11-27T18:30:00Z",
+      "action": "Completed features 0.7-0.9: Onboarding templates populated - Wave 0 complete"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "B1",
+      "severity": "critical",
+      "description": "Python 3.12 asyncio.get_child_watcher() deprecated - workers crash on first flow",
+      "status": "documented",
+      "solution": "Remove uvloop package or upgrade Prefect to >= 3.4.1"
+    }
+  ],
+  "dependencies": {
+    "external_access": [
+      "Coolify skill for server management",
+      "Puppeteer MCP for browser automation",
+      "Production Prefect at https://prefect.galatek.dev"
+    ],
+    "mandatory_email": "lengobaosang@gmail.com"
+  }
+}
