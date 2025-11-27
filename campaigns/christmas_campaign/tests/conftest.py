@@ -376,3 +376,54 @@ def sample_call_complete_payload() -> Dict[str, Any]:
         "call_notes": "Great call, ready for portal delivery",
         "next_steps": "Phase 2A Done-For-You"
     }
+
+
+# ==============================================================================
+# New Sequence Type Fixtures (Wave 1, Feature 1.5)
+# ==============================================================================
+
+@pytest.fixture
+def sample_calendly_noshow_payload() -> Dict[str, Any]:
+    """Sample Calendly no-show webhook payload."""
+    return {
+        "email": "test@example.com",
+        "first_name": "John",
+        "business_name": "Test Corp",
+        "calendly_event_uri": "https://calendly.com/events/ABC123XYZ",
+        "scheduled_time": "2025-12-01T14:00:00Z",
+        "event_type": "Discovery Call - $2997 Diagnostic",
+        "reschedule_url": "https://calendly.com/reschedule/ABC123XYZ"
+    }
+
+
+@pytest.fixture
+def sample_postcall_maybe_payload() -> Dict[str, Any]:
+    """Sample post-call maybe webhook payload."""
+    return {
+        "email": "test@example.com",
+        "first_name": "Sarah",
+        "business_name": "Sarah's Salon",
+        "call_date": "2025-12-01T14:30:00Z",
+        "call_outcome": "Maybe",
+        "call_notes": "Interested in the diagnostic but needs to check budget with partner. Mentioned concern about timing with holiday season. Strong interest in Phase 1 results.",
+        "objections": ["Price - $2997 seems high", "Timing - busy with holidays", "Need partner approval"],
+        "follow_up_priority": "High"
+    }
+
+
+@pytest.fixture
+def sample_onboarding_payload() -> Dict[str, Any]:
+    """Sample onboarding webhook payload (DocuSign + payment complete)."""
+    return {
+        "email": "test@example.com",
+        "first_name": "Maria",
+        "business_name": "Maria's Beauty Bar",
+        "payment_confirmed": True,
+        "payment_amount": 2997.00,
+        "payment_date": "2025-12-01T15:00:00Z",
+        "docusign_completed": True,
+        "salon_address": "123 Main Street, Toronto, ON M5V 2T6",
+        "observation_dates": ["2025-12-10", "2025-12-17", "2025-12-20"],
+        "start_date": "2025-12-10",
+        "package_type": "Phase 1 - Traditional Service Diagnostic"
+    }
