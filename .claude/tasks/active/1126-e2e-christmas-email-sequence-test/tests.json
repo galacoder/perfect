@@ -6,7 +6,7 @@
     "total": 0,
     "passing": 0,
     "failing": 0,
-    "not_started": 86
+    "not_started": 93
   },
   "suites": [],
   "failures": [],
@@ -354,6 +354,107 @@
       "slot_count": 10,
       "real_testimonials": ["Van Tiny", "Hera Nguyen", "Loc Diem"]
     },
+    "estimated_duration_minutes": 120
+  },
+  "wave14_test_requirements": {
+    "description": "Wave 14 adds 7 features for Production Launch Verification - Worker Capacity + Full E2E Retest after uvloop fix",
+    "context": "User fixed Python 3.12 + uvloop crash (commit ac65816 via Coolify rebuild). Verified workers working (flow run b58af269-bdd0-477c-8edd-6ee53f174711 COMPLETED). Need to verify capacity for 50-100 concurrent signups.",
+    "features_with_tests": [
+      {
+        "feature_id": "14.1",
+        "test_scenarios": [
+          "Query Prefect API for worker count: PREFECT_API_URL=https://prefect.galatek.dev/api prefect work-pool ls",
+          "Verify at least 3 workers are active and healthy",
+          "Check worker CPU/memory capacity via Prefect dashboard",
+          "Calculate concurrent flow capacity: each worker can handle 10-20 concurrent flows",
+          "Verify 50-100 concurrent signups can be handled (3 workers * ~30 flows each = 90+ capacity)"
+        ]
+      },
+      {
+        "feature_id": "14.2",
+        "test_scenarios": [
+          "Check worker status via Prefect API",
+          "Verify all workers show 'online' or 'running' status",
+          "Confirm workers last heartbeat within last 60 seconds",
+          "Test worker health with a simple ping flow run",
+          "Verify no worker errors in Prefect logs"
+        ]
+      },
+      {
+        "feature_id": "14.3",
+        "test_scenarios": [
+          "Trigger 5 concurrent christmas-signup-handler flows",
+          "Monitor all 5 flows start within 30 seconds",
+          "Verify no flow run failures due to worker capacity",
+          "Monitor worker load distribution across all workers",
+          "Document peak concurrent flow handling"
+        ]
+      },
+      {
+        "feature_id": "14.4",
+        "test_scenarios": [
+          "Navigate to https://sangletech.com/en/flows/businessX/dfu/xmas-a01 via Puppeteer MCP",
+          "Fill opt-in form with unique test email (timestamp-based)",
+          "Complete 16-question assessment",
+          "Verify redirect to results page",
+          "Screenshot evidence of successful completion"
+        ]
+      },
+      {
+        "feature_id": "14.5",
+        "test_scenarios": [
+          "Test /webhook/christmas-signup - Lead Nurture (7 emails)",
+          "Test /webhook/calendly-noshow - No-Show Recovery (3 emails)",
+          "Test /webhook/postcall-maybe - Post-Call Maybe (3 emails)",
+          "Test /webhook/onboarding-start - Onboarding (3 emails)",
+          "Verify each webhook creates flow run on prefect.galatek.dev",
+          "Record flow run IDs for all 4 sequences"
+        ]
+      },
+      {
+        "feature_id": "14.6",
+        "test_scenarios": [
+          "Trigger Lead Nurture sequence (7 emails) - verify all 7 scheduled and sent",
+          "Trigger No-Show Recovery sequence (3 emails) - verify all 3 scheduled and sent",
+          "Trigger Post-Call Maybe sequence (3 emails) - verify all 3 scheduled and sent",
+          "Trigger Onboarding sequence (3 emails) - verify all 3 scheduled and sent",
+          "Query Resend API for all 16 emails to lengobaosang@gmail.com",
+          "Verify all emails have 'delivered' or 'opened' status"
+        ]
+      },
+      {
+        "feature_id": "14.7",
+        "test_scenarios": [
+          "3+ Prefect workers active and healthy",
+          "All workers connected to prefect.galatek.dev",
+          "Concurrent flow capacity verified (50-100 flows)",
+          "Production site (sangletech.com) fully functional",
+          "All 4 webhook endpoints trigger correct deployments",
+          "All 16 email templates work correctly",
+          "Resend API confirms email delivery",
+          "uvloop crash fix applied and verified",
+          "READY FOR ADVERTISEMENT LAUNCH WITH 50-100 CONCURRENT SIGNUPS"
+        ]
+      }
+    ],
+    "total_test_scenarios": 41,
+    "production_site_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+    "production_prefect_url": "https://prefect.galatek.dev/api",
+    "test_email": "lengobaosang@gmail.com",
+    "expected_traffic": "50-100 concurrent signups",
+    "minimum_workers": 3,
+    "uvloop_fix": {
+      "issue": "Python 3.12 + uvloop crash",
+      "commit": "ac65816",
+      "verified_flow_run": "b58af269-bdd0-477c-8edd-6ee53f174711"
+    },
+    "email_sequences_to_test": [
+      {"name": "Lead Nurture", "email_count": 7},
+      {"name": "No-Show Recovery", "email_count": 3},
+      {"name": "Post-Call Maybe", "email_count": 3},
+      {"name": "Onboarding", "email_count": 3}
+    ],
+    "total_emails_expected": 16,
     "estimated_duration_minutes": 120
   }
 }

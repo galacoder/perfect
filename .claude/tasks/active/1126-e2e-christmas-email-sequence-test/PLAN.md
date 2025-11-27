@@ -1827,3 +1827,299 @@ curl -X POST https://sangletech.com/api/webhook/onboarding-start \
 - Onboarding sequence: 10 minutes
 - Final verification: 15 minutes
 - **Total Wave 13**: ~2 hours
+
+---
+
+## Wave 14: Production Launch Verification (Worker Capacity + Full E2E Retest) (ADDED)
+
+### 14.1 Objective
+Verify Prefect worker capacity for 50-100 concurrent signups, confirm workers are healthy on production Prefect (prefect.galatek.dev), perform full E2E retest on PRODUCTION site (sangletech.com) after uvloop fix, and complete final pre-launch checklist.
+
+### 14.2 Context
+**uvloop Fix Applied**: Python 3.12 + uvloop crash resolved (commit ac65816 via Coolify rebuild)
+**Verified Flow Run**: b58af269-bdd0-477c-8edd-6ee53f174711 COMPLETED
+**Expected Traffic**: 50-100 concurrent signups from advertisement launch
+**Minimum Workers Required**: 3 (for 50-100 concurrent capacity)
+
+### 14.3 Pre-Conditions
+- Production site live at https://sangletech.com
+- Prefect workers running at https://prefect.galatek.dev
+- uvloop fix applied and deployed via Coolify
+- Test email: lengobaosang@gmail.com
+
+### 14.4 Tasks
+
+#### Task 14.1: Verify Prefect Worker Count and Capacity (3+ Workers for 50-100 Concurrent Flows)
+**Command**:
+```bash
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect work-pool ls
+```
+**Expected**:
+- At least 3 workers active
+- Each worker can handle 10-20 concurrent flows
+- Total capacity: 50-100+ concurrent signups
+
+**Test Scenarios**:
+- [ ] Query Prefect API for worker count
+- [ ] Verify at least 3 workers are active and healthy
+- [ ] Check worker CPU/memory capacity via Prefect dashboard
+- [ ] Calculate concurrent flow capacity
+- [ ] Verify 50-100 concurrent signups can be handled
+
+**Estimated Time**: 10 minutes
+
+#### Task 14.2: Verify Workers Are Healthy and Connected to Production Prefect
+**Commands**:
+```bash
+# Check work pool status
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect work-pool ls
+
+# List workers in default pool
+PREFECT_API_URL=https://prefect.galatek.dev/api python3 -c "
+from prefect.client.orchestration import get_client
+import asyncio
+
+async def check_workers():
+    async with get_client() as client:
+        pools = await client.read_work_pools()
+        for pool in pools:
+            print(f'Pool: {pool.name}')
+            print(f'  Status: {pool.status}')
+            print(f'  Workers: Check Prefect dashboard')
+
+asyncio.run(check_workers())
+"
+```
+**Expected**:
+- All workers show 'online' or 'running' status
+- Workers heartbeat within last 60 seconds
+- No worker errors in logs
+
+**Test Scenarios**:
+- [ ] Check worker status via Prefect API
+- [ ] Verify all workers show 'online' or 'running' status
+- [ ] Confirm workers last heartbeat within last 60 seconds
+- [ ] Test worker health with a simple ping flow run
+- [ ] Verify no worker errors in Prefect logs
+
+**Estimated Time**: 10 minutes
+
+#### Task 14.3: Test Concurrent Flow Capacity (Run Multiple Test Flows Simultaneously)
+**Command**:
+```bash
+# Trigger 5 concurrent flows
+for i in {1..5}; do
+  curl -X POST https://prefect.galatek.dev/api/deployments/<deployment-id>/create_flow_run \
+    -H "Content-Type: application/json" \
+    -d '{
+      "name": "concurrent-test-'$i'-'$(date +%s)'",
+      "parameters": {
+        "email": "test'$i'@example.com",
+        "first_name": "Concurrent Test '$i'"
+      }
+    }' &
+done
+wait
+
+# Monitor all flows
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls --limit 10
+```
+**Expected**:
+- All 5 flows start within 30 seconds
+- No failures due to worker capacity
+- Workers distribute load evenly
+
+**Test Scenarios**:
+- [ ] Trigger 5 concurrent christmas-signup-handler flows
+- [ ] Monitor all 5 flows start within 30 seconds
+- [ ] Verify no flow run failures due to worker capacity
+- [ ] Monitor worker load distribution across all workers
+- [ ] Document peak concurrent flow handling
+
+**Estimated Time**: 15 minutes
+
+#### Task 14.4: Full E2E Puppeteer Test on PRODUCTION Site (sangletech.com)
+**Use Puppeteer MCP**:
+```javascript
+// Navigate to PRODUCTION site
+await puppeteer_navigate({ url: 'https://sangletech.com/en/flows/businessX/dfu/xmas-a01' });
+await puppeteer_screenshot({ name: 'wave14-landing-page' });
+
+// Fill opt-in form
+await puppeteer_fill({ selector: '#firstName', value: 'Wave14 Test' });
+await puppeteer_fill({ selector: '#email', value: 'lengobaosang@gmail.com' });
+await puppeteer_select({ selector: '#monthlyRevenue', value: '10k-20k' });
+await puppeteer_select({ selector: '#biggestChallenge', value: 'no-shows' });
+await puppeteer_click({ selector: '#privacy' });
+await puppeteer_click({ selector: 'button[type="submit"]' });
+
+// Complete 16-question assessment
+// ... (answer all questions)
+
+// Verify results page
+await puppeteer_screenshot({ name: 'wave14-results-page' });
+```
+**Expected**:
+- Complete funnel works on production
+- Webhook triggers Prefect flow
+- Results page displays correctly
+
+**Test Scenarios**:
+- [ ] Navigate to https://sangletech.com/en/flows/businessX/dfu/xmas-a01 via Puppeteer MCP
+- [ ] Fill opt-in form with unique test email (timestamp-based)
+- [ ] Complete 16-question assessment
+- [ ] Verify redirect to results page
+- [ ] Screenshot evidence of successful completion
+
+**Estimated Time**: 20 minutes
+
+#### Task 14.5: Verify Webhook Triggers Production Prefect Flows (All 4 Endpoints)
+**Commands**:
+```bash
+# Test Lead Nurture (7 emails)
+curl -X POST http://localhost:8000/webhook/christmas-signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave14 Test",
+    "business_name": "Test Salon",
+    "red_systems": 2
+  }'
+
+# Test No-Show Recovery (3 emails)
+curl -X POST http://localhost:8000/webhook/calendly-noshow \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave14 Test",
+    "event_uri": "https://calendly.com/test/wave14"
+  }'
+
+# Test Post-Call Maybe (3 emails)
+curl -X POST http://localhost:8000/webhook/postcall-maybe \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave14 Test",
+    "call_date": "2025-11-27"
+  }'
+
+# Test Onboarding (3 emails)
+curl -X POST http://localhost:8000/webhook/onboarding-start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave14 Test",
+    "client_since": "2025-11-27"
+  }'
+
+# Verify all flows created
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls --limit 10
+```
+**Expected**:
+- Each webhook creates a flow run on prefect.galatek.dev
+- All 4 deployments triggered correctly
+
+**Test Scenarios**:
+- [ ] Test /webhook/christmas-signup - Lead Nurture (7 emails)
+- [ ] Test /webhook/calendly-noshow - No-Show Recovery (3 emails)
+- [ ] Test /webhook/postcall-maybe - Post-Call Maybe (3 emails)
+- [ ] Test /webhook/onboarding-start - Onboarding (3 emails)
+- [ ] Verify each webhook creates flow run on prefect.galatek.dev
+- [ ] Record flow run IDs for all 4 sequences
+
+**Estimated Time**: 20 minutes
+
+#### Task 14.6: Verify All 4 Email Sequences Work with Production Workers (16 Emails Total)
+**Command**:
+```bash
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+import resend
+import os
+resend.api_key = os.getenv('RESEND_API_KEY')
+
+emails = resend.Emails.list()
+target = 'lengobaosang@gmail.com'
+count = 0
+for email in emails.data[:30]:
+    if email.to and target in str(email.to):
+        count += 1
+        print(f'{count}. {email.subject[:50]} - {email.status}')
+
+print(f'\\nTotal emails to {target}: {count}')
+print(f'Expected: 16 (7 Lead + 3 NoShow + 3 PostCall + 3 Onboarding)')
+"
+```
+**Expected**:
+- All 16 emails sent and delivered
+- All emails have 'delivered' or 'opened' status
+
+**Test Scenarios**:
+- [ ] Trigger Lead Nurture sequence (7 emails) - verify all 7 scheduled and sent
+- [ ] Trigger No-Show Recovery sequence (3 emails) - verify all 3 scheduled and sent
+- [ ] Trigger Post-Call Maybe sequence (3 emails) - verify all 3 scheduled and sent
+- [ ] Trigger Onboarding sequence (3 emails) - verify all 3 scheduled and sent
+- [ ] Query Resend API for all 16 emails to lengobaosang@gmail.com
+- [ ] Verify all emails have 'delivered' or 'opened' status
+
+**Estimated Time**: 30 minutes
+
+#### Task 14.7: Final Production Launch Readiness Checklist
+**Checklist**:
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| 3+ Prefect workers active and healthy | [ ] | |
+| All workers connected to prefect.galatek.dev | [ ] | |
+| Concurrent flow capacity verified (50-100 flows) | [ ] | |
+| Production site (sangletech.com) fully functional | [ ] | |
+| All 4 webhook endpoints trigger correct deployments | [ ] | |
+| All 16 email templates work correctly | [ ] | |
+| Resend API confirms email delivery | [ ] | |
+| uvloop crash fix applied and verified | [ ] | |
+| **READY FOR ADVERTISEMENT LAUNCH WITH 50-100 CONCURRENT SIGNUPS** | [ ] | |
+
+**Test Scenarios**:
+- [ ] 3+ Prefect workers active and healthy
+- [ ] All workers connected to prefect.galatek.dev
+- [ ] Concurrent flow capacity verified (50-100 flows)
+- [ ] Production site (sangletech.com) fully functional
+- [ ] All 4 webhook endpoints trigger correct deployments
+- [ ] All 16 email templates work correctly
+- [ ] Resend API confirms email delivery
+- [ ] uvloop crash fix applied and verified
+- [ ] READY FOR ADVERTISEMENT LAUNCH WITH 50-100 CONCURRENT SIGNUPS
+
+**Estimated Time**: 15 minutes
+
+### 14.5 Email Sequence Summary
+
+| Sequence | Email Count | Trigger | Purpose |
+|----------|-------------|---------|---------|
+| Lead Nurture | 7 | Website funnel | New signup nurturing |
+| No-Show Recovery | 3 | /webhook/calendly-noshow | Re-engage no-shows |
+| Post-Call Maybe | 3 | /webhook/postcall-maybe | Follow up maybes |
+| Onboarding | 3 | /webhook/onboarding-start | Welcome new clients |
+| **TOTAL** | **16** | | |
+
+### 14.6 Expected Outcomes
+- 3+ Prefect workers verified active and healthy
+- Workers connected to production Prefect (prefect.galatek.dev)
+- Concurrent flow capacity verified for 50-100 signups
+- Production site (sangletech.com) fully functional
+- All 4 webhook endpoints trigger correct deployments
+- All 16 emails sent and delivered via production workers
+- uvloop crash fix confirmed working
+- **READY FOR ADVERTISEMENT LAUNCH WITH 50-100 CONCURRENT SIGNUPS**
+
+### 14.7 Total Estimated Time
+- Worker count verification: 10 minutes
+- Worker health check: 10 minutes
+- Concurrent flow test: 15 minutes
+- Full E2E Puppeteer test: 20 minutes
+- Webhook endpoint tests: 20 minutes
+- Email sequence verification: 30 minutes
+- Final checklist: 15 minutes
+- **Total Wave 14**: ~2 hours

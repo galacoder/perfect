@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-11-27T16:15:36.145122",
+  "results": {
+    "14.1": {
+      "status": "ERROR",
+      "error": "Client error '405 Method Not Allowed' for url 'https://prefect.galatek.dev/api/work_pools/'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405"
+    },
+    "14.2": {
+      "status": "ERROR",
+      "error": "Client error '404 Not Found' for url 'https://prefect.galatek.dev/api/workers/filter'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
+    },
+    "14.3": {
+      "status": "FAIL",
+      "flows_created": 0,
+      "flows_started": 0,
+      "issue": "Expected 4-5 flows to start, got 0"
+    },
+    "14.5": {
+      "status": "PASS",
+      "deployments": {
+        "christmas-noshow-recovery-handler": "3400e152-1cbe-4d8f-9f8a-0dd73569afa1",
+        "christmas-onboarding-handler": "db47b919-1e55-4de2-b52c-6e2b0b2a2285",
+        "christmas-postcall-maybe-handler": "ed929cd9-34b3-4655-b128-1a1e08a59cbd",
+        "christmas-signup-handler": "1ae3a3b3-e076-49c5-9b08-9c176aa47aa0"
+      }
+    }
+  },
+  "summary": {
+    "passed": 1,
+    "total": 4,
+    "percentage": 25.0
+  }
+}

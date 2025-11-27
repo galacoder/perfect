@@ -28,7 +28,7 @@ Test the complete email sequence by sending emails to lengobaosang@gmail.com. Te
 
 ## Progress Summary
 
-### Completed Waves (1-9)
+### Completed Waves (1-9, 13)
 | Wave | Name | Status | Features |
 |------|------|--------|----------|
 | 1 | Infrastructure Verification | COMPLETE | 6/6 |
@@ -40,6 +40,7 @@ Test the complete email sequence by sending emails to lengobaosang@gmail.com. Te
 | 7 | Fresh Complete E2E Test | COMPLETE | 13/13 |
 | 8 | Auto-Triggered E2E with Template Variables | COMPLETE | 8/8 |
 | 9 | Full Funnel + All Email Sequences Test | COMPLETE | 10/10 |
+| 13 | Production Site E2E Test | COMPLETE | 11/11 |
 
 ### Wave 11 (ADDED - 7 Features) - Verify Updated Templates
 **Context**: Task 1127-audit-email-templates-replace-fabricated-case-studies replaced 42 fabricated testimonials with real case studies
@@ -91,6 +92,29 @@ Test the complete email sequence by sending emails to lengobaosang@gmail.com. Te
 - **New Variables**: {{q1_foundation_deadline}}, {{days_to_q1_deadline}}, {{slots_remaining}}, {{spots_taken}}
 - **Template Changes**: December 15 deadline, 10 founding member slots, real testimonials
 
+### Wave 14 (ADDED - 7 Features) - Production Launch Verification (Worker Capacity + Full E2E Retest)
+**Context**: uvloop fix applied (commit ac65816 via Coolify rebuild), workers verified working (flow run b58af269-bdd0-477c-8edd-6ee53f174711 COMPLETED). Need to verify capacity for 50-100 concurrent signups.
+
+| Feature | Name | Priority | Est. Time |
+|---------|------|----------|-----------|
+| 14.1 | Verify Prefect worker count and capacity (3+ workers for 50-100 concurrent flows) | CRITICAL | 10 min |
+| 14.2 | Verify workers are healthy and connected to production Prefect (prefect.galatek.dev) | CRITICAL | 10 min |
+| 14.3 | Test concurrent flow capacity (run multiple test flows simultaneously) | HIGH | 15 min |
+| 14.4 | Full E2E Puppeteer test on PRODUCTION site (sangletech.com) | CRITICAL | 20 min |
+| 14.5 | Verify webhook triggers production Prefect flows (all 4 endpoints) | CRITICAL | 20 min |
+| 14.6 | Verify all 4 email sequences work with production workers (16 emails total) | CRITICAL | 30 min |
+| 14.7 | Final production launch readiness checklist | CRITICAL | 15 min |
+
+**Wave 14 Key Details**:
+- **Production URL**: https://sangletech.com/en/flows/businessX/dfu/xmas-a01
+- **Prefect Server**: https://prefect.galatek.dev/api
+- **Test Email**: lengobaosang@gmail.com
+- **Expected Traffic**: 50-100 concurrent signups
+- **Minimum Workers**: 3 (for concurrent capacity)
+- **uvloop Fix**: Commit ac65816 via Coolify rebuild
+- **Verified Flow Run**: b58af269-bdd0-477c-8edd-6ee53f174711 COMPLETED
+- **Goal**: READY FOR ADVERTISEMENT LAUNCH WITH 50-100 CONCURRENT SIGNUPS
+
 ## Estimates
 
 ### Previous (Waves 1-9)
@@ -98,12 +122,12 @@ Test the complete email sequence by sending emails to lengobaosang@gmail.com. Te
 - **Completed Features**: 62
 - **Estimated Time**: ~6.5 hours
 
-### Current (With Waves 11, 12, 13)
-- **Total Features**: 62 -> 86 (+24 added)
-- **Completed Features**: 62
-- **Pending Features**: 24 (7 from Wave 11, 6 from Wave 12, 11 from Wave 13)
-- **Estimated Time**: ~6.5 hours -> ~11.5 hours (+5 hours)
-- **Total Waves**: 9 -> 12 (3 new waves added)
+### Current (With Waves 11, 12, 13, 14)
+- **Total Features**: 62 -> 93 (+31 added)
+- **Completed Features**: 72 (Waves 1-9, 13)
+- **Pending Features**: 31 (7 from Wave 11, 6 from Wave 12, 11 from Wave 13 partial, 7 from Wave 14)
+- **Estimated Time**: ~6.5 hours -> ~13.5 hours (+7 hours)
+- **Total Waves**: 9 -> 13 (4 new waves added)
 
 ## Wave 9 Email Sequence Summary
 
@@ -138,6 +162,11 @@ Test the complete email sequence by sending emails to lengobaosang@gmail.com. Te
 - 2025-11-27 - Wave 12 ADDED via /add-tasks: 6 features for Production Readiness testing
 - 2025-11-27 - Wave 12 PARTIAL: Most features complete, UI issue on assessment page
 - 2025-11-27 - Wave 13 ADDED via /add-tasks-coding: 11 features for PRODUCTION site E2E testing
+- 2025-11-27 - Wave 13 COMPLETE: Production site E2E test successful
+- 2025-11-27 - CRITICAL BUG DIAGNOSED: Python 3.12 + uvloop crash on Prefect workers
+- 2025-11-27 - uvloop fix applied (commit ac65816 via Coolify rebuild)
+- 2025-11-27 - Workers verified working (flow run b58af269-bdd0-477c-8edd-6ee53f174711 COMPLETED)
+- 2025-11-27 - Wave 14 ADDED via /add-tasks-coding: 7 features for Production Launch Verification (Worker Capacity + Full E2E Retest)
 
 ## Next Steps
-Run `/execute-coding` to implement Wave 13 features (PRODUCTION site E2E test with Puppeteer MCP).
+Run `/execute-coding` to implement Wave 14 features (Production Launch Verification - Worker Capacity + Full E2E Retest for 50-100 concurrent signups).
