@@ -201,3 +201,56 @@ def get_segment_description(segment: Literal["CRITICAL", "URGENT", "OPTIMIZE"]) 
         }
     }
     return descriptions.get(segment, descriptions["OPTIMIZE"])
+
+
+def get_sequence_template_id(
+    sequence_type: Literal["noshow", "postcall", "onboarding"],
+    email_number: int
+) -> str:
+    """
+    Get template ID for new sequence types (no-show recovery, post-call maybe, onboarding).
+
+    Template Mapping:
+    - No-Show Recovery: noshow_recovery_email_1, noshow_recovery_email_2, noshow_recovery_email_3
+    - Post-Call Maybe: postcall_maybe_email_1, postcall_maybe_email_2, postcall_maybe_email_3
+    - Onboarding Phase 1: onboarding_phase1_email_1, onboarding_phase1_email_2, onboarding_phase1_email_3
+
+    Args:
+        sequence_type: Type of sequence (noshow, postcall, onboarding)
+        email_number: Email number in sequence (1-3)
+
+    Returns:
+        Template ID to use
+
+    Raises:
+        ValueError: If sequence_type or email_number is invalid
+
+    Example:
+        template_id = get_sequence_template_id("noshow", 1)
+        # Returns: "noshow_recovery_email_1"
+
+        template_id = get_sequence_template_id("postcall", 2)
+        # Returns: "postcall_maybe_email_2"
+
+        template_id = get_sequence_template_id("onboarding", 3)
+        # Returns: "onboarding_phase1_email_3"
+    """
+    # Validate email_number
+    if email_number not in [1, 2, 3]:
+        raise ValueError(f"Invalid email_number: {email_number}. Must be 1, 2, or 3.")
+
+    # Template mapping
+    templates = {
+        "noshow": f"noshow_recovery_email_{email_number}",
+        "postcall": f"postcall_maybe_email_{email_number}",
+        "onboarding": f"onboarding_phase1_email_{email_number}"
+    }
+
+    # Validate sequence_type
+    if sequence_type not in templates:
+        raise ValueError(
+            f"Invalid sequence_type: '{sequence_type}'. "
+            f"Must be one of: {list(templates.keys())}"
+        )
+
+    return templates[sequence_type]
