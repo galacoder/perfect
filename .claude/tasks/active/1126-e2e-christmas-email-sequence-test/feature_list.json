@@ -1772,6 +1772,18 @@
         ],
         "note": "Production site fully functional, webhook integration working"
       }
+    },
+    {
+      "timestamp": "2025-11-27T20:30:00+00:00",
+      "action": "CRITICAL BUG DIAGNOSED: Python 3.12 + uvloop crash",
+      "details": {
+        "error": "NotImplementedError from asyncio.get_child_watcher()",
+        "root_cause": "Python 3.12 deprecated get_child_watcher(), uvloop triggers this",
+        "fix": "pip uninstall uvloop -y && pkill -f 'prefect worker' && prefect worker start --pool default &",
+        "fix_documented": "campaigns/christmas_campaign/PRODUCTION_FIX.md",
+        "server": "Hublab (MINISFORUM UH125 Pro)",
+        "manual_action_required": true
+      }
     }
   ]
 }
