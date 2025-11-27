@@ -655,6 +655,286 @@ async def send_discord_notification(email: str, segment: str, red_systems: int):
         # Don't fail the webhook if Discord notification fails
 
 
+# ==============================================================================
+# Wave 5: New Webhook Endpoints (Christmas Traditional Service Campaign)
+# ==============================================================================
+
+class CalendlyNoShowRequest(BaseModel):
+    """
+    Calendly no-show webhook payload.
+
+    Example:
+        {
+            "email": "sarah@example.com",
+            "first_name": "Sarah",
+            "business_name": "Sarah's Salon",
+            "calendly_event_uri": "https://calendly.com/events/ABC123",
+            "scheduled_time": "2025-12-01T14:00:00Z"
+        }
+    """
+    email: EmailStr = Field(..., description="Contact email address")
+    first_name: str = Field(..., description="Contact first name")
+    business_name: str = Field(..., description="Business name")
+    calendly_event_uri: str = Field(..., description="Calendly event URI")
+    scheduled_time: str = Field(..., description="Original scheduled time (ISO format)")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "sarah@example.com",
+                "first_name": "Sarah",
+                "business_name": "Sarah's Salon",
+                "calendly_event_uri": "https://calendly.com/events/ABC123",
+                "scheduled_time": "2025-12-01T14:00:00Z"
+            }
+        }
+
+
+class PostCallMaybeRequest(BaseModel):
+    """
+    Post-call maybe webhook payload.
+
+    Example:
+        {
+            "email": "sarah@example.com",
+            "first_name": "Sarah",
+            "business_name": "Sarah's Salon",
+            "call_date": "2025-12-01T14:30:00Z",
+            "call_outcome": "Maybe",
+            "call_notes": "Interested but needs budget approval",
+            "objections": ["Price", "Timing"],
+            "follow_up_priority": "High"
+        }
+    """
+    email: EmailStr = Field(..., description="Contact email address")
+    first_name: str = Field(..., description="Contact first name")
+    business_name: str = Field(..., description="Business name")
+    call_date: str = Field(..., description="Call date (ISO format)")
+    call_outcome: str = Field(default="Maybe", description="Call outcome")
+    call_notes: Optional[str] = Field(None, description="Notes from the call")
+    objections: Optional[list[str]] = Field(None, description="List of objections")
+    follow_up_priority: str = Field(default="Medium", description="Follow-up priority (High/Medium/Low)")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "sarah@example.com",
+                "first_name": "Sarah",
+                "business_name": "Sarah's Salon",
+                "call_date": "2025-12-01T14:30:00Z",
+                "call_outcome": "Maybe",
+                "call_notes": "Interested but needs budget approval",
+                "objections": ["Price", "Timing"],
+                "follow_up_priority": "High"
+            }
+        }
+
+
+class OnboardingStartRequest(BaseModel):
+    """
+    Onboarding start webhook payload.
+
+    Example:
+        {
+            "email": "sarah@example.com",
+            "first_name": "Sarah",
+            "business_name": "Sarah's Salon",
+            "payment_confirmed": true,
+            "payment_amount": 2997.00,
+            "payment_date": "2025-12-01T15:00:00Z",
+            "docusign_completed": true,
+            "salon_address": "123 Main St, Toronto, ON",
+            "observation_dates": ["2025-12-10", "2025-12-17"],
+            "start_date": "2025-12-10"
+        }
+    """
+    email: EmailStr = Field(..., description="Client email address")
+    first_name: str = Field(..., description="Client first name")
+    business_name: str = Field(..., description="Salon/business name")
+    payment_confirmed: bool = Field(..., description="Whether payment was confirmed")
+    payment_amount: float = Field(..., description="Payment amount (e.g., 2997.00)")
+    payment_date: str = Field(..., description="Payment date (ISO format)")
+    docusign_completed: bool = Field(default=True, description="Whether DocuSign contract was completed")
+    salon_address: Optional[str] = Field(None, description="Physical address of salon")
+    observation_dates: Optional[list[str]] = Field(None, description="List of scheduled observation dates")
+    start_date: Optional[str] = Field(None, description="Phase 1 start date (ISO format)")
+    package_type: str = Field(default="Phase 1 - Traditional Service Diagnostic", description="Package purchased")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "sarah@example.com",
+                "first_name": "Sarah",
+                "business_name": "Sarah's Salon",
+                "payment_confirmed": True,
+                "payment_amount": 2997.00,
+                "payment_date": "2025-12-01T15:00:00Z",
+                "docusign_completed": True,
+                "salon_address": "123 Main St, Toronto, ON",
+                "observation_dates": ["2025-12-10", "2025-12-17"],
+                "start_date": "2025-12-10",
+                "package_type": "Phase 1 - Traditional Service Diagnostic"
+            }
+        }
+
+
+@app.post("/webhook/calendly-noshow")
+async def calendly_noshow_webhook(request: CalendlyNoShowRequest, background_tasks: BackgroundTasks):
+    """
+    Handle Calendly no-show webhook.
+
+    Triggered when: Client misses their scheduled call
+
+    This endpoint:
+    1. Receives no-show notification from Calendly
+    2. Triggers noshow_recovery_handler_flow
+    3. Schedules 3 recovery emails (5min, 24h, 48h)
+    """
+    logger.info(f"📞 Received Calendly no-show webhook for {request.email}")
+    logger.info(f"   Business: {request.business_name}")
+    logger.info(f"   Event URI: {request.calendly_event_uri}")
+    logger.info(f"   Scheduled Time: {request.scheduled_time}")
+
+    try:
+        # Import flow
+        from campaigns.christmas_campaign.flows.noshow_recovery_handler import noshow_recovery_handler_flow
+
+        # Trigger flow in background
+        def run_flow():
+            result = noshow_recovery_handler_flow(
+                email=request.email,
+                first_name=request.first_name,
+                business_name=request.business_name,
+                calendly_event_uri=request.calendly_event_uri,
+                scheduled_time=request.scheduled_time,
+                missed_time=datetime.now().isoformat()
+            )
+            logger.info(f"✅ No-show recovery flow completed: {result.get('status')}")
+
+        background_tasks.add_task(run_flow)
+
+        logger.info(f"✅ No-show recovery flow triggered for {request.email}")
+
+        return {
+            "status": "accepted",
+            "message": "No-show recovery sequence will begin shortly",
+            "email": request.email,
+            "campaign": "Christmas Traditional Service"
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Error triggering no-show recovery flow: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger no-show recovery: {str(e)}")
+
+
+@app.post("/webhook/postcall-maybe")
+async def postcall_maybe_webhook(request: PostCallMaybeRequest, background_tasks: BackgroundTasks):
+    """
+    Handle post-call maybe webhook.
+
+    Triggered when: Sales call ends with "maybe" outcome
+
+    This endpoint:
+    1. Receives post-call data from CRM
+    2. Triggers postcall_maybe_handler_flow
+    3. Schedules 3 follow-up emails (1h, Day 3, Day 7)
+    """
+    logger.info(f"📞 Received post-call maybe webhook for {request.email}")
+    logger.info(f"   Business: {request.business_name}")
+    logger.info(f"   Call Date: {request.call_date}")
+    logger.info(f"   Outcome: {request.call_outcome}")
+    logger.info(f"   Priority: {request.follow_up_priority}")
+
+    try:
+        # Import flow
+        from campaigns.christmas_campaign.flows.postcall_maybe_handler import postcall_maybe_handler_flow
+
+        # Trigger flow in background
+        def run_flow():
+            result = postcall_maybe_handler_flow(
+                email=request.email,
+                first_name=request.first_name,
+                business_name=request.business_name,
+                call_date=request.call_date,
+                call_outcome=request.call_outcome,
+                call_notes=request.call_notes,
+                objections=request.objections,
+                follow_up_priority=request.follow_up_priority
+            )
+            logger.info(f"✅ Post-call maybe flow completed: {result.get('status')}")
+
+        background_tasks.add_task(run_flow)
+
+        logger.info(f"✅ Post-call maybe flow triggered for {request.email}")
+
+        return {
+            "status": "accepted",
+            "message": "Post-call follow-up sequence will begin shortly",
+            "email": request.email,
+            "call_outcome": request.call_outcome,
+            "campaign": "Christmas Traditional Service"
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Error triggering post-call maybe flow: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger post-call follow-up: {str(e)}")
+
+
+@app.post("/webhook/onboarding-start")
+async def onboarding_start_webhook(request: OnboardingStartRequest, background_tasks: BackgroundTasks):
+    """
+    Handle onboarding start webhook.
+
+    Triggered when: Client completes payment + DocuSign
+
+    This endpoint:
+    1. Receives payment confirmation from payment system
+    2. Triggers onboarding_handler_flow
+    3. Schedules 3 welcome emails (1h, Day 1, Day 3)
+    """
+    logger.info(f"🎉 Received onboarding start webhook for {request.email}")
+    logger.info(f"   Business: {request.business_name}")
+    logger.info(f"   Payment: ${request.payment_amount:.2f} on {request.payment_date}")
+    logger.info(f"   Package: {request.package_type}")
+
+    try:
+        # Import flow
+        from campaigns.christmas_campaign.flows.onboarding_handler import onboarding_handler_flow
+
+        # Trigger flow in background
+        def run_flow():
+            result = onboarding_handler_flow(
+                email=request.email,
+                first_name=request.first_name,
+                business_name=request.business_name,
+                payment_confirmed=request.payment_confirmed,
+                payment_amount=request.payment_amount,
+                payment_date=request.payment_date,
+                docusign_completed=request.docusign_completed,
+                salon_address=request.salon_address,
+                observation_dates=request.observation_dates,
+                start_date=request.start_date,
+                package_type=request.package_type
+            )
+            logger.info(f"✅ Onboarding flow completed: {result.get('status')}")
+
+        background_tasks.add_task(run_flow)
+
+        logger.info(f"✅ Onboarding flow triggered for {request.email}")
+
+        return {
+            "status": "accepted",
+            "message": "Onboarding welcome sequence will begin shortly",
+            "email": request.email,
+            "payment_amount": request.payment_amount,
+            "campaign": "Christmas Traditional Service"
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Error triggering onboarding flow: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to trigger onboarding: {str(e)}")
+
+
 # ===== Startup Event =====
 
 @app.on_event("startup")
