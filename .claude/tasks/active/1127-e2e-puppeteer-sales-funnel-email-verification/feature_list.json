@@ -1,0 +1,308 @@
+{
+  "task_id": "1127-e2e-puppeteer-sales-funnel-email-verification",
+  "domain": "coding",
+  "status": "executing",
+  "current_phase": "CODE",
+  "current_wave": 2,
+  "current_feature_id": "2.1",
+  "created_at": "2025-11-27T14:30:00Z",
+  "updated_at": "2025-11-27T16:58:00Z",
+  "meta": {
+    "title": "E2E Puppeteer Sales Funnel Email Verification",
+    "description": "Complete end-to-end test using Puppeteer to navigate sangletech.com sales funnel, complete assessment, trigger Christmas campaign webhook, and verify all 7 emails are scheduled and delivered to lengobaosang@gmail.com within 10 minutes (TESTING_MODE=true)",
+    "estimated_hours": 3,
+    "test_email": "lengobaosang@gmail.com",
+    "funnel_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+    "prefect_server": "https://prefect.galatek.dev/api",
+    "notion_sequence_db_id": "576de1aa-6064-4201-a5e6-623b7f2be79a",
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    }
+  },
+  "waves": [
+    {
+      "id": 1,
+      "name": "Pre-Test Setup",
+      "objective": "Prepare environment by deleting existing sequence and verifying TESTING_MODE",
+      "status": "complete",
+      "estimated_minutes": 15,
+      "started_at": "2025-11-27T16:55:00Z",
+      "completed_at": "2025-11-27T16:58:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Puppeteer Browser Automation",
+      "objective": "Navigate sales funnel, fill forms, complete assessment, capture screenshots",
+      "status": "pending",
+      "estimated_minutes": 30
+    },
+    {
+      "id": 3,
+      "name": "Webhook & Flow Verification",
+      "objective": "Verify webhook triggers Prefect flow and email sequence is created",
+      "status": "pending",
+      "estimated_minutes": 20
+    },
+    {
+      "id": 4,
+      "name": "Email Delivery Verification",
+      "objective": "Monitor and verify all 7 emails delivered to test inbox",
+      "status": "pending",
+      "estimated_minutes": 45
+    }
+  ],
+  "features": [
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Delete existing email sequence for lengobaosang@gmail.com from Notion",
+      "status": "complete",
+      "priority": "critical",
+      "tests_required": false,
+      "acceptance_criteria": [
+        "Query Notion Email Sequence database for existing record",
+        "Delete record if found (bypass idempotency check)",
+        "Confirm no sequence exists for test email"
+      ],
+      "started_at": "2025-11-27T16:55:00Z",
+      "completed_at": "2025-11-27T16:56:00Z",
+      "notes": "Archived 1 existing record, verified deletion successful"
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Verify TESTING_MODE=true in Prefect Secret block",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "acceptance_criteria": [
+        "Check testing-mode Secret block value",
+        "Confirm emails will send at 1-minute intervals",
+        "Document current environment state"
+      ],
+      "started_at": "2025-11-27T16:56:00Z",
+      "completed_at": "2025-11-27T16:57:00Z",
+      "notes": "TESTING_MODE=True (boolean) confirmed in Prefect Secret block"
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Verify FastAPI server is running with correct endpoints",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "acceptance_criteria": [
+        "Health check passes at /health endpoint",
+        "/webhook/christmas-signup endpoint available",
+        "Server logs show ready state"
+      ],
+      "started_at": "2025-11-27T16:57:00Z",
+      "completed_at": "2025-11-27T16:58:00Z",
+      "notes": "Server running on localhost:8000, all endpoints verified including /webhook/christmas-signup"
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Navigate to sales funnel landing page",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Puppeteer navigates to sangletech.com/en/flows/businessX/dfu/xmas-a01",
+        "Page loads successfully (no errors)",
+        "Screenshot captured of landing page"
+      ]
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Fill opt-in form with test email",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Enter first_name: 'Sang'",
+        "Enter email: 'lengobaosang@gmail.com'",
+        "Enter business_name: 'E2E Test Salon'",
+        "Screenshot captured of filled form"
+      ]
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Complete 16-question BusOS assessment with CRITICAL segment answers",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Answer questions to achieve CRITICAL segment (2+ red systems)",
+        "All 16 questions answered",
+        "Screenshots at key milestones",
+        "Assessment submission successful"
+      ]
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Verify results page displayed with correct segment",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Results page loads after assessment",
+        "BusOS score displayed",
+        "CRITICAL segment identified",
+        "Final screenshot captured"
+      ]
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Verify webhook triggered to /webhook/christmas-signup",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Network request captured showing webhook POST",
+        "OR manually trigger webhook with assessment data",
+        "Response status 200 with accepted status"
+      ]
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Verify Prefect flow run created",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Query Prefect API for flow runs",
+        "christmas-signup-handler flow run exists",
+        "Flow run status is COMPLETED or RUNNING"
+      ]
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Verify email sequence record created in Notion",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Query Notion Email Sequence database",
+        "Record exists for lengobaosang@gmail.com",
+        "Campaign = 'Christmas 2025'",
+        "Segment = 'CRITICAL'"
+      ]
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Wait for Email 1 (immediate) and verify delivery",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Email 1 sent timestamp recorded in Notion",
+        "Check Resend delivery logs",
+        "Confirm delivery to lengobaosang@gmail.com"
+      ]
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Monitor Emails 2-7 delivery over 6 minutes",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "Email 2 delivered at ~+1 minute",
+        "Email 3 delivered at ~+2 minutes",
+        "Email 4 delivered at ~+3 minutes",
+        "Email 5 delivered at ~+4 minutes",
+        "Email 6 delivered at ~+5 minutes",
+        "Email 7 delivered at ~+6 minutes"
+      ]
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Verify all 7 emails received in test inbox",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "acceptance_criteria": [
+        "All 7 emails delivered to lengobaosang@gmail.com",
+        "Email subjects match expected templates",
+        "No emails in spam/junk",
+        "Delivery completed within 10 minutes"
+      ]
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "Generate E2E test report with screenshots and timing",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "acceptance_criteria": [
+        "Test report generated with all screenshots",
+        "Email delivery timeline documented",
+        "Pass/fail status for each verification step",
+        "Results saved to tests/e2e/results/"
+      ]
+    }
+  ],
+  "progress": {
+    "total_features": 14,
+    "completed_features": 3,
+    "total_waves": 4,
+    "completed_waves": 1,
+    "percentage": 21.43
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-27T14:30:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-27T14:35:00Z",
+      "action": "EXPLORE phase complete - codebase analyzed"
+    },
+    {
+      "timestamp": "2025-11-27T14:45:00Z",
+      "action": "PLAN phase complete - awaiting approval"
+    },
+    {
+      "timestamp": "2025-11-27T16:55:00Z",
+      "action": "Wave 1 execution started - Pre-Test Setup",
+      "wave_id": 1
+    },
+    {
+      "timestamp": "2025-11-27T16:56:00Z",
+      "action": "Completed feature 1.1: Delete existing email sequence",
+      "feature_id": "1.1",
+      "notes": "Archived 1 existing record from Notion"
+    },
+    {
+      "timestamp": "2025-11-27T16:57:00Z",
+      "action": "Completed feature 1.2: Verify TESTING_MODE",
+      "feature_id": "1.2",
+      "notes": "TESTING_MODE=True confirmed"
+    },
+    {
+      "timestamp": "2025-11-27T16:58:00Z",
+      "action": "Completed feature 1.3: Verify FastAPI server",
+      "feature_id": "1.3",
+      "notes": "Server running, all endpoints verified"
+    },
+    {
+      "timestamp": "2025-11-27T16:58:00Z",
+      "action": "Wave 1 complete - Pre-Test Setup",
+      "wave_id": 1,
+      "features_completed": 3
+    }
+  ]
+}
