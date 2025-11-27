@@ -18,8 +18,8 @@ from prefect import task
 from prefect.blocks.system import Secret
 from notion_client import Client
 from datetime import datetime
+from typing import Optional, Dict, Any, List, Literal
 import os
-from typing import Optional, Dict, Any, Literal
 from dotenv import load_dotenv
 
 # Load environment variables (fallback for local development)
@@ -747,4 +747,83 @@ def create_noshow_sequence(
 
     except Exception as e:
         print(f"❌ Error creating no-show sequence for {email}: {e}")
+        raise
+
+
+# ==============================================================================
+# Post-Call Maybe Sequence Operations (Wave 3)
+# ==============================================================================
+
+@task(retries=3, retry_delay_seconds=60, name="christmas-create-postcall-sequence")
+def create_postcall_sequence(
+    email: str,
+    first_name: str,
+    business_name: str,
+    call_date: str,
+    call_outcome: str = "Maybe",
+    call_notes: Optional[str] = None,
+    objections: Optional[List[str]] = None,
+    follow_up_priority: str = "Medium"
+) -> Dict[str, Any]:
+    """
+    Create post-call maybe sequence tracking record in Email Sequence database.
+
+    This function creates a tracking record for the 3-email post-call follow-up sequence.
+
+    Args:
+        email: Contact email address
+        first_name: Contact first name
+        business_name: Business name
+        call_date: Call date (ISO format)
+        call_outcome: Call outcome (default: Maybe)
+        call_notes: Notes from the call (optional)
+        objections: List of objections raised (optional)
+        follow_up_priority: Follow-up priority (High/Medium/Low)
+
+    Returns:
+        Created sequence record
+
+    Example:
+        sequence = create_postcall_sequence(
+            email="sarah@example.com",
+            first_name="Sarah",
+            business_name="Sarah's Salon",
+            call_date="2025-12-01T14:30:00Z",
+            call_notes="Interested but needs budget approval",
+            objections=["Price", "Timing"]
+        )
+    """
+    try:
+        properties = {
+            "Email": {"email": email},
+            "First Name": {"rich_text": [{"text": {"content": first_name}}]},
+            "Business Name": {"rich_text": [{"text": {"content": business_name}}]},
+            "Template Type": {"select": {"name": "Post-Call Follow-Up"}},
+            "Campaign": {"select": {"name": "Christmas 2025"}},
+            "Call Date": {"rich_text": [{"text": {"content": call_date}}]},
+            "Call Outcome": {"rich_text": [{"text": {"content": call_outcome}}]},
+            "Follow-Up Priority": {"rich_text": [{"text": {"content": follow_up_priority}}]},
+            "Sequence Created": {"date": {"start": datetime.now().isoformat()}},
+            "Sequence Completed": {"checkbox": False}
+        }
+
+        if call_notes:
+            # Truncate call notes if too long (Notion has field limits)
+            truncated_notes = call_notes[:2000] if len(call_notes) > 2000 else call_notes
+            properties["Call Notes"] = {"rich_text": [{"text": {"content": truncated_notes}}]}
+
+        if objections:
+            objections_str = ", ".join(objections)
+            properties["Objections"] = {"rich_text": [{"text": {"content": objections_str}}]}
+
+        response = notion.pages.create(
+            parent={"database_id": NOTION_EMAIL_SEQUENCE_DB_ID},
+            properties=properties
+        )
+
+        print(f"✅ Created post-call follow-up sequence for {email} (Call: {call_date})")
+        return response
+
+    except Exception as e:
+        print(f"❌ Error creating post-call sequence for {email}: {e}")
         raise
