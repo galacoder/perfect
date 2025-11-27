@@ -20,7 +20,9 @@ from datetime import datetime
 
 # Import Notion operations
 from campaigns.christmas_campaign.tasks.notion_operations import (
-    search_contact_by_email
+    search_contact_by_email,
+    create_noshow_sequence,
+    search_email_sequence_by_email
 )
 
 
@@ -91,36 +93,64 @@ def noshow_recovery_handler_flow(
     # Step 2: Check for existing no-show recovery sequence (Idempotency)
     # ==============================================================================
 
-    # TODO: Implement idempotency check in Wave 2
-    logger.info("⏭️  Idempotency check not yet implemented (Wave 2)")
+    logger.info(f"🔍 Checking for existing no-show recovery sequence for {email}...")
+
+    existing_sequence = search_email_sequence_by_email(email)
+
+    if existing_sequence:
+        # Check if it's a no-show recovery sequence
+        template_type = existing_sequence.get("properties", {}).get("Template Type", {}).get("select", {}).get("name")
+
+        if template_type == "No-Show Recovery":
+            logger.info(f"⚠️  No-show recovery sequence already exists for {email}")
+            return {
+                "status": "skipped",
+                "reason": "duplicate_noshow_sequence",
+                "email": email,
+                "existing_sequence_id": existing_sequence["id"]
+            }
+        else:
+            logger.info(f"✅ Existing sequence is {template_type}, will create no-show recovery")
 
     # ==============================================================================
     # Step 3: Create no-show sequence tracking record
     # ==============================================================================
 
-    # TODO: Implement sequence creation in Wave 2
-    logger.info("⏭️  Sequence creation not yet implemented (Wave 2)")
+    logger.info(f"📝 Creating no-show recovery sequence for {email}...")
+
+    sequence = create_noshow_sequence(
+        email=email,
+        first_name=first_name,
+        business_name=business_name,
+        calendly_event_uri=calendly_event_uri,
+        scheduled_time=scheduled_time,
+        event_type=event_type
+    )
+
+    sequence_id = sequence["id"]
+    logger.info(f"✅ Created no-show sequence: {sequence_id}")
 
     # ==============================================================================
     # Step 4: Schedule 3-email recovery sequence
     # ==============================================================================
 
-    # TODO: Implement email scheduling in Wave 2
-    logger.info("⏭️  Email scheduling not yet implemented (Wave 2)")
+    # TODO: Implement email scheduling in Wave 2, Feature 2.3
+    logger.info("⏭️  Email scheduling not yet implemented (Wave 2, Feature 2.3)")
 
     # ==============================================================================
     # Return result
     # ==============================================================================
 
-    logger.info(f"✅ No-Show Recovery Handler skeleton execution complete for {email}")
+    logger.info(f"✅ No-Show Recovery Handler execution complete for {email}")
 
     return {
-        "status": "skeleton_complete",
-        "message": "Flow skeleton created successfully (Wave 1)",
+        "status": "success",
+        "message": "No-show recovery sequence created (emails will be scheduled in Feature 2.3)",
         "email": email,
         "business_name": business_name,
         "calendly_event_uri": calendly_event_uri,
-        "contact_id": contact_id
+        "contact_id": contact_id,
+        "sequence_id": sequence_id
     }
 
 

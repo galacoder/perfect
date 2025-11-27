@@ -682,3 +682,69 @@ def log_email_analytics(
         print(f"❌ Error logging email analytics for {email}: {e}")
         # Don't raise - analytics logging should not block email sending
         return None
+
+
+# ==============================================================================
+# No-Show Recovery Sequence Operations (Wave 2)
+# ==============================================================================
+
+@task(retries=3, retry_delay_seconds=60, name="christmas-create-noshow-sequence")
+def create_noshow_sequence(
+    email: str,
+    first_name: str,
+    business_name: str,
+    calendly_event_uri: str,
+    scheduled_time: str,
+    event_type: str = "Discovery Call - $2997 Diagnostic"
+) -> Dict[str, Any]:
+    """
+    Create no-show recovery sequence tracking record in Email Sequence database.
+
+    This function creates a tracking record for the 3-email no-show recovery sequence.
+
+    Args:
+        email: Contact email address
+        first_name: Contact first name
+        business_name: Business name
+        calendly_event_uri: Calendly event URI (unique identifier)
+        scheduled_time: Original scheduled time (ISO format)
+        event_type: Type of event (default: Discovery Call)
+
+    Returns:
+        Created sequence record
+
+    Example:
+        sequence = create_noshow_sequence(
+            email="sarah@example.com",
+            first_name="Sarah",
+            business_name="Sarah's Salon",
+            calendly_event_uri="https://calendly.com/events/ABC123",
+            scheduled_time="2025-12-01T14:00:00Z"
+        )
+        sequence_id = sequence["id"]
+    """
+    try:
+        properties = {
+            "Email": {"email": email},
+            "First Name": {"rich_text": [{"text": {"content": first_name}}]},
+            "Business Name": {"rich_text": [{"text": {"content": business_name}}]},
+            "Template Type": {"select": {"name": "No-Show Recovery"}},
+            "Campaign": {"select": {"name": "Christmas 2025"}},
+            "Calendly Event URI": {"rich_text": [{"text": {"content": calendly_event_uri}}]},
+            "Scheduled Time": {"rich_text": [{"text": {"content": scheduled_time}}]},
+            "Event Type": {"rich_text": [{"text": {"content": event_type}}]},
+            "Sequence Created": {"date": {"start": datetime.now().isoformat()}},
+            "Sequence Completed": {"checkbox": False}
+        }
+
+        response = notion.pages.create(
+            parent={"database_id": NOTION_EMAIL_SEQUENCE_DB_ID},
+            properties=properties
+        )
+
+        print(f"✅ Created no-show recovery sequence for {email} (Event: {calendly_event_uri})")
+        return response
+
+    except Exception as e:
+        print(f"❌ Error creating no-show sequence for {email}: {e}")
+        raise

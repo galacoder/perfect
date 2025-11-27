@@ -1,0 +1,205 @@
+{
+  "task_id": "1126-christmas-traditional-service-automation",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 0,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 125
+  },
+  "estimated_tests": {
+    "wave_0": {
+      "test_notion_operations.py": [
+        "test_fetch_template_lead_nurture_email_1_exists",
+        "test_fetch_template_lead_nurture_email_2a_critical_exists",
+        "test_fetch_template_lead_nurture_email_2b_urgent_exists",
+        "test_fetch_template_lead_nurture_email_2c_optimize_exists",
+        "test_fetch_template_lead_nurture_email_3_exists",
+        "test_fetch_template_lead_nurture_email_4_exists",
+        "test_fetch_template_lead_nurture_email_5_exists",
+        "test_fetch_template_returns_correct_properties",
+        "test_fetch_template_active_status_filter",
+        "test_fetch_template_new_naming_format",
+        "test_fetch_template_segment_specific_2a_2b_2c",
+        "test_fetch_template_backward_compatibility",
+        "test_fetch_template_invalid_name_returns_none"
+      ],
+      "test_resend_operations.py": [
+        "test_send_lead_nurture_email_1_success",
+        "test_send_lead_nurture_email_2a_critical_success",
+        "test_send_lead_nurture_email_2b_urgent_success",
+        "test_send_lead_nurture_email_2c_optimize_success",
+        "test_send_lead_nurture_email_3_success",
+        "test_send_lead_nurture_email_4_success",
+        "test_send_lead_nurture_email_5_success",
+        "test_send_email_correct_subject_line",
+        "test_send_email_correct_body_content"
+      ],
+      "test_template_rendering.py": [
+        "test_render_first_name_variable",
+        "test_render_top_red_system_variable",
+        "test_render_segment_variable",
+        "test_render_scorecard_url_variable",
+        "test_render_calendly_link_variable",
+        "test_render_all_variables_replaced",
+        "test_render_no_unreplaced_variables_in_output",
+        "test_render_missing_variable_fallback"
+      ]
+    },
+    "wave_1": {
+      "test_routing.py": [
+        "test_get_sequence_template_id_noshow",
+        "test_get_sequence_template_id_postcall",
+        "test_get_sequence_template_id_onboarding",
+        "test_get_sequence_template_id_invalid_sequence"
+      ],
+      "test_noshow_recovery_handler.py": [
+        "test_noshow_handler_flow_structure"
+      ],
+      "test_postcall_maybe_handler.py": [
+        "test_postcall_handler_flow_structure"
+      ],
+      "test_onboarding_handler.py": [
+        "test_onboarding_handler_flow_structure"
+      ]
+    },
+    "wave_2": {
+      "test_noshow_recovery_handler.py": [
+        "test_noshow_handler_success",
+        "test_noshow_handler_contact_not_found",
+        "test_noshow_handler_idempotency_skip",
+        "test_noshow_handler_idempotency_continue",
+        "test_noshow_schedule_emails_production_timing",
+        "test_noshow_schedule_emails_testing_timing",
+        "test_noshow_handler_calendly_payload_parsing",
+        "test_noshow_handler_api_error"
+      ]
+    },
+    "wave_3": {
+      "test_postcall_maybe_handler.py": [
+        "test_postcall_handler_success",
+        "test_postcall_handler_contact_not_found",
+        "test_postcall_handler_idempotency_skip",
+        "test_postcall_handler_idempotency_continue",
+        "test_postcall_schedule_emails_production_timing",
+        "test_postcall_schedule_emails_testing_timing",
+        "test_postcall_handler_with_call_notes",
+        "test_postcall_handler_api_error"
+      ]
+    },
+    "wave_4": {
+      "test_onboarding_handler.py": [
+        "test_onboarding_handler_success",
+        "test_onboarding_handler_contact_not_found",
+        "test_onboarding_handler_idempotency_skip",
+        "test_onboarding_handler_idempotency_continue",
+        "test_onboarding_schedule_emails_production_timing",
+        "test_onboarding_schedule_emails_testing_timing",
+        "test_onboarding_handler_with_all_variables",
+        "test_onboarding_handler_api_error"
+      ]
+    },
+    "wave_5": {
+      "test_server.py": [
+        "test_calendly_noshow_webhook_endpoint",
+        "test_calendly_noshow_webhook_invalid_payload",
+        "test_postcall_maybe_webhook_endpoint",
+        "test_postcall_maybe_webhook_invalid_payload",
+        "test_onboarding_start_webhook_endpoint",
+        "test_onboarding_start_webhook_invalid_payload"
+      ]
+    },
+    "wave_6_e2e": {
+      "e2e/test_lead_nurture_funnel.py": [
+        "test_e2e_navigate_to_landing_page",
+        "test_e2e_fill_optin_form_with_test_email",
+        "test_e2e_complete_16_question_assessment",
+        "test_e2e_verify_results_page_displayed",
+        "test_e2e_verify_webhook_triggers_signup_handler",
+        "test_e2e_verify_email_sequence_created_in_notion",
+        "test_e2e_monitor_7_nurture_emails_sent",
+        "test_e2e_verify_new_template_content_in_emails",
+        "test_e2e_screenshots_at_each_step"
+      ]
+    },
+    "wave_7_e2e": {
+      "e2e/test_noshow_recovery_e2e.py": [
+        "test_e2e_noshow_webhook_valid_payload_accepted",
+        "test_e2e_noshow_webhook_invalid_payload_rejected",
+        "test_e2e_noshow_webhook_missing_email_rejected",
+        "test_e2e_noshow_webhook_missing_event_uri_rejected",
+        "test_e2e_noshow_webhook_triggers_prefect_flow",
+        "test_e2e_noshow_flow_run_id_returned",
+        "test_e2e_noshow_sequence_record_created_in_notion",
+        "test_e2e_noshow_template_type_is_noshow_recovery",
+        "test_e2e_noshow_email_1_sent_after_1min",
+        "test_e2e_noshow_email_2_sent_after_2min",
+        "test_e2e_noshow_email_3_sent_after_3min",
+        "test_e2e_noshow_correct_templates_used",
+        "test_e2e_noshow_personalization_filled"
+      ]
+    },
+    "wave_8_e2e": {
+      "e2e/test_postcall_maybe_e2e.py": [
+        "test_e2e_postcall_webhook_valid_payload_accepted",
+        "test_e2e_postcall_webhook_invalid_payload_rejected",
+        "test_e2e_postcall_webhook_with_call_notes",
+        "test_e2e_postcall_webhook_with_objections",
+        "test_e2e_postcall_webhook_triggers_prefect_flow",
+        "test_e2e_postcall_flow_run_id_returned",
+        "test_e2e_postcall_sequence_record_created_in_notion",
+        "test_e2e_postcall_template_type_is_postcall_followup",
+        "test_e2e_postcall_email_1_sent_after_1min",
+        "test_e2e_postcall_email_2_sent_after_2min",
+        "test_e2e_postcall_email_3_sent_after_3min",
+        "test_e2e_postcall_correct_templates_used",
+        "test_e2e_postcall_call_notes_in_personalization"
+      ]
+    },
+    "wave_9_e2e": {
+      "e2e/test_onboarding_e2e.py": [
+        "test_e2e_onboarding_webhook_valid_payload_accepted",
+        "test_e2e_onboarding_webhook_invalid_payload_rejected",
+        "test_e2e_onboarding_webhook_missing_payment_rejected",
+        "test_e2e_onboarding_webhook_partial_data_handled",
+        "test_e2e_onboarding_webhook_triggers_prefect_flow",
+        "test_e2e_onboarding_flow_run_id_returned",
+        "test_e2e_onboarding_sequence_record_created_in_notion",
+        "test_e2e_onboarding_template_type_is_onboarding",
+        "test_e2e_onboarding_email_1_sent_after_1min",
+        "test_e2e_onboarding_email_2_sent_after_2min",
+        "test_e2e_onboarding_email_3_sent_after_3min",
+        "test_e2e_onboarding_correct_templates_used",
+        "test_e2e_onboarding_salon_address_in_personalization",
+        "test_e2e_onboarding_observation_dates_in_personalization"
+      ]
+    },
+    "wave_10_e2e": {
+      "e2e/test_full_integration_e2e.py": [
+        "test_e2e_full_journey_optin_to_nurture",
+        "test_e2e_full_journey_noshow_after_booking",
+        "test_e2e_full_journey_maybe_after_call",
+        "test_e2e_full_journey_onboarding_after_close",
+        "test_e2e_sequences_dont_conflict",
+        "test_e2e_idempotency_prevents_duplicates",
+        "test_e2e_proper_handoff_between_sequences"
+      ],
+      "e2e/test_production_readiness_e2e.py": [
+        "test_e2e_production_signup_deployment_exists",
+        "test_e2e_production_noshow_deployment_exists",
+        "test_e2e_production_postcall_deployment_exists",
+        "test_e2e_production_onboarding_deployment_exists",
+        "test_e2e_production_health_endpoint_responds",
+        "test_e2e_production_secret_blocks_accessible",
+        "test_e2e_production_git_deployment_configured"
+      ]
+    }
+  },
+  "suites": [],
+  "failures": [],
+  "history": [],
+  "coverage_target": 80,
+  "test_command": "pytest campaigns/christmas_campaign/tests/ -v --tb=short",
+  "e2e_test_command": "pytest campaigns/christmas_campaign/tests/e2e/ -v --tb=short -s"
+}
