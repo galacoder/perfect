@@ -1,0 +1,35 @@
+{
+  "valid_payload": {
+    "email": "e2e-noshow-test@example.com",
+    "first_name": "NoShow Test",
+    "business_name": "NoShow Test Salon",
+    "calendly_event_uri": "https://calendly.com/events/E2E-TEST-NOSHOW-001",
+    "scheduled_time": "2025-12-01T14:00:00Z"
+  },
+  "valid_payload_with_different_data": {
+    "email": "e2e-noshow-test-2@example.com",
+    "first_name": "NoShow Test 2",
+    "business_name": "Second NoShow Salon",
+    "calendly_event_uri": "https://calendly.com/events/E2E-TEST-NOSHOW-002",
+    "scheduled_time": "2025-12-02T10:30:00Z"
+  },
+  "invalid_payload_missing_email": {
+    "first_name": "NoShow Test",
+    "business_name": "NoShow Test Salon",
+    "calendly_event_uri": "https://calendly.com/events/E2E-TEST-NOSHOW-001",
+    "scheduled_time": "2025-12-01T14:00:00Z"
+  },
+  "invalid_payload_missing_event_uri": {
+    "email": "e2e-noshow-test@example.com",
+    "first_name": "NoShow Test",
+    "business_name": "NoShow Test Salon",
+    "scheduled_time": "2025-12-01T14:00:00Z"
+  },
+  "invalid_payload_malformed_email": {
+    "email": "not-an-email",
+    "first_name": "NoShow Test",
+    "business_name": "NoShow Test Salon",
+    "calendly_event_uri": "https://calendly.com/events/E2E-TEST-NOSHOW-001",
+    "scheduled_time": "2025-12-01T14:00:00Z"
+  }
+}

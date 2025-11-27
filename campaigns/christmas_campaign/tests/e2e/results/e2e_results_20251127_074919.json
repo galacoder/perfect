@@ -1,0 +1,90 @@
+{
+  "timestamp": "2025-11-27T07:49:19.188789",
+  "total_suites": 4,
+  "total_tests": 12,
+  "passed": 11,
+  "failed": 1,
+  "pass_rate": "91.7%",
+  "results": [
+    {
+      "test_name": "christmas_signup_webhook",
+      "status": "passed",
+      "tests": [
+        {
+          "name": "critical_segment",
+          "status": "passed",
+          "email": "e2e-critical-1764247759110@e2e-test.example.com"
+        },
+        {
+          "name": "urgent_segment",
+          "status": "passed",
+          "email": "e2e-urgent-1764247759154@e2e-test.example.com"
+        },
+        {
+          "name": "optimize_segment",
+          "status": "passed",
+          "email": "e2e-optimize-1764247759155@e2e-test.example.com"
+        }
+      ],
+      "summary": "3/3 tests passed"
+    },
+    {
+      "test_name": "noshow_webhook",
+      "status": "passed",
+      "tests": [
+        {
+          "name": "valid_payload",
+          "status": "passed"
+        },
+        {
+          "name": "missing_email_rejected",
+          "status": "passed"
+        },
+        {
+          "name": "malformed_email_rejected",
+          "status": "passed"
+        }
+      ],
+      "summary": "3/3 tests passed"
+    },
+    {
+      "test_name": "postcall_webhook",
+      "status": "failed",
+      "tests": [
+        {
+          "name": "valid_payload",
+          "status": "passed"
+        },
+        {
+          "name": "minimal_payload",
+          "status": "error",
+          "error": "[Errno 54] Connection reset by peer"
+        },
+        {
+          "name": "missing_email_rejected",
+          "status": "passed"
+        }
+      ],
+      "summary": "2/3 tests passed"
+    },
+    {
+      "test_name": "onboarding_webhook",
+      "status": "passed",
+      "tests": [
+        {
+          "name": "valid_payload",
+          "status": "passed"
+        },
+        {
+          "name": "minimal_payload",
+          "status": "passed"
+        },
+        {
+          "name": "missing_email_rejected",
+          "status": "passed"
+        }
+      ],
+      "summary": "3/3 tests passed"
+    }
+  ]
+}

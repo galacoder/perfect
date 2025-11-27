@@ -1,0 +1,12 @@
+{
+  "test_name": "test_e2e_idempotency_prevents_duplicates",
+  "status": "passed",
+  "start_time": "2025-11-27T07:48:42.159859",
+  "end_time": "2025-11-27T07:48:42.199651",
+  "duration_seconds": 0.039792,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

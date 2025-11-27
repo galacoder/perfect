@@ -1,0 +1,44 @@
+{
+  "valid_payload": {
+    "email": "e2e-postcall-test@example.com",
+    "first_name": "PostCall Test",
+    "business_name": "PostCall Test Salon",
+    "call_date": "2025-12-01T14:30:00Z",
+    "call_outcome": "Maybe",
+    "call_notes": "Interested but needs budget approval from business partner",
+    "objections": ["Price", "Timing"],
+    "follow_up_priority": "High"
+  },
+  "valid_payload_minimal": {
+    "email": "e2e-postcall-minimal@example.com",
+    "first_name": "Minimal Test",
+    "business_name": "Minimal Test Salon",
+    "call_date": "2025-12-02T10:00:00Z"
+  },
+  "valid_payload_with_multiple_objections": {
+    "email": "e2e-postcall-objections@example.com",
+    "first_name": "Objections Test",
+    "business_name": "Objections Test Salon",
+    "call_date": "2025-12-03T15:00:00Z",
+    "call_outcome": "Maybe",
+    "call_notes": "Many concerns but willing to consider if addressed",
+    "objections": ["Price too high", "Need to think about it", "Already working with competitor", "Not right timing"],
+    "follow_up_priority": "Medium"
+  },
+  "invalid_payload_missing_email": {
+    "first_name": "PostCall Test",
+    "business_name": "PostCall Test Salon",
+    "call_date": "2025-12-01T14:30:00Z"
+  },
+  "invalid_payload_missing_call_date": {
+    "email": "e2e-postcall-test@example.com",
+    "first_name": "PostCall Test",
+    "business_name": "PostCall Test Salon"
+  },
+  "invalid_payload_malformed_email": {
+    "email": "invalid-email-format",
+    "first_name": "PostCall Test",
+    "business_name": "PostCall Test Salon",
+    "call_date": "2025-12-01T14:30:00Z"
+  }
+}

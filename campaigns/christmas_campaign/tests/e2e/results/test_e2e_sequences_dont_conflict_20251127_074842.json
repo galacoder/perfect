@@ -1,0 +1,12 @@
+{
+  "test_name": "test_e2e_sequences_dont_conflict",
+  "status": "passed",
+  "start_time": "2025-11-27T07:48:42.122419",
+  "end_time": "2025-11-27T07:48:42.159333",
+  "duration_seconds": 0.036914,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

@@ -1,0 +1,12 @@
+{
+  "test_name": "test_e2e_proper_handoff_between_sequences",
+  "status": "passed",
+  "start_time": "2025-11-27T07:48:42.200232",
+  "end_time": "2025-11-27T07:48:42.283097",
+  "duration_seconds": 0.082865,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

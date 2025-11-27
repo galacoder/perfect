@@ -1,0 +1,58 @@
+{
+  "valid_payload": {
+    "email": "e2e-onboarding-test@example.com",
+    "first_name": "Onboarding Test",
+    "business_name": "Onboarding Test Salon",
+    "payment_confirmed": true,
+    "payment_amount": 2997.00,
+    "payment_date": "2025-12-01T15:00:00Z",
+    "docusign_completed": true,
+    "salon_address": "123 Main Street, Toronto, ON M5V 2T6",
+    "observation_dates": ["2025-12-10", "2025-12-17"],
+    "start_date": "2025-12-10",
+    "package_type": "Phase 1 - Traditional Service Diagnostic"
+  },
+  "valid_payload_minimal": {
+    "email": "e2e-onboarding-minimal@example.com",
+    "first_name": "Minimal Onboard",
+    "business_name": "Minimal Test Salon",
+    "payment_confirmed": true,
+    "payment_amount": 2997.00,
+    "payment_date": "2025-12-02T10:00:00Z"
+  },
+  "valid_payload_full_details": {
+    "email": "e2e-onboarding-full@example.com",
+    "first_name": "Full Details",
+    "business_name": "Luxury Hair Studio",
+    "payment_confirmed": true,
+    "payment_amount": 2997.00,
+    "payment_date": "2025-12-03T12:30:00Z",
+    "docusign_completed": true,
+    "salon_address": "456 Queen Street West, Suite 200, Toronto, ON M5V 3J9",
+    "observation_dates": ["2025-12-15", "2025-12-18", "2025-12-20"],
+    "start_date": "2025-12-15",
+    "package_type": "Phase 1 - Traditional Service Diagnostic"
+  },
+  "invalid_payload_payment_not_confirmed": {
+    "email": "e2e-onboarding-nopay@example.com",
+    "first_name": "No Payment",
+    "business_name": "No Payment Salon",
+    "payment_confirmed": false,
+    "payment_amount": 0,
+    "payment_date": "2025-12-01T15:00:00Z"
+  },
+  "invalid_payload_missing_email": {
+    "first_name": "No Email",
+    "business_name": "No Email Salon",
+    "payment_confirmed": true,
+    "payment_amount": 2997.00,
+    "payment_date": "2025-12-01T15:00:00Z"
+  },
+  "invalid_payload_missing_payment_confirmation": {
+    "email": "e2e-onboarding-test@example.com",
+    "first_name": "Onboarding Test",
+    "business_name": "Onboarding Test Salon",
+    "payment_amount": 2997.00,
+    "payment_date": "2025-12-01T15:00:00Z"
+  }
+}

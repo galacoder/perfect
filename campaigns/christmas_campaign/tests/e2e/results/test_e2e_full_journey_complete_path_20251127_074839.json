@@ -1,0 +1,38 @@
+{
+  "test_name": "test_e2e_full_journey_complete_path",
+  "status": "passed",
+  "start_time": "2025-11-27T07:48:39.945093",
+  "end_time": "2025-11-27T07:48:42.121714",
+  "duration_seconds": 2.176621,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/christmas-signup",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Christmas signup received and email sequence will begin shortly",
+        "email": "e2e-full-journey-1764247719945@e2e-test.example.com",
+        "campaign": "Christmas 2025",
+        "timestamp": "2025-11-27T07:48:40.021010"
+      },
+      "timestamp": "2025-11-27T07:48:40.022821"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "=== Step 1: Opt-in (Lead Nurture) ===",
+      "timestamp": "2025-11-27T07:48:39.945332"
+    },
+    {
+      "note": "Lead Nurture triggered for e2e-full-journey-1764247719945@e2e-test.example.com",
+      "timestamp": "2025-11-27T07:48:40.022829"
+    },
+    {
+      "note": "=== Step 2: No-show (Recovery Sequence) ===",
+      "timestamp": "2025-11-27T07:48:42.026462"
+    }
+  ]
+}
