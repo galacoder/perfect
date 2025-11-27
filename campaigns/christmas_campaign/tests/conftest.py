@@ -269,12 +269,18 @@ def mock_future_time():
 # Environment Fixtures
 # ==============================================================================
 
-@pytest.fixture(autouse=True)
-def prefect_test_mode(monkeypatch):
-    """Disable Prefect tracking for unit tests."""
-    # Use ephemeral API (in-memory, no server needed)
-    monkeypatch.setenv("PREFECT_API_URL", "http://ephemeral/api")
-    monkeypatch.setenv("PREFECT_API_ENABLE_HTTP2", "false")
+@pytest.fixture(autouse=True, scope="session")
+def prefect_test_mode():
+    """
+    Enable Prefect test harness for all unit tests.
+
+    This creates an in-memory test database and prevents API calls.
+    Uses Prefect's official testing utilities for reliable test isolation.
+    """
+    from prefect.testing.utilities import prefect_test_harness
+
+    with prefect_test_harness():
+        yield
 
 
 @pytest.fixture(autouse=True)
