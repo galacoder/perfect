@@ -1,0 +1,950 @@
+{
+  "task_id": "1126-christmas-traditional-service-automation",
+  "domain": "coding",
+  "status": "executing",
+  "current_phase": "PLAN",
+  "current_wave": 1,
+  "current_feature_id": "1.1",
+  "created_at": "2025-11-26T23:20:00Z",
+  "updated_at": "2025-11-26T23:51:23.482101Z",
+  "meta": {
+    "title": "Christmas Traditional Service Campaign - Complete Email Automation",
+    "description": "Implement 3 new email sequences (No-Show Recovery, Post-Call Maybe, Onboarding Phase 1) for the Christmas Traditional Service campaign ($2,997 diagnostic). Each sequence has 3 emails with specific timing based on triggers. Includes comprehensive E2E testing across all funnel stages.",
+    "estimated_hours": 18,
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    },
+    "notion_templates_db_id": "2ab7c374-1115-8115-932c-ca6789c5b87b",
+    "campaign": "Christmas Traditional Service",
+    "price_point": "$2,997"
+  },
+  "waves": [
+    {
+      "id": 0,
+      "name": "Lead Nurture Verification",
+      "objective": "Verify 7 lead nurture templates are accessible and working from new Notion database before implementing new sequences",
+      "status": "complete",
+      "estimated_hours": 2,
+      "added_at": "2025-11-26T23:45:00Z",
+      "started_at": "2025-11-27T01:00:00Z",
+      "completed_at": "2025-11-26T23:51:23.482098Z"
+    },
+    {
+      "id": 1,
+      "name": "Foundation",
+      "objective": "Create new flow files, extend routing module, and establish test infrastructure",
+      "status": "pending",
+      "estimated_hours": 1.5
+    },
+    {
+      "id": 2,
+      "name": "No-Show Recovery Sequence",
+      "objective": "Implement complete no-show recovery flow with TDD (3 emails: 5min, 24h, 48h)",
+      "status": "pending",
+      "estimated_hours": 2
+    },
+    {
+      "id": 3,
+      "name": "Post-Call Maybe Sequence",
+      "objective": "Implement post-call maybe flow with TDD (3 emails: 1h, Day 3, Day 7)",
+      "status": "pending",
+      "estimated_hours": 2
+    },
+    {
+      "id": 4,
+      "name": "Onboarding Phase 1 Sequence",
+      "objective": "Implement onboarding flow with TDD (3 emails: 1h, Day 1, Day 3)",
+      "status": "pending",
+      "estimated_hours": 2
+    },
+    {
+      "id": 5,
+      "name": "Integration & Webhooks",
+      "objective": "Add webhook endpoints to server.py, create deployments, documentation",
+      "status": "pending",
+      "estimated_hours": 1
+    },
+    {
+      "id": 6,
+      "name": "E2E Testing - Lead Nurture Funnel",
+      "objective": "End-to-end browser automation testing of complete lead nurture funnel with new templates using Puppeteer",
+      "status": "pending",
+      "estimated_hours": 1.5,
+      "added_at": "2025-11-27T00:15:00Z"
+    },
+    {
+      "id": 7,
+      "name": "E2E Testing - No-Show Recovery Sequence",
+      "objective": "End-to-end testing of no-show webhook integration and 3-email recovery sequence",
+      "status": "pending",
+      "estimated_hours": 1.5,
+      "added_at": "2025-11-27T00:15:00Z"
+    },
+    {
+      "id": 8,
+      "name": "E2E Testing - Post-Call Maybe Sequence",
+      "objective": "End-to-end testing of post-call webhook integration and 3-email follow-up sequence",
+      "status": "pending",
+      "estimated_hours": 1.5,
+      "added_at": "2025-11-27T00:15:00Z"
+    },
+    {
+      "id": 9,
+      "name": "E2E Testing - Onboarding Sequence",
+      "objective": "End-to-end testing of onboarding webhook integration and 3-email welcome sequence",
+      "status": "pending",
+      "estimated_hours": 1.5,
+      "added_at": "2025-11-27T00:15:00Z"
+    },
+    {
+      "id": 10,
+      "name": "E2E Testing - Full Integration & Production Readiness",
+      "objective": "Complete multi-sequence scenario testing, production deployment verification, and E2E summary report",
+      "status": "pending",
+      "estimated_hours": 1.5,
+      "added_at": "2025-11-27T00:15:00Z"
+    }
+  ],
+  "features": [
+    {
+      "id": "0.1",
+      "wave": 0,
+      "name": "Verify 7 lead nurture templates accessible from new Notion database",
+      "description": "Verify all 7 lead nurture templates exist and are queryable from database ID 2ab7c374-1115-8115-932c-ca6789c5b87b",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_notion_operations.py",
+      "implementation_file": "campaigns/christmas_campaign/tasks/notion_operations.py",
+      "added_at": "2025-11-26T23:45:00Z",
+      "test_scenarios": [
+        "test_fetch_template_lead_nurture_email_1_exists",
+        "test_fetch_template_lead_nurture_email_2a_critical_exists",
+        "test_fetch_template_lead_nurture_email_2b_urgent_exists",
+        "test_fetch_template_lead_nurture_email_2c_optimize_exists",
+        "test_fetch_template_lead_nurture_email_3_exists",
+        "test_fetch_template_lead_nurture_email_4_exists",
+        "test_fetch_template_lead_nurture_email_5_exists",
+        "test_fetch_template_returns_correct_properties",
+        "test_fetch_template_active_status_filter"
+      ],
+      "started_at": "2025-11-27T01:00:00Z",
+      "completed_at": "2025-11-26T23:47:14.426375Z",
+      "tests_passing": true,
+      "commit_hash": "694d95e"
+    },
+    {
+      "id": "0.2",
+      "wave": 0,
+      "name": "Update template fetching for new Template Name format",
+      "description": "Update notion_operations.py to fetch templates using new format: lead_nurture_email_1, lead_nurture_email_2a_critical, etc.",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_notion_operations.py",
+      "implementation_file": "campaigns/christmas_campaign/tasks/notion_operations.py",
+      "added_at": "2025-11-26T23:45:00Z",
+      "test_scenarios": [
+        "test_fetch_template_new_naming_format",
+        "test_fetch_template_segment_specific_2a_2b_2c",
+        "test_fetch_template_backward_compatibility",
+        "test_fetch_template_invalid_name_returns_none"
+      ],
+      "dependencies": [
+        "0.1"
+      ],
+      "started_at": "2025-11-27T01:00:00Z",
+      "completed_at": "2025-11-26T23:47:14.426381Z",
+      "tests_passing": true,
+      "commit_hash": "694d95e"
+    },
+    {
+      "id": "0.3",
+      "wave": 0,
+      "name": "Test all 7 nurture emails send correctly with updated content",
+      "description": "Verify emails 1-7 can be sent with new template content via Resend API, with correct subject lines and body content",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_resend_operations.py",
+      "implementation_file": "campaigns/christmas_campaign/tasks/resend_operations.py",
+      "added_at": "2025-11-26T23:45:00Z",
+      "test_scenarios": [
+        "test_send_lead_nurture_email_1_success",
+        "test_send_lead_nurture_email_2a_critical_success",
+        "test_send_lead_nurture_email_2b_urgent_success",
+        "test_send_lead_nurture_email_2c_optimize_success",
+        "test_send_lead_nurture_email_3_success",
+        "test_send_lead_nurture_email_4_success",
+        "test_send_lead_nurture_email_5_success",
+        "test_send_email_correct_subject_line",
+        "test_send_email_correct_body_content"
+      ],
+      "dependencies": [
+        "0.2"
+      ],
+      "started_at": "2025-11-27T01:30:00Z",
+      "completed_at": "2025-11-26T23:51:23.482087Z",
+      "tests_passing": true,
+      "commit_hash": "513de09"
+    },
+    {
+      "id": "0.4",
+      "wave": 0,
+      "name": "Verify personalization variables render correctly in updated templates",
+      "description": "Ensure variable substitution works: {{first_name}}, {{top_red_system}}, {{segment}}, {{scorecard_url}}, {{calendly_link}}",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_template_rendering.py",
+      "implementation_file": "campaigns/christmas_campaign/tasks/template_operations.py",
+      "added_at": "2025-11-26T23:45:00Z",
+      "test_scenarios": [
+        "test_render_first_name_variable",
+        "test_render_top_red_system_variable",
+        "test_render_segment_variable",
+        "test_render_scorecard_url_variable",
+        "test_render_calendly_link_variable",
+        "test_render_all_variables_replaced",
+        "test_render_no_unreplaced_variables_in_output",
+        "test_render_missing_variable_fallback"
+      ],
+      "started_at": "2025-11-27T01:30:00Z",
+      "completed_at": "2025-11-26T23:51:23.482092Z",
+      "tests_passing": true,
+      "commit_hash": "513de09"
+    },
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Create routing extension for new sequence types",
+      "description": "Add get_sequence_template_id() function to routing.py for noshow, postcall, onboarding sequences",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_routing.py",
+      "implementation_file": "campaigns/christmas_campaign/tasks/routing.py"
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Create no-show recovery handler flow skeleton",
+      "description": "Create noshow_recovery_handler.py with flow structure and parameters",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_noshow_recovery_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/noshow_recovery_handler.py"
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Create post-call maybe handler flow skeleton",
+      "description": "Create postcall_maybe_handler.py with flow structure and parameters",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_postcall_maybe_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/postcall_maybe_handler.py"
+    },
+    {
+      "id": "1.4",
+      "wave": 1,
+      "name": "Create onboarding handler flow skeleton",
+      "description": "Create onboarding_handler.py with flow structure and parameters",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_onboarding_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/onboarding_handler.py"
+    },
+    {
+      "id": "1.5",
+      "wave": 1,
+      "name": "Add test fixtures for new sequences",
+      "description": "Add fixtures for Calendly payload, post-call data, onboarding data to conftest.py",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "implementation_file": "campaigns/christmas_campaign/tests/conftest.py"
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Write tests for no-show recovery handler",
+      "description": "TDD: Write unit tests for noshow_recovery_handler_flow before implementation",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_noshow_recovery_handler.py"
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Implement no-show recovery handler flow",
+      "description": "Implement flow: receive Calendly no-show webhook, schedule 3 recovery emails",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_noshow_recovery_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/noshow_recovery_handler.py",
+      "dependencies": [
+        "2.1"
+      ]
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Implement no-show email scheduling logic",
+      "description": "Implement schedule_noshow_emails() with timing: 5min, 24h, 48h",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_noshow_recovery_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/noshow_recovery_handler.py",
+      "dependencies": [
+        "2.2"
+      ]
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Add idempotency check for no-show sequence",
+      "description": "Prevent duplicate no-show sequences for same contact/booking",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_noshow_recovery_handler.py",
+      "dependencies": [
+        "2.2"
+      ]
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Write tests for post-call maybe handler",
+      "description": "TDD: Write unit tests for postcall_maybe_handler_flow before implementation",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_postcall_maybe_handler.py"
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Implement post-call maybe handler flow",
+      "description": "Implement flow: receive post-call trigger, schedule 3 follow-up emails",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_postcall_maybe_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/postcall_maybe_handler.py",
+      "dependencies": [
+        "3.1"
+      ]
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Implement post-call email scheduling logic",
+      "description": "Implement schedule_postcall_emails() with timing: 1h, 72h (Day 3), 168h (Day 7)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_postcall_maybe_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/postcall_maybe_handler.py",
+      "dependencies": [
+        "3.2"
+      ]
+    },
+    {
+      "id": "3.4",
+      "wave": 3,
+      "name": "Add idempotency check for post-call sequence",
+      "description": "Prevent duplicate post-call sequences for same contact",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_postcall_maybe_handler.py",
+      "dependencies": [
+        "3.2"
+      ]
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Write tests for onboarding handler",
+      "description": "TDD: Write unit tests for onboarding_handler_flow before implementation",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_onboarding_handler.py"
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Implement onboarding handler flow",
+      "description": "Implement flow: receive DocuSign+payment trigger, schedule 3 onboarding emails",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_onboarding_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/onboarding_handler.py",
+      "dependencies": [
+        "4.1"
+      ]
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Implement onboarding email scheduling logic",
+      "description": "Implement schedule_onboarding_emails() with timing: 1h, 24h (Day 1), 72h (Day 3)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_onboarding_handler.py",
+      "implementation_file": "campaigns/christmas_campaign/flows/onboarding_handler.py",
+      "dependencies": [
+        "4.2"
+      ]
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "Add idempotency check for onboarding sequence",
+      "description": "Prevent duplicate onboarding sequences for same client",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/test_onboarding_handler.py",
+      "dependencies": [
+        "4.2"
+      ]
+    },
+    {
+      "id": "5.1",
+      "wave": 5,
+      "name": "Add Calendly no-show webhook endpoint",
+      "description": "Add POST /webhook/calendly-noshow endpoint to server.py",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "implementation_file": "server.py"
+    },
+    {
+      "id": "5.2",
+      "wave": 5,
+      "name": "Add post-call maybe webhook endpoint",
+      "description": "Add POST /webhook/postcall-maybe endpoint to server.py",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "implementation_file": "server.py"
+    },
+    {
+      "id": "5.3",
+      "wave": 5,
+      "name": "Add onboarding start webhook endpoint",
+      "description": "Add POST /webhook/onboarding-start endpoint to server.py",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "implementation_file": "server.py"
+    },
+    {
+      "id": "5.4",
+      "wave": 5,
+      "name": "Create Prefect deployment configurations",
+      "description": "Create deploy scripts for 3 new send_email flows (noshow, postcall, onboarding)",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "implementation_file": "campaigns/christmas_campaign/deployments/deploy_sequences.py"
+    },
+    {
+      "id": "5.5",
+      "wave": 5,
+      "name": "Update campaign documentation",
+      "description": "Update README.md and STATUS.md with new sequence information",
+      "status": "pending",
+      "priority": "low",
+      "tests_required": false,
+      "implementation_file": "campaigns/christmas_campaign/README.md"
+    },
+    {
+      "id": "6.1",
+      "wave": 6,
+      "name": "E2E: Lead nurture funnel with new templates",
+      "description": "Complete browser automation test of sales funnel: Landing -> Opt-in -> Assessment -> Results -> Book Call, verifying webhook triggers and email sequence creation with new template content",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_lead_nurture_funnel.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "browser_automation",
+      "test_scenarios": [
+        "test_e2e_navigate_to_landing_page",
+        "test_e2e_fill_optin_form_with_test_email",
+        "test_e2e_complete_16_question_assessment",
+        "test_e2e_verify_results_page_displayed",
+        "test_e2e_verify_webhook_triggers_signup_handler",
+        "test_e2e_verify_email_sequence_created_in_notion",
+        "test_e2e_monitor_7_nurture_emails_sent",
+        "test_e2e_verify_new_template_content_in_emails",
+        "test_e2e_screenshots_at_each_step"
+      ],
+      "verification_steps": [
+        "Navigate to localhost:3005/en/flows/businessX/dfu/xmas-a01",
+        "Fill opt-in form with unique test email",
+        "Complete 16-question assessment with CRITICAL segment answers",
+        "Capture screenshots at landing, opt-in, questions, results",
+        "Verify Prefect flow run created via API",
+        "Query Notion for sequence record",
+        "Monitor Resend API for 7 emails (TESTING_MODE timing)",
+        "Verify personalization variables filled in emails"
+      ],
+      "dependencies": [
+        "0.1",
+        "0.2",
+        "0.3",
+        "0.4"
+      ]
+    },
+    {
+      "id": "6.2",
+      "wave": 6,
+      "name": "Create E2E test infrastructure",
+      "description": "Create e2e test runner script and fixtures for browser automation and API testing",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "implementation_file": "campaigns/christmas_campaign/tests/e2e/e2e_test_runner.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "deliverables": [
+        "campaigns/christmas_campaign/tests/e2e/__init__.py",
+        "campaigns/christmas_campaign/tests/e2e/e2e_test_runner.py",
+        "campaigns/christmas_campaign/tests/e2e/conftest_e2e.py",
+        "campaigns/christmas_campaign/tests/e2e/fixtures/calendly_noshow_payload.json",
+        "campaigns/christmas_campaign/tests/e2e/fixtures/crm_postcall_payload.json",
+        "campaigns/christmas_campaign/tests/e2e/fixtures/docusign_completion_payload.json",
+        "campaigns/christmas_campaign/tests/e2e/fixtures/test_customer_data.json"
+      ]
+    },
+    {
+      "id": "7.1",
+      "wave": 7,
+      "name": "E2E: No-show recovery webhook integration",
+      "description": "Test POST /webhook/calendly-noshow endpoint with valid/invalid payloads and verify flow triggers correctly",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_noshow_recovery_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "api_integration",
+      "test_scenarios": [
+        "test_e2e_noshow_webhook_valid_payload_accepted",
+        "test_e2e_noshow_webhook_invalid_payload_rejected",
+        "test_e2e_noshow_webhook_missing_email_rejected",
+        "test_e2e_noshow_webhook_missing_event_uri_rejected",
+        "test_e2e_noshow_webhook_triggers_prefect_flow",
+        "test_e2e_noshow_flow_run_id_returned"
+      ],
+      "verification_steps": [
+        "POST valid Calendly no-show payload to /webhook/calendly-noshow",
+        "Verify 200 response with flow_run_id",
+        "POST invalid payload, verify 422 validation error",
+        "POST payload missing email, verify rejection",
+        "Query Prefect API for flow run status",
+        "Verify flow parameters match webhook payload"
+      ],
+      "dependencies": [
+        "5.1",
+        "2.2"
+      ]
+    },
+    {
+      "id": "7.2",
+      "wave": 7,
+      "name": "E2E: No-show recovery email sequence",
+      "description": "Trigger no-show webhook and verify complete 3-email sequence sends with correct templates and timing",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_noshow_recovery_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "sequence_verification",
+      "test_scenarios": [
+        "test_e2e_noshow_sequence_record_created_in_notion",
+        "test_e2e_noshow_template_type_is_noshow_recovery",
+        "test_e2e_noshow_email_1_sent_after_1min",
+        "test_e2e_noshow_email_2_sent_after_2min",
+        "test_e2e_noshow_email_3_sent_after_3min",
+        "test_e2e_noshow_correct_templates_used",
+        "test_e2e_noshow_personalization_filled"
+      ],
+      "verification_steps": [
+        "Trigger noshow webhook with test data",
+        "Query Notion for sequence record with Template Type: No-Show Recovery",
+        "Wait and verify noshow_recovery_email_1 sent",
+        "Wait and verify noshow_recovery_email_2 sent",
+        "Wait and verify noshow_recovery_email_3 sent",
+        "Verify all personalization variables filled",
+        "Document flow run ID for audit"
+      ],
+      "expected_timing_testing_mode": {
+        "email_1": "1 minute",
+        "email_2": "2 minutes",
+        "email_3": "3 minutes"
+      },
+      "dependencies": [
+        "7.1"
+      ]
+    },
+    {
+      "id": "8.1",
+      "wave": 8,
+      "name": "E2E: Post-call maybe webhook integration",
+      "description": "Test POST /webhook/postcall-maybe endpoint with CRM payload format and verify flow triggers correctly",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_postcall_maybe_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "api_integration",
+      "test_scenarios": [
+        "test_e2e_postcall_webhook_valid_payload_accepted",
+        "test_e2e_postcall_webhook_invalid_payload_rejected",
+        "test_e2e_postcall_webhook_with_call_notes",
+        "test_e2e_postcall_webhook_with_objections",
+        "test_e2e_postcall_webhook_triggers_prefect_flow",
+        "test_e2e_postcall_flow_run_id_returned"
+      ],
+      "verification_steps": [
+        "POST valid CRM post-call payload to /webhook/postcall-maybe",
+        "Verify 200 response with flow_run_id",
+        "POST payload with call_notes field, verify accepted",
+        "POST payload with objections array, verify captured",
+        "Query Prefect API for flow run status",
+        "Verify call notes stored in flow parameters"
+      ],
+      "dependencies": [
+        "5.2",
+        "3.2"
+      ]
+    },
+    {
+      "id": "8.2",
+      "wave": 8,
+      "name": "E2E: Post-call maybe email sequence",
+      "description": "Trigger post-call webhook and verify complete 3-email sequence sends with call-specific personalization",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_postcall_maybe_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "sequence_verification",
+      "test_scenarios": [
+        "test_e2e_postcall_sequence_record_created_in_notion",
+        "test_e2e_postcall_template_type_is_postcall_followup",
+        "test_e2e_postcall_email_1_sent_after_1min",
+        "test_e2e_postcall_email_2_sent_after_2min",
+        "test_e2e_postcall_email_3_sent_after_3min",
+        "test_e2e_postcall_correct_templates_used",
+        "test_e2e_postcall_call_notes_in_personalization"
+      ],
+      "verification_steps": [
+        "Trigger postcall webhook with test data including call notes",
+        "Query Notion for sequence record with Template Type: Post-Call Follow-Up",
+        "Wait and verify postcall_maybe_email_1 sent",
+        "Wait and verify postcall_maybe_email_2 sent",
+        "Wait and verify postcall_maybe_email_3 sent",
+        "Verify call notes appear in email content",
+        "Document flow run ID for audit"
+      ],
+      "expected_timing_testing_mode": {
+        "email_1": "1 minute",
+        "email_2": "2 minutes",
+        "email_3": "3 minutes"
+      },
+      "dependencies": [
+        "8.1"
+      ]
+    },
+    {
+      "id": "9.1",
+      "wave": 9,
+      "name": "E2E: Onboarding webhook integration",
+      "description": "Test POST /webhook/onboarding-start endpoint with DocuSign + payment payload and verify flow triggers correctly",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_onboarding_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "api_integration",
+      "test_scenarios": [
+        "test_e2e_onboarding_webhook_valid_payload_accepted",
+        "test_e2e_onboarding_webhook_invalid_payload_rejected",
+        "test_e2e_onboarding_webhook_missing_payment_rejected",
+        "test_e2e_onboarding_webhook_partial_data_handled",
+        "test_e2e_onboarding_webhook_triggers_prefect_flow",
+        "test_e2e_onboarding_flow_run_id_returned"
+      ],
+      "verification_steps": [
+        "POST valid DocuSign + payment payload to /webhook/onboarding-start",
+        "Verify 200 response with flow_run_id",
+        "POST payload missing payment_confirmed, verify rejection",
+        "POST partial payload, verify graceful handling",
+        "Query Prefect API for flow run status",
+        "Verify client data stored in flow parameters"
+      ],
+      "dependencies": [
+        "5.3",
+        "4.2"
+      ]
+    },
+    {
+      "id": "9.2",
+      "wave": 9,
+      "name": "E2E: Onboarding email sequence",
+      "description": "Trigger onboarding webhook and verify complete 3-email sequence sends with client-specific personalization",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_onboarding_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "sequence_verification",
+      "test_scenarios": [
+        "test_e2e_onboarding_sequence_record_created_in_notion",
+        "test_e2e_onboarding_template_type_is_onboarding",
+        "test_e2e_onboarding_email_1_sent_after_1min",
+        "test_e2e_onboarding_email_2_sent_after_2min",
+        "test_e2e_onboarding_email_3_sent_after_3min",
+        "test_e2e_onboarding_correct_templates_used",
+        "test_e2e_onboarding_salon_address_in_personalization",
+        "test_e2e_onboarding_observation_dates_in_personalization"
+      ],
+      "verification_steps": [
+        "Trigger onboarding webhook with test client data",
+        "Query Notion for sequence record with Template Type: Onboarding",
+        "Wait and verify onboarding_phase1_email_1 sent",
+        "Wait and verify onboarding_phase1_email_2 sent",
+        "Wait and verify onboarding_phase1_email_3 sent",
+        "Verify salon_address appears in email",
+        "Verify observation_dates appears in email",
+        "Document flow run ID for audit"
+      ],
+      "expected_timing_testing_mode": {
+        "email_1": "1 minute",
+        "email_2": "2 minutes",
+        "email_3": "3 minutes"
+      },
+      "dependencies": [
+        "9.1"
+      ]
+    },
+    {
+      "id": "10.1",
+      "wave": 10,
+      "name": "E2E: Complete multi-sequence scenario",
+      "description": "Simulate full customer journey: opt-in -> no-show -> maybe -> onboarding, verifying sequences don't conflict and proper handoff occurs",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_full_integration_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "full_integration",
+      "test_scenarios": [
+        "test_e2e_full_journey_optin_to_nurture",
+        "test_e2e_full_journey_noshow_after_booking",
+        "test_e2e_full_journey_maybe_after_call",
+        "test_e2e_full_journey_onboarding_after_close",
+        "test_e2e_sequences_dont_conflict",
+        "test_e2e_idempotency_prevents_duplicates",
+        "test_e2e_proper_handoff_between_sequences"
+      ],
+      "verification_steps": [
+        "Create test contact via opt-in funnel",
+        "Trigger no-show webhook for same contact",
+        "Verify no-show sequence starts without breaking nurture",
+        "Trigger post-call maybe webhook",
+        "Verify post-call sequence tracked separately",
+        "Trigger onboarding webhook (simulating close)",
+        "Verify all 4 sequence types have separate records",
+        "Document all flow run IDs"
+      ],
+      "dependencies": [
+        "6.1",
+        "7.2",
+        "8.2",
+        "9.2"
+      ]
+    },
+    {
+      "id": "10.2",
+      "wave": 10,
+      "name": "E2E: Production deployment verification",
+      "description": "Verify all 4 flow deployments exist on prefect.galatek.dev, test production endpoints, verify Secret blocks accessible",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "campaigns/christmas_campaign/tests/e2e/test_production_readiness_e2e.py",
+      "added_at": "2025-11-27T00:15:00Z",
+      "e2e_type": "production_verification",
+      "test_scenarios": [
+        "test_e2e_production_signup_deployment_exists",
+        "test_e2e_production_noshow_deployment_exists",
+        "test_e2e_production_postcall_deployment_exists",
+        "test_e2e_production_onboarding_deployment_exists",
+        "test_e2e_production_health_endpoint_responds",
+        "test_e2e_production_secret_blocks_accessible",
+        "test_e2e_production_git_deployment_configured"
+      ],
+      "verification_steps": [
+        "Query prefect.galatek.dev/api for deployment list",
+        "Verify signup_handler deployment exists",
+        "Verify noshow_recovery_handler deployment exists",
+        "Verify postcall_maybe_handler deployment exists",
+        "Verify onboarding_handler deployment exists",
+        "Test /health endpoint on production server",
+        "Verify Secret blocks: notion-token, resend-api-key, notion-db-id",
+        "Verify git_clone pull step configured"
+      ],
+      "production_api_url": "https://prefect.galatek.dev/api",
+      "dependencies": [
+        "5.4"
+      ]
+    },
+    {
+      "id": "10.3",
+      "wave": 10,
+      "name": "Generate E2E_TEST_SUMMARY.md report",
+      "description": "Generate comprehensive E2E test summary document with all flow run IDs, test results, screenshots, and production readiness checklist",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "implementation_file": "campaigns/christmas_campaign/E2E_TEST_SUMMARY.md",
+      "added_at": "2025-11-27T00:15:00Z",
+      "deliverables": [
+        "E2E_TEST_SUMMARY.md with all test results",
+        "Screenshots organized in campaigns/christmas_campaign/tests/e2e/screenshots/",
+        "JSON test results in campaigns/christmas_campaign/tests/e2e/results/"
+      ],
+      "report_sections": [
+        "Executive Summary",
+        "Test Environment Configuration",
+        "Lead Nurture Funnel Results",
+        "No-Show Recovery Sequence Results",
+        "Post-Call Maybe Sequence Results",
+        "Onboarding Sequence Results",
+        "Multi-Sequence Integration Results",
+        "Production Deployment Verification",
+        "Flow Run ID Audit Trail",
+        "Screenshots Gallery",
+        "Issues and Observations",
+        "Production Readiness Checklist"
+      ],
+      "dependencies": [
+        "10.1",
+        "10.2"
+      ]
+    }
+  ],
+  "progress": {
+    "total_features": 36,
+    "completed_features": 4,
+    "total_waves": 11,
+    "completed_waves": 1,
+    "percentage": 11.11
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-26T23:00:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-26T23:10:00Z",
+      "action": "EXPLORE phase complete - codebase analyzed"
+    },
+    {
+      "timestamp": "2025-11-26T23:20:00Z",
+      "action": "PLAN phase complete - awaiting approval"
+    },
+    {
+      "timestamp": "2025-11-26T23:45:00Z",
+      "action": "Added 4 features via /add-tasks-coding",
+      "details": {
+        "features_added": [
+          "0.1",
+          "0.2",
+          "0.3",
+          "0.4"
+        ],
+        "waves_added": [
+          0
+        ],
+        "reason": "Lead nurture templates archived and updated in new Notion database - need verification before new sequence implementation",
+        "impact_hours": 2,
+        "new_database_id": "2ab7c374-1115-8115-932c-ca6789c5b87b",
+        "new_template_format": "lead_nurture_email_X"
+      }
+    },
+    {
+      "timestamp": "2025-11-27T00:15:00Z",
+      "action": "Added 11 E2E features via /add-tasks-coding",
+      "details": {
+        "features_added": [
+          "6.1",
+          "6.2",
+          "7.1",
+          "7.2",
+          "8.1",
+          "8.2",
+          "9.1",
+          "9.2",
+          "10.1",
+          "10.2",
+          "10.3"
+        ],
+        "waves_added": [
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "reason": "Comprehensive E2E testing to verify complete funnel, all email sequences, and production readiness",
+        "impact_hours": 8,
+        "e2e_testing_approach": {
+          "browser_automation": "Puppeteer via MCP for landing page to book-call funnel",
+          "webhook_testing": "requests library for API endpoint validation",
+          "sequence_verification": "Notion API + Resend API monitoring",
+          "production_verification": "Prefect API for deployment status"
+        },
+        "test_categories": {
+          "wave_6": "Lead Nurture Funnel with browser automation",
+          "wave_7": "No-Show Recovery sequence E2E",
+          "wave_8": "Post-Call Maybe sequence E2E",
+          "wave_9": "Onboarding sequence E2E",
+          "wave_10": "Full integration + production readiness"
+        }
+      }
+    },
+    {
+      "timestamp": "2025-11-26T23:47:14.426390Z",
+      "action": "Completed features 0.1 and 0.2 - template fetching verified",
+      "feature_id": "0.2",
+      "commit_hash": "694d95e",
+      "tests_passing": 13
+    },
+    {
+      "timestamp": "2025-11-26T23:51:23.482102Z",
+      "action": "Completed Wave 0 - Lead Nurture Verification (4 features, 37 tests)",
+      "wave_id": 0,
+      "commit_hash": "513de09",
+      "tests_passing": 37,
+      "summary": "All lead nurture templates verified: fetching (13 tests), sending (11 tests), variable rendering (13 tests)"
+    }
+  ]
+}
