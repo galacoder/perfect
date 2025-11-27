@@ -1,0 +1,29 @@
+{
+  "test_name": "test_e2e_all_webhook_endpoints_available",
+  "status": "passed",
+  "start_time": "2025-11-27T14:29:59.448843",
+  "end_time": "2025-11-27T14:29:59.451782",
+  "duration_seconds": 0.002939,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "/webhook/christmas-signup: available",
+      "timestamp": "2025-11-27T14:29:59.449787"
+    },
+    {
+      "note": "/webhook/calendly-noshow: available",
+      "timestamp": "2025-11-27T14:29:59.450422"
+    },
+    {
+      "note": "/webhook/postcall-maybe: available",
+      "timestamp": "2025-11-27T14:29:59.451017"
+    },
+    {
+      "note": "/webhook/onboarding-start: available",
+      "timestamp": "2025-11-27T14:29:59.451545"
+    }
+  ]
+}

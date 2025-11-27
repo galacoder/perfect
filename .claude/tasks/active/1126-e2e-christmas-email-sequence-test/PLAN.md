@@ -1103,3 +1103,727 @@ print(f'Expected: 16 (7 Lead + 3 NoShow + 3 Maybe + 3 Onboard)')
 - Email sequences (4 total): 45 minutes
 - Resend verification: 15 minutes
 - **Total Wave 9**: ~2.5 hours
+
+---
+
+## Wave 11: Verify Updated Templates After Testimonial Audit (ADDED)
+
+### 11.1 Objective
+Re-test all 16 emails after template updates from task `1127-audit-email-templates-replace-fabricated-case-studies`. Verify that real testimonials (Van Tiny, Hera Nguyen, Loc Diem) have replaced fabricated ones (Jennifer K, Sarah P, Linh, Marcus Chen, etc.).
+
+### 11.2 Context
+**Related Task**: 1127-audit-email-templates-replace-fabricated-case-studies
+**Changes Made**: Replaced 42 fabricated testimonials with real case studies
+**Real Testimonials Added**: Van Tiny, Hera Nguyen, Loc Diem
+**Fabricated Names Removed**: Jennifer K, Sarah P, Linh, Marcus Chen, Maria Santos, David Kim
+
+### 11.3 Tasks
+
+#### Task 11.1: Verify Notion Email Templates Have Updated Testimonials
+**Command**:
+```bash
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+from notion_client import Client
+import os
+notion = Client(auth=os.getenv('NOTION_TOKEN'))
+
+# Query all email templates
+templates = notion.databases.query(
+    database_id=os.getenv('NOTION_EMAIL_TEMPLATES_DB_ID')
+)
+
+real_names = ['Van Tiny', 'Hera Nguyen', 'Loc Diem']
+fabricated_names = ['Jennifer K', 'Sarah P', 'Linh', 'Marcus Chen', 'Maria Santos', 'David Kim']
+
+for template in templates['results']:
+    name = template['properties']['Template Name']['title'][0]['plain_text']
+    # Check body content for testimonials
+    body = template['properties'].get('Body', {}).get('rich_text', [])
+    body_text = ' '.join([t['plain_text'] for t in body]) if body else ''
+
+    has_real = any(n in body_text for n in real_names)
+    has_fabricated = any(n in body_text for n in fabricated_names)
+
+    status = 'OK' if has_real and not has_fabricated else 'CHECK' if has_fabricated else 'CLEAN'
+    print(f'{status}: {name}')
+"
+```
+**Expected**: All templates show OK or CLEAN (no fabricated names)
+**Estimated Time**: 10 minutes
+
+#### Task 11.2: Send Updated Lead Nurture Sequence (7 emails)
+**Trigger**: Via christmas-signup-handler or orchestrate_sequence.py
+**Test Email**: lengobaosang@gmail.com
+**Email Count**: 7
+
+**Test Scenarios**:
+- [ ] Trigger christmas-signup-handler
+- [ ] Verify all 7 emails scheduled
+- [ ] Wait for all 7 emails sent (~6 min with TESTING_MODE)
+- [ ] Verify templates render correctly with real testimonials
+
+**Estimated Time**: 15 minutes
+
+#### Task 11.3: Send Updated No-Show Recovery Sequence (3 emails)
+**Trigger**: POST /webhook/calendly-no-show
+```bash
+curl -X POST http://localhost:8000/webhook/calendly-no-show \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Template Test",
+    "business_name": "Test Salon",
+    "event_name": "BusinessX Discovery Call",
+    "event_time": "2025-11-27T14:00:00Z"
+  }'
+```
+**Email Count**: 3
+
+**Test Scenarios**:
+- [ ] Trigger noshow-recovery-handler via webhook
+- [ ] Verify all 3 emails scheduled
+- [ ] Test all 3 emails with new testimonials
+- [ ] Verify delivery
+
+**Estimated Time**: 10 minutes
+
+#### Task 11.4: Send Updated Post-Call Maybe Sequence (3 emails)
+**Trigger**: POST /webhook/post-call-maybe
+```bash
+curl -X POST http://localhost:8000/webhook/post-call-maybe \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Template Test",
+    "business_name": "Test Salon",
+    "call_date": "2025-11-27"
+  }'
+```
+**Email Count**: 3
+**Special Attention**: postcall_maybe_email_2 was updated with Van Tiny testimonial
+
+**Test Scenarios**:
+- [ ] Trigger postcall-maybe-handler via webhook
+- [ ] Specifically verify postcall_maybe_email_2 (updated with Van Tiny)
+- [ ] Verify all 3 emails scheduled and delivered
+- [ ] Check testimonial content renders correctly
+
+**Estimated Time**: 10 minutes
+
+#### Task 11.5: Send Updated Onboarding Sequence (3 emails)
+**Trigger**: POST /webhook/onboarding-phase1
+```bash
+curl -X POST http://localhost:8000/webhook/onboarding-phase1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Template Test",
+    "business_name": "Test Salon",
+    "client_since": "2025-11-27"
+  }'
+```
+**Email Count**: 3
+
+**Test Scenarios**:
+- [ ] Trigger onboarding-handler via webhook
+- [ ] Verify all 3 emails scheduled
+- [ ] Test all 3 emails delivered
+- [ ] Check content renders correctly
+
+**Estimated Time**: 10 minutes
+
+#### Task 11.6: Verify All 16 Emails Delivered in Resend
+**Command**:
+```bash
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+import resend
+import os
+resend.api_key = os.getenv('RESEND_API_KEY')
+
+emails = resend.Emails.list()
+target_email = 'lengobaosang@gmail.com'
+
+count = 0
+for email in emails.data[:50]:
+    if email.to and target_email in str(email.to):
+        count += 1
+        print(f'{count}. {email.subject[:60]} - {email.status}')
+
+print(f'\\nTotal emails to {target_email}: {count}')
+print(f'Expected: 16 (7 Lead + 3 NoShow + 3 Maybe + 3 Onboard)')
+"
+```
+
+**Test Scenarios**:
+- [ ] Check Resend API for all 16 emails
+- [ ] Verify delivery status via Resend API
+- [ ] Confirm no template rendering errors
+- [ ] Document delivery timestamps
+
+**Expected Emails**: 16 total
+**Estimated Time**: 10 minutes
+
+#### Task 11.7: Visual Verification - Review Email Content
+**Manual Steps**:
+1. Open lengobaosang@gmail.com inbox
+2. Locate all 16 emails from Wave 11 test
+3. For each email with testimonials:
+   - Verify Van Tiny, Hera Nguyen, or Loc Diem names appear
+   - Confirm no Jennifer K, Sarah P, Linh, Marcus Chen, Maria Santos, David Kim
+   - Check all placeholder variables are substituted
+4. Take screenshots as evidence
+
+**Test Scenarios**:
+- [ ] Open emails in inbox (lengobaosang@gmail.com)
+- [ ] Check that testimonials display correctly (Van Tiny, Hera Nguyen stories)
+- [ ] Verify no placeholder variables remain unsubstituted
+- [ ] Confirm no fabricated names appear (Jennifer K, Sarah P, etc.)
+- [ ] Screenshot evidence of real testimonials
+
+**Estimated Time**: 15 minutes
+
+### 11.4 Email Sequence Summary
+
+| Sequence | Email Count | Trigger | Key Testimonials to Verify |
+|----------|-------------|---------|---------------------------|
+| Lead Nurture | 7 | christmas-signup-handler | Van Tiny, Hera Nguyen |
+| No-Show Recovery | 3 | calendly-no-show webhook | Various |
+| Post-Call Maybe | 3 | post-call-maybe webhook | Van Tiny (email 2) |
+| Onboarding | 3 | onboarding-phase1 webhook | Various |
+| **TOTAL** | **16** | | |
+
+### 11.5 Expected Outcomes
+- All 16 email templates verified in Notion (no fabricated names)
+- All 16 emails sent and delivered to lengobaosang@gmail.com
+- Real testimonials (Van Tiny, Hera Nguyen, Loc Diem) display correctly
+- No fabricated names (Jennifer K, Sarah P, etc.) appear in any email
+- No unsubstituted placeholder variables
+
+### 11.6 Total Estimated Time
+- Notion template verification: 10 minutes
+- Lead Nurture sequence: 15 minutes
+- No-Show Recovery sequence: 10 minutes
+- Post-Call Maybe sequence: 10 minutes
+- Onboarding sequence: 10 minutes
+- Resend verification: 10 minutes
+- Visual verification: 15 minutes
+- **Total Wave 11**: ~1.5 hours
+
+---
+
+## Wave 12: Production Readiness (ADDED)
+
+### 12.1 Objective
+Perform comprehensive production readiness verification before advertisement launch. Test full E2E funnel with Puppeteer, verify Notion template fetching (not hardcoded), test all 4 email sequences via production Prefect server, and complete production readiness checklist.
+
+### 12.2 Pre-Conditions
+- Frontend project at: `/Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss`
+- FastAPI server running at localhost:8000
+- Production Prefect server: https://prefect.galatek.dev
+- Test email: lengobaosang@gmail.com
+- All Prefect deployments active with TESTING_MODE=true
+
+### 12.3 Tasks
+
+#### Task 12.1: Start sangletech-tailwindcss Dev Server (localhost:3005)
+**Command**:
+```bash
+cd /Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss && pnpm dev
+```
+**Expected**:
+- Server starts on localhost:3005
+- Pages load at localhost:3005/en/flows/businessX/dfu/xmas-a01/
+
+**Test Scenarios**:
+- [ ] Run pnpm dev in /Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss
+- [ ] Verify server starts successfully on localhost:3005
+- [ ] Verify pages load at localhost:3005/en/flows/businessX/dfu/xmas-a01/
+
+**Estimated Time**: 5 minutes
+
+#### Task 12.2: Full E2E Test Through Sales Funnel with Puppeteer
+**Navigate through complete funnel**:
+```javascript
+// Navigate to opt-in page
+await page.goto('http://localhost:3005/en/flows/businessX/dfu/xmas-a01/');
+
+// Fill form with test data
+await page.fill('#firstName', 'Production Test');
+await page.fill('#email', 'lengobaosang@gmail.com');
+await page.selectOption('#monthlyRevenue', '10k-20k');
+await page.selectOption('#biggestChallenge', 'scaling');
+await page.check('#privacy');
+
+// Submit form
+await page.click('button[type="submit"]');
+await page.waitForURL(/thank-you/);
+
+// Continue to assessment
+await page.click('a[href*="/assessment"]');
+await page.waitForURL(/assessment/);
+
+// Answer 16 questions
+for (let i = 0; i < 16; i++) {
+  if (i % 3 === 0) {
+    await page.click('button:has-text("YES")');
+  } else {
+    await page.click('button:has-text("NO")');
+  }
+  await page.waitForTimeout(600);
+}
+```
+
+**Test Scenarios**:
+- [ ] Navigate to opt-in page at localhost:3005/en/flows/businessX/dfu/xmas-a01/
+- [ ] Fill form with test data (email: lengobaosang@gmail.com)
+- [ ] Complete assessment (16 questions)
+- [ ] Verify webhook triggers FastAPI server (localhost:8000)
+- [ ] Verify Prefect flow runs on PRODUCTION server (https://prefect.galatek.dev)
+
+**Estimated Time**: 20 minutes
+
+#### Task 12.3: Verify Email Flows Fetch Templates from Notion Database (CRITICAL)
+**Check orchestrate_sequence.py for Notion API usage**:
+```bash
+# Verify code uses Notion API to fetch templates
+grep -n "notion" campaigns/christmas_campaign/flows/orchestrate_sequence.py
+grep -n "NOTION_EMAIL_TEMPLATES_DB_ID" campaigns/christmas_campaign/flows/orchestrate_sequence.py
+
+# Check for hardcoded templates (should NOT find any)
+grep -n "subject.*=" campaigns/christmas_campaign/flows/orchestrate_sequence.py
+grep -n "body.*=" campaigns/christmas_campaign/flows/orchestrate_sequence.py
+
+# Verify Version field usage
+grep -n "Version" campaigns/christmas_campaign/flows/orchestrate_sequence.py
+```
+
+**Test Scenarios**:
+- [ ] Check that orchestrate_sequence.py uses Notion API to fetch templates
+- [ ] Verify templates are NOT hardcoded
+- [ ] Verify templates come from NOTION_EMAIL_TEMPLATES_DB_ID
+- [ ] Verify Version field is used to get latest template updates
+
+**Estimated Time**: 15 minutes
+
+#### Task 12.4: Test Webhook to Prefect Production Flow Chain
+**Trigger webhook and verify production flow**:
+```bash
+# Start FastAPI server (if not running)
+cd /Users/sangle/Dev/action/projects/perfect && uvicorn server:app --reload --port 8000
+
+# Trigger signup webhook
+curl -X POST http://localhost:8000/webhook/christmas-signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Production Test",
+    "business_name": "Test Salon",
+    "assessment_score": 52,
+    "red_systems": 2,
+    "orange_systems": 1,
+    "yellow_systems": 2,
+    "green_systems": 3
+  }'
+
+# Verify flow runs on production Prefect
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls --limit 5
+```
+
+**Test Scenarios**:
+- [ ] POST to localhost:8000/webhook/signup triggers Prefect flow
+- [ ] Flow runs on production Prefect server (https://prefect.galatek.dev/api)
+- [ ] Verify flow uses Secret blocks for credentials
+- [ ] Verify flow fetches templates from Notion
+
+**Estimated Time**: 15 minutes
+
+#### Task 12.5: Verify All 4 Sequences Work via Production Prefect
+**Test each email sequence**:
+
+**Lead Nurture (7 emails)**:
+```bash
+# Already triggered via Task 12.4 or Task 12.2
+# Verify 7 emails scheduled
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls --flow-name christmas-send-email --limit 10
+```
+
+**No-Show Recovery (3 emails)**:
+```bash
+curl -X POST http://localhost:8000/webhook/calendly-no-show \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Production Test",
+    "business_name": "Test Salon",
+    "event_name": "BusinessX Discovery Call",
+    "event_uri": "https://calendly.com/test/123"
+  }'
+```
+
+**Post-Call Maybe (3 emails)**:
+```bash
+curl -X POST http://localhost:8000/webhook/post-call-maybe \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Production Test",
+    "business_name": "Test Salon",
+    "call_date": "2025-11-27",
+    "call_notes": "Interested but needs to think",
+    "objections": ["price", "timing"]
+  }'
+```
+
+**Onboarding (3 emails)**:
+```bash
+curl -X POST http://localhost:8000/webhook/onboarding-phase1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Production Test",
+    "business_name": "Test Salon",
+    "client_since": "2025-11-27"
+  }'
+```
+
+**Test Scenarios**:
+- [ ] Lead Nurture (7 emails) - triggered, templates from Notion
+- [ ] No-Show Recovery (3 emails) - triggered, templates from Notion
+- [ ] Post-Call Maybe (3 emails) - triggered, templates from Notion
+- [ ] Onboarding (3 emails) - triggered, templates from Notion
+
+**Estimated Time**: 30 minutes
+
+#### Task 12.6: Production Readiness Checklist
+**Final checklist before ad launch**:
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| All webhooks trigger correct Prefect deployments | [ ] | |
+| All templates fetched from Notion (not hardcoded) | [ ] | |
+| All credentials from Secret blocks (not .env) | [ ] | |
+| Git-based deployment working | [ ] | |
+| Ready for advertisement launch | [ ] | |
+
+**Verification Commands**:
+```bash
+# Check deployments exist
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect deployment ls
+
+# Check Secret blocks accessible
+PREFECT_API_URL=https://prefect.galatek.dev/api python3 -c "
+from prefect.blocks.system import Secret
+blocks = ['notion-token', 'notion-email-templates-db-id', 'resend-api-key']
+for block in blocks:
+    try:
+        Secret.load(block)
+        print(f'OK: {block}')
+    except Exception as e:
+        print(f'FAIL: {block} - {e}')
+"
+
+# Check git-based deployment
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect deployment inspect christmas-signup-handler/christmas-signup-handler | grep -A5 "pull"
+```
+
+**Test Scenarios**:
+- [ ] All webhooks trigger correct Prefect deployments
+- [ ] All templates fetched from Notion (not hardcoded)
+- [ ] All credentials from Secret blocks (not .env)
+- [ ] Git-based deployment working
+- [ ] Ready for advertisement launch
+
+**Estimated Time**: 10 minutes
+
+### 12.4 Email Sequence Summary
+
+| Sequence | Email Count | Trigger | Template Source |
+|----------|-------------|---------|-----------------|
+| Lead Nurture | 7 | christmas-signup-handler | Notion (NOTION_EMAIL_TEMPLATES_DB_ID) |
+| No-Show Recovery | 3 | calendly-no-show webhook | Notion |
+| Post-Call Maybe | 3 | post-call-maybe webhook | Notion |
+| Onboarding | 3 | onboarding-phase1 webhook | Notion |
+| **TOTAL** | **16** | | |
+
+### 12.5 Expected Outcomes
+- Dev server running at localhost:3005
+- Full E2E funnel completes successfully via Puppeteer
+- All email templates fetched from Notion (not hardcoded)
+- All webhooks trigger correct Prefect deployments
+- All 16 emails (4 sequences) work via production Prefect
+- Production readiness checklist complete
+- **READY FOR ADVERTISEMENT LAUNCH**
+
+### 12.6 Total Estimated Time
+- Dev server startup: 5 minutes
+- Full E2E Puppeteer test: 20 minutes
+- Notion template verification: 15 minutes
+- Webhook to Prefect chain test: 15 minutes
+- All 4 sequences verification: 30 minutes
+- Production readiness checklist: 10 minutes
+- **Total Wave 12**: ~1.5 hours
+
+---
+
+## Wave 13: Production Site E2E Test (ADDED)
+
+### 13.1 Objective
+Full E2E test on PRODUCTION site (sangletech.com NOT localhost) using Puppeteer MCP. Test complete funnel, all 4 email sequences (16 emails total), and verify new template variables from task 1127.
+
+### 13.2 Context
+**Production Site Deployed**: https://sangletech.com
+**Task 1127 Completed**: Email templates updated with:
+- Real testimonials: Van Tiny, Hera Nguyen, Loc Diem
+- New automation variables: {{q1_foundation_deadline}}, {{days_to_q1_deadline}}, {{slots_remaining}}, {{spots_taken}}
+- Deadline changed: November 15 -> December 15, 2025
+- Slot count: 10 founding members
+
+### 13.3 Pre-Conditions
+- Production site live at https://sangletech.com
+- Puppeteer MCP server connected
+- Prefect worker running at https://prefect.galatek.dev with TESTING_MODE=true
+- Test email: lengobaosang@gmail.com
+
+### 13.4 Tasks
+
+#### Task 13.1: Puppeteer - Navigate to PRODUCTION Sales Funnel
+**Use Puppeteer MCP**:
+```javascript
+// Navigate to PRODUCTION site (NOT localhost!)
+await puppeteer_navigate({ url: 'https://sangletech.com/en/flows/businessX/dfu/xmas-a01' });
+await puppeteer_screenshot({ name: 'wave13-landing-page' });
+```
+**Verify**:
+- Page loads without errors
+- Opt-in form visible
+- Screenshot captured
+
+**Estimated Time**: 5 minutes
+
+#### Task 13.2: Puppeteer - Complete Opt-In Form
+**Use Puppeteer MCP**:
+```javascript
+await puppeteer_fill({ selector: '#firstName', value: 'Production Test' });
+await puppeteer_fill({ selector: '#email', value: 'lengobaosang@gmail.com' });
+await puppeteer_select({ selector: '#monthlyRevenue', value: '10k-20k' });
+await puppeteer_select({ selector: '#biggestChallenge', value: 'scaling' });
+await puppeteer_click({ selector: '#privacy' });
+await puppeteer_click({ selector: 'button[type="submit"]' });
+// Wait for redirect to thank-you page
+```
+**Verify**:
+- All fields populated
+- Form submitted successfully
+- Redirect to thank-you page
+
+**Estimated Time**: 10 minutes
+
+#### Task 13.3: Puppeteer - Complete 16-Question Assessment
+**Use Puppeteer MCP**:
+```javascript
+// Navigate to assessment from thank-you page
+await puppeteer_click({ selector: 'a[href*="/assessment"]' });
+
+// Answer 16 questions (varied pattern)
+for (let i = 0; i < 16; i++) {
+  if (i % 3 === 0) {
+    await puppeteer_click({ selector: 'button:has-text("YES")' });
+  } else {
+    await puppeteer_click({ selector: 'button:has-text("NO")' });
+  }
+  // Wait for animation
+}
+```
+**Verify**:
+- Progress bar advances
+- Assessment completes
+- Redirect to results page
+
+**Estimated Time**: 15 minutes
+
+#### Task 13.4: Verify Webhook Triggers PRODUCTION Prefect
+**Check Prefect API**:
+```bash
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls --limit 5
+```
+**Verify**:
+- New flow run created after assessment completion
+- Flow run status: RUNNING -> COMPLETED
+- Record flow run ID
+
+**Estimated Time**: 10 minutes
+
+#### Task 13.5: Verify All 7 Lead Nurture Emails Scheduled
+**Check Prefect for scheduled emails**:
+```bash
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls \
+  --flow-name christmas-send-email \
+  --limit 10
+```
+**Expected (TESTING_MODE=true)**:
+- Email 1: Sent immediately
+- Emails 2-7: Sent at 1-minute intervals
+- Total sequence: ~6 minutes
+
+**Estimated Time**: 15 minutes
+
+#### Task 13.6: Verify Lead Nurture Emails Delivered via Resend API
+**Query Resend API**:
+```bash
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+import resend
+import os
+resend.api_key = os.getenv('RESEND_API_KEY')
+
+emails = resend.Emails.list()
+target = 'lengobaosang@gmail.com'
+count = 0
+for email in emails.data[:20]:
+    if email.to and target in str(email.to):
+        count += 1
+        print(f'{count}. {email.subject[:50]} - {email.status}')
+print(f'\\nLead Nurture emails: {count}/7')
+"
+```
+**Verify**:
+- All 7 emails delivered
+- Check status: sent/delivered/opened
+
+**Estimated Time**: 10 minutes
+
+#### Task 13.7: Verify Updated Templates with New Variables
+**Manual verification in inbox (lengobaosang@gmail.com)**:
+1. Open emails from Wave 13 test
+2. Check new automation variables:
+   - {{q1_foundation_deadline}} -> "December 15, 2025"
+   - {{days_to_q1_deadline}} -> Correct countdown number
+   - {{slots_remaining}} -> Number (10 or less)
+   - {{spots_taken}} -> Number
+3. Check testimonials:
+   - Van Tiny, Hera Nguyen, Loc Diem appear
+   - No Jennifer K, Sarah P, Linh, Marcus Chen
+
+**Estimated Time**: 15 minutes
+
+#### Task 13.8: Test No-Show Recovery Sequence (3 emails)
+**Trigger webhook**:
+```bash
+curl -X POST https://sangletech.com/api/webhook/calendly-noshow \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave13 Test",
+    "business_name": "Test Salon",
+    "event_name": "BusinessX Discovery Call",
+    "event_uri": "https://calendly.com/test/wave13"
+  }'
+```
+**Verify**:
+- Prefect flow triggered
+- 3 emails scheduled
+- All 3 delivered (~3 min with TESTING_MODE)
+
+**Estimated Time**: 10 minutes
+
+#### Task 13.9: Test Post-Call Maybe Sequence (3 emails)
+**Trigger webhook**:
+```bash
+curl -X POST https://sangletech.com/api/webhook/postcall-maybe \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave13 Test",
+    "business_name": "Test Salon",
+    "call_date": "2025-11-27",
+    "call_notes": "Interested but needs to think",
+    "objections": ["price", "timing"]
+  }'
+```
+**Verify**:
+- Prefect flow triggered
+- 3 emails scheduled
+- All 3 delivered
+
+**Estimated Time**: 10 minutes
+
+#### Task 13.10: Test Onboarding Sequence (3 emails)
+**Trigger webhook**:
+```bash
+curl -X POST https://sangletech.com/api/webhook/onboarding-start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "lengobaosang@gmail.com",
+    "first_name": "Wave13 Test",
+    "business_name": "Test Salon",
+    "client_since": "2025-11-27"
+  }'
+```
+**Verify**:
+- Prefect flow triggered
+- 3 emails scheduled
+- All 3 delivered
+
+**Estimated Time**: 10 minutes
+
+#### Task 13.11: Production Readiness Final Verification
+**Complete verification checklist**:
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| Total 16 emails sent to test inbox | [ ] | |
+| Lead Nurture: 7 emails verified | [ ] | |
+| No-Show Recovery: 3 emails verified | [ ] | |
+| Post-Call Maybe: 3 emails verified | [ ] | |
+| Onboarding: 3 emails verified | [ ] | |
+| New template variables render correctly | [ ] | |
+| Real testimonials displayed | [ ] | |
+| No fabricated testimonials | [ ] | |
+| **PRODUCTION READY FOR LIVE ADS** | [ ] | |
+
+**Estimated Time**: 15 minutes
+
+### 13.5 Email Sequence Summary
+
+| Sequence | Email Count | Trigger | Variables to Verify |
+|----------|-------------|---------|---------------------|
+| Lead Nurture | 7 | Website funnel | All new variables |
+| No-Show Recovery | 3 | /webhook/calendly-noshow | testimonials |
+| Post-Call Maybe | 3 | /webhook/postcall-maybe | Van Tiny (email 2) |
+| Onboarding | 3 | /webhook/onboarding-start | testimonials |
+| **TOTAL** | **16** | | |
+
+### 13.6 New Template Variables to Verify
+
+| Variable | Expected Value |
+|----------|---------------|
+| {{q1_foundation_deadline}} | December 15, 2025 |
+| {{days_to_q1_deadline}} | Dynamic countdown |
+| {{slots_remaining}} | 10 or less |
+| {{spots_taken}} | 0 or more |
+
+### 13.7 Expected Outcomes
+- Complete E2E funnel passes on PRODUCTION site (sangletech.com)
+- Webhook triggers PRODUCTION Prefect (prefect.galatek.dev)
+- All 16 emails sent and delivered to lengobaosang@gmail.com
+- New template variables render correctly
+- Real testimonials display (Van Tiny, Hera Nguyen, Loc Diem)
+- No fabricated testimonials present
+- **PRODUCTION READY FOR LIVE AD TRAFFIC**
+
+### 13.8 Total Estimated Time
+- Navigate + opt-in form: 15 minutes
+- Complete assessment: 15 minutes
+- Webhook verification: 10 minutes
+- Lead Nurture sequence: 25 minutes (15 + 10)
+- Template variable verification: 15 minutes
+- No-Show Recovery sequence: 10 minutes
+- Post-Call Maybe sequence: 10 minutes
+- Onboarding sequence: 10 minutes
+- Final verification: 15 minutes
+- **Total Wave 13**: ~2 hours

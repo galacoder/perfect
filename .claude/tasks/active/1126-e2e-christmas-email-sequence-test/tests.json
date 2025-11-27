@@ -6,11 +6,164 @@
     "total": 0,
     "passing": 0,
     "failing": 0,
-    "not_started": 29
+    "not_started": 86
   },
   "suites": [],
   "failures": [],
   "history": [],
+  "wave11_test_requirements": {
+    "description": "Wave 11 adds 7 features to verify updated email templates after testimonial audit",
+    "context": "Task 1127-audit-email-templates-replace-fabricated-case-studies replaced 42 fabricated testimonials with real case studies",
+    "features_with_tests": [
+      {
+        "feature_id": "11.1",
+        "test_scenarios": [
+          "Check templates in Notion database for Van Tiny, Hera Nguyen references",
+          "Verify no fabricated names remain (Jennifer K, Sarah P, Linh, etc.)",
+          "Query all 16 email templates",
+          "Document which templates have been updated"
+        ]
+      },
+      {
+        "feature_id": "11.2",
+        "test_scenarios": [
+          "Trigger via orchestrate_sequence.py or christmas-signup-handler",
+          "Verify all 7 emails scheduled",
+          "Wait for all 7 emails sent (~6 min with TESTING_MODE)",
+          "Verify templates render correctly with real testimonials"
+        ]
+      },
+      {
+        "feature_id": "11.3",
+        "test_scenarios": [
+          "Trigger noshow-recovery-handler via webhook",
+          "Verify all 3 emails scheduled",
+          "Test all 3 emails with new testimonials",
+          "Verify delivery"
+        ]
+      },
+      {
+        "feature_id": "11.4",
+        "test_scenarios": [
+          "Trigger postcall-maybe-handler via webhook",
+          "Specifically verify postcall_maybe_email_2 (updated with Van Tiny)",
+          "Verify all 3 emails scheduled and delivered",
+          "Check testimonial content renders correctly"
+        ]
+      },
+      {
+        "feature_id": "11.5",
+        "test_scenarios": [
+          "Trigger onboarding-handler via webhook",
+          "Verify all 3 emails scheduled",
+          "Test all 3 emails delivered",
+          "Check content renders correctly"
+        ]
+      },
+      {
+        "feature_id": "11.6",
+        "test_scenarios": [
+          "Check Resend API for all 16 emails",
+          "Verify delivery status via Resend API",
+          "Confirm no template rendering errors",
+          "Document delivery timestamps"
+        ]
+      },
+      {
+        "feature_id": "11.7",
+        "test_scenarios": [
+          "Open emails in inbox (lengobaosang@gmail.com)",
+          "Check that testimonials display correctly (Van Tiny, Hera Nguyen stories)",
+          "Verify no placeholder variables remain unsubstituted",
+          "Confirm no fabricated names appear (Jennifer K, Sarah P, etc.)",
+          "Screenshot evidence of real testimonials"
+        ]
+      }
+    ],
+    "total_test_scenarios": 18,
+    "email_sequences_to_test": [
+      {"name": "Lead Nurture", "email_count": 7},
+      {"name": "No-Show Recovery", "email_count": 3},
+      {"name": "Post-Call Maybe", "email_count": 3},
+      {"name": "Onboarding", "email_count": 3}
+    ],
+    "total_emails_expected": 16,
+    "real_testimonials_to_verify": ["Van Tiny", "Hera Nguyen", "Loc Diem"],
+    "fabricated_names_to_confirm_removed": ["Jennifer K", "Sarah P", "Linh", "Marcus Chen", "Maria Santos", "David Kim"]
+  },
+  "wave12_test_requirements": {
+    "description": "Wave 12 adds 6 features for Production Readiness testing before advertisement launch",
+    "context": "Full E2E verification with Puppeteer, Notion template fetching verification, production Prefect flow testing",
+    "features_with_tests": [
+      {
+        "feature_id": "12.1",
+        "test_scenarios": [
+          "Run pnpm dev in /Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss",
+          "Verify server starts successfully on localhost:3005",
+          "Verify pages load at localhost:3005/en/flows/businessX/dfu/xmas-a01/"
+        ]
+      },
+      {
+        "feature_id": "12.2",
+        "test_scenarios": [
+          "Navigate to opt-in page at localhost:3005/en/flows/businessX/dfu/xmas-a01/",
+          "Fill form with test data (email: lengobaosang@gmail.com)",
+          "Complete assessment (16 questions)",
+          "Verify webhook triggers FastAPI server (localhost:8000)",
+          "Verify Prefect flow runs on PRODUCTION server (https://prefect.galatek.dev)"
+        ]
+      },
+      {
+        "feature_id": "12.3",
+        "test_scenarios": [
+          "Check that orchestrate_sequence.py uses Notion API to fetch templates",
+          "Verify templates are NOT hardcoded",
+          "Verify templates come from NOTION_EMAIL_TEMPLATES_DB_ID",
+          "Verify Version field is used to get latest template updates"
+        ]
+      },
+      {
+        "feature_id": "12.4",
+        "test_scenarios": [
+          "POST to localhost:8000/webhook/signup triggers Prefect flow",
+          "Flow runs on production Prefect server (https://prefect.galatek.dev/api)",
+          "Verify flow uses Secret blocks for credentials",
+          "Verify flow fetches templates from Notion"
+        ]
+      },
+      {
+        "feature_id": "12.5",
+        "test_scenarios": [
+          "Lead Nurture (7 emails) - triggered, templates from Notion",
+          "No-Show Recovery (3 emails) - triggered, templates from Notion",
+          "Post-Call Maybe (3 emails) - triggered, templates from Notion",
+          "Onboarding (3 emails) - triggered, templates from Notion"
+        ]
+      },
+      {
+        "feature_id": "12.6",
+        "test_scenarios": [
+          "All webhooks trigger correct Prefect deployments",
+          "All templates fetched from Notion (not hardcoded)",
+          "All credentials from Secret blocks (not .env)",
+          "Git-based deployment working",
+          "Ready for advertisement launch"
+        ]
+      }
+    ],
+    "total_test_scenarios": 23,
+    "production_prefect_url": "https://prefect.galatek.dev",
+    "frontend_project": "/Users/sangle/Dev/action/projects/@new-websites/sangletech-tailwindcss",
+    "dev_server_port": 3005,
+    "test_email": "lengobaosang@gmail.com",
+    "email_sequences_to_verify": [
+      {"name": "Lead Nurture", "email_count": 7},
+      {"name": "No-Show Recovery", "email_count": 3},
+      {"name": "Post-Call Maybe", "email_count": 3},
+      {"name": "Onboarding", "email_count": 3}
+    ],
+    "total_emails_expected": 16
+  },
   "wave9_test_requirements": {
     "description": "Wave 9 adds 10 new features with comprehensive test scenarios",
     "features_with_tests": [
@@ -63,5 +216,144 @@
       {"name": "Onboarding", "email_count": 3}
     ],
     "total_emails_expected": 16
+  },
+  "wave13_test_requirements": {
+    "description": "Wave 13 adds 11 features for PRODUCTION site E2E testing via Puppeteer MCP",
+    "context": "User deployed production site at sangletech.com and completed task 1127 (email template updates with real testimonials and new automation variables)",
+    "features_with_tests": [
+      {
+        "feature_id": "13.1",
+        "test_scenarios": [
+          "Use Puppeteer MCP to navigate to https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+          "Verify page loads without errors",
+          "Verify opt-in form is visible",
+          "Take screenshot of landing page"
+        ]
+      },
+      {
+        "feature_id": "13.2",
+        "test_scenarios": [
+          "Fill firstName field with 'Production Test'",
+          "Fill email field with 'lengobaosang@gmail.com'",
+          "Select monthlyRevenue dropdown value",
+          "Select biggestChallenge dropdown value",
+          "Check privacy checkbox",
+          "Submit form",
+          "Verify redirect to thank-you page"
+        ]
+      },
+      {
+        "feature_id": "13.3",
+        "test_scenarios": [
+          "Navigate to assessment page",
+          "Answer all 16 questions (varied YES/NO pattern)",
+          "Verify progress bar advances",
+          "Verify assessment completion",
+          "Verify redirect to results page"
+        ]
+      },
+      {
+        "feature_id": "13.4",
+        "test_scenarios": [
+          "Monitor Prefect API for new flow run after assessment completion",
+          "Verify flow run created on https://prefect.galatek.dev/api",
+          "Verify flow run status transitions to RUNNING then COMPLETED",
+          "Record flow run ID for tracking"
+        ]
+      },
+      {
+        "feature_id": "13.5",
+        "test_scenarios": [
+          "Check Prefect API for 7 scheduled email flow runs",
+          "Verify TESTING_MODE uses fast delays (1 min intervals)",
+          "Monitor email 1 sent immediately",
+          "Monitor emails 2-7 sent at 1-minute intervals",
+          "Total sequence time ~6 minutes"
+        ]
+      },
+      {
+        "feature_id": "13.6",
+        "test_scenarios": [
+          "Query Resend API for emails to lengobaosang@gmail.com",
+          "Verify all 7 Lead Nurture emails delivered",
+          "Check delivery status (sent/delivered/opened)",
+          "Document any bounces or failures"
+        ]
+      },
+      {
+        "feature_id": "13.7",
+        "test_scenarios": [
+          "Open emails in inbox (lengobaosang@gmail.com)",
+          "Verify {{q1_foundation_deadline}} renders as 'December 15, 2025'",
+          "Verify {{days_to_q1_deadline}} renders with correct countdown",
+          "Verify {{slots_remaining}} renders correctly (10 or less)",
+          "Verify {{spots_taken}} renders correctly",
+          "Verify real testimonials (Van Tiny, Hera Nguyen) appear",
+          "Verify no fabricated names (Jennifer K, Sarah P) appear"
+        ]
+      },
+      {
+        "feature_id": "13.8",
+        "test_scenarios": [
+          "POST to production server /webhook/calendly-noshow endpoint",
+          "Verify noshow-recovery-handler Prefect flow triggered",
+          "Monitor 3 emails scheduled",
+          "Wait for all 3 emails sent (~3 min with TESTING_MODE)",
+          "Verify all 3 delivered via Resend API"
+        ]
+      },
+      {
+        "feature_id": "13.9",
+        "test_scenarios": [
+          "POST to production server /webhook/postcall-maybe endpoint",
+          "Verify postcall-maybe-handler Prefect flow triggered",
+          "Monitor 3 emails scheduled",
+          "Wait for all 3 emails sent (~3 min with TESTING_MODE)",
+          "Verify all 3 delivered via Resend API"
+        ]
+      },
+      {
+        "feature_id": "13.10",
+        "test_scenarios": [
+          "POST to production server /webhook/onboarding-start endpoint",
+          "Verify onboarding-handler Prefect flow triggered",
+          "Monitor 3 emails scheduled",
+          "Wait for all 3 emails sent (~3 min with TESTING_MODE)",
+          "Verify all 3 delivered via Resend API"
+        ]
+      },
+      {
+        "feature_id": "13.11",
+        "test_scenarios": [
+          "Verify total 16 emails sent to lengobaosang@gmail.com",
+          "Lead Nurture: 7 emails verified",
+          "No-Show Recovery: 3 emails verified",
+          "Post-Call Maybe: 3 emails verified",
+          "Onboarding: 3 emails verified",
+          "All template variables rendered correctly",
+          "All real testimonials displayed (Van Tiny, Hera Nguyen, Loc Diem)",
+          "No fabricated testimonials present",
+          "Production site ready for live ad traffic"
+        ]
+      }
+    ],
+    "total_test_scenarios": 56,
+    "production_site_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+    "production_prefect_url": "https://prefect.galatek.dev/api",
+    "test_email": "lengobaosang@gmail.com",
+    "email_sequences_to_test": [
+      {"name": "Lead Nurture", "email_count": 7},
+      {"name": "No-Show Recovery", "email_count": 3},
+      {"name": "Post-Call Maybe", "email_count": 3},
+      {"name": "Onboarding", "email_count": 3}
+    ],
+    "total_emails_expected": 16,
+    "new_template_variables": ["{{q1_foundation_deadline}}", "{{days_to_q1_deadline}}", "{{slots_remaining}}", "{{spots_taken}}"],
+    "template_changes": {
+      "deadline": "December 15, 2025",
+      "slot_count": 10,
+      "real_testimonials": ["Van Tiny", "Hera Nguyen", "Loc Diem"]
+    },
+    "estimated_duration_minutes": 120
   }
 }
