@@ -585,3 +585,262 @@ async def cancel_scheduled():
 asyncio.run(cancel_scheduled())
 "
 ```
+
+---
+
+## Wave 6: Puppeteer E2E Funnel Test (ADDED)
+
+### 6.1 Objective
+Test the complete website funnel from landing page to email sequence using Puppeteer MCP browser automation.
+
+### 6.2 Pre-Conditions
+- Website running at https://sangletech.com (or localhost for local testing)
+- Prefect worker running with TESTING_MODE=true
+- Puppeteer MCP server connected
+
+### 6.3 Complete Funnel Flow to Test
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 1: LANDING PAGE (/en/flows/businessX/dfu/xmas-a01)                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Fill opt-in form (firstName, email, monthlyRevenue, biggestChallenge)     │
+│ • Check privacy checkbox                                                     │
+│ • Submit form → POST /api/form/submit-businessx-xmas-campaign               │
+│ • localStorage saves: xmas-user-email, xmas-user-name                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 2: THANK YOU PAGE (/thank-you?name=...&email=...)                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Displays personalized greeting                                             │
+│ • CTA: "Start Your Free 8-System Assessment Now"                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ STEP 3: ASSESSMENT PAGE (/assessment)                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ • Answer 16 yes/no questions (0.5s delay per question)                      │
+│ • On completion:                                                             │
+│   ├── POST /api/assessment/save-results (Notion)                            │
+│   └── POST /api/assessment/complete → 🚀 TRIGGERS PREFECT WEBHOOK           │
+│         │                                                                    │
+│         └── Prefect christmas-signup-handler:                               │
+│             ├── Creates Email Sequence record in Notion                     │
+│             └── Schedules 7 email flows (TESTING_MODE: 1-6 min)             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                         ┌────────────┴────────────┐
+                         │                         │
+                         ▼                         ▼
+┌──────────────────────────────────┐  ┌──────────────────────────────────────┐
+│ EMAIL SEQUENCE (Background)       │  │ STEP 4: DIAGNOSTIC PAGE (/diagnostic) │
+├──────────────────────────────────┤  ├──────────────────────────────────────┤
+│ Email #1: Immediate              │  │ • Displays personalized results       │
+│ Email #2: +1 min (testing)       │  │ • Shows broken systems (red/orange)   │
+│ Email #3: +2 min                 │  │ • CTA: "Book FREE Discovery Call"     │
+│ Email #4: +3 min                 │  └──────────────────────────────────────┘
+│ Email #5: +4 min                 │                    │
+│ Email #6: +5 min                 │                    ▼
+│ Email #7: +6 min                 │  ┌──────────────────────────────────────┐
+│                                  │  │ STEP 5: BOOK CALL PAGE (/book-call)   │
+│ FROM: value@galatek.dev          │  ├──────────────────────────────────────┤
+│ TO: lengobaosang@gmail.com       │  │ • Cal.com embedded calendar           │
+└──────────────────────────────────┘  │ • calLink: sang-le-tech/businessx-   │
+                                      │            together                   │
+                                      │ • On booking success → redirect       │
+                                      └──────────────────────────────────────┘
+                                                       │
+                                                       ▼
+                                      ┌──────────────────────────────────────┐
+                                      │ STEP 6: BOOKING CONFIRMED              │
+                                      │ (/booking-confirmed?date=...&time=...) │
+                                      ├──────────────────────────────────────┤
+                                      │ • Displays booking details             │
+                                      │ • POST /api/subscribe-and-notify       │
+                                      │ • Facebook Pixel: InitiateCheckout     │
+                                      └──────────────────────────────────────┘
+```
+
+**KEY INSIGHT**: The 7-email sequence is triggered at **Step 3 (Assessment Completion)**, NOT at booking. The book-call and booking-confirmed pages are part of the sales funnel but don't trigger additional email sequences.
+
+### 6.4 Test Steps
+
+#### Step 6.1: Navigate to Landing Page
+```javascript
+await page.goto('https://sangletech.com/en/flows/businessX/dfu/xmas-a01');
+// OR for local: http://localhost:3000/en/flows/businessX/dfu/xmas-a01
+```
+**Verify**: Page loads with opt-in form visible
+
+#### Step 6.2: Fill Opt-In Form
+```javascript
+await page.fill('#firstName', 'Puppeteer Test');
+await page.fill('#email', 'lengobaosang@gmail.com');
+await page.selectOption('#monthlyRevenue', '10k-20k');
+await page.selectOption('#biggestChallenge', 'scaling');
+await page.check('#privacy');
+```
+**Verify**: All fields populated, checkbox checked
+
+#### Step 6.3: Submit Form
+```javascript
+await page.click('button[type="submit"]');
+// Wait for redirect
+await page.waitForURL(/thank-you/);
+```
+**Verify**:
+- API response 200
+- Redirect to thank-you page
+- localStorage contains xmas-user-email and xmas-user-name
+
+#### Step 6.4: Navigate to Assessment
+```javascript
+await page.click('a[href*="/assessment"]');
+await page.waitForURL(/assessment/);
+```
+**Verify**: Assessment page loads with Question 1 visible
+
+#### Step 6.5: Answer 16 Questions
+```javascript
+for (let i = 0; i < 16; i++) {
+  // Create varied scoring pattern for realistic test
+  if (i % 3 === 0) {
+    await page.click('button:has-text("YES")');
+  } else {
+    await page.click('button:has-text("NO")');
+  }
+  await page.waitForTimeout(600); // Animation delay
+}
+```
+**Verify**: Progress bar advances, final question shows completion state
+
+#### Step 6.6: Verify Prefect Webhook
+```javascript
+// The assessment.tsx automatically calls /api/assessment/complete
+// which triggers the Prefect webhook
+```
+**Verify**:
+- Network request to /api/assessment/complete returns 200
+- Response contains `success: true`
+
+#### Step 6.7: Navigate to Diagnostic Page (Results)
+```javascript
+// After assessment completion, user sees results
+// Click link to go to diagnostic page
+await page.click('a[href*="/diagnostic"]');
+await page.waitForURL(/diagnostic/);
+```
+**Verify**:
+- Personalized hero shows assessment results
+- System scores displayed (red/orange/yellow/green)
+- CTA visible: "Book FREE Discovery Call"
+
+#### Step 6.8: Navigate to Book Call Page
+```javascript
+await page.click('a[href*="/book-call"]');
+await page.waitForURL(/book-call/);
+```
+**Verify**: Page loads with Cal.com calendar section
+
+#### Step 6.9: Verify Cal.com Calendar Loads
+```javascript
+// Cal.com calendar is embedded via @calcom/embed-react
+// calLink: "sang-le-tech/businessx-together"
+// Wait for Cal.com iframe to load
+await page.waitForSelector('iframe[src*="cal.com"]', { timeout: 10000 });
+```
+**Verify**:
+- Cal.com calendar iframe is visible
+- Calendar shows available time slots
+
+**NOTE**: Actually booking via Cal.com requires interacting with external service.
+For E2E testing, we verify:
+1. Calendar loads successfully
+2. Page displays correctly
+3. (Optional) Mock Cal.com booking callback to test redirect to booking-confirmed
+
+#### Step 6.10: Verify Email Sequence Created
+```bash
+# Check Notion Email Sequence Database
+cd /Users/sangle/Dev/action/projects/perfect && \
+source .env && \
+python3 -c "
+from notion_client import Client
+import os
+notion = Client(auth=os.getenv('NOTION_TOKEN'))
+r = notion.databases.query(
+    database_id=os.getenv('NOTION_EMAIL_SEQUENCE_DB_ID'),
+    filter={'property': 'Email', 'email': {'equals': 'lengobaosang@gmail.com'}}
+)
+if r['results']:
+    seq = r['results'][0]
+    print(f'✅ SEQUENCE FOUND: {seq[\"id\"]}')
+    print(f'   Campaign: {seq[\"properties\"][\"Campaign\"][\"select\"][\"name\"]}')
+    print(f'   Segment: {seq[\"properties\"].get(\"Segment\", {}).get(\"select\", {}).get(\"name\", \"N/A\")}')
+"
+```
+**Verify**: Email sequence record exists with Christmas 2025 campaign
+
+#### Step 6.8: Monitor Email Delivery
+```bash
+PREFECT_API_URL=https://prefect.galatek.dev/api prefect flow-run ls \
+  --flow-name christmas-send-email \
+  --limit 10
+```
+**Verify** (with TESTING_MODE=true):
+- Email #1: Sent immediately
+- Email #2: Sent after 1 min
+- Email #3: Sent after 2 min
+- Email #4: Sent after 3 min
+- Email #5: Sent after 4 min
+- Email #6: Sent after 5 min
+- Email #7: Sent after 6 min
+
+### 6.5 Expected Outcomes
+- Complete funnel traversal without errors
+- 7 emails delivered to lengobaosang@gmail.com
+- Notion Email Sequence updated with all "Email X Sent" timestamps
+- Production readiness confirmed
+
+### 6.6 CSS Selectors Reference
+
+| Page | Element | Selector |
+|------|---------|----------|
+| **Landing** | First Name | `#firstName` |
+| **Landing** | Email | `#email` |
+| **Landing** | Revenue Dropdown | `#monthlyRevenue` |
+| **Landing** | Challenge Dropdown | `#biggestChallenge` |
+| **Landing** | Privacy Checkbox | `#privacy` |
+| **Landing** | Submit Button | `button[type="submit"]` |
+| **Thank You** | Assessment CTA | `a[href*="/assessment"]` |
+| **Assessment** | YES Button | `button:has-text("YES")` |
+| **Assessment** | NO Button | `button:has-text("NO")` |
+| **Assessment** | Progress | `text=/Question \\d+ of 16/` |
+| **Diagnostic** | Book Call CTA | `a[href*="/book-call"]` |
+| **Diagnostic** | Score Display | `text=/\\d+\\/100/` |
+| **Book Call** | Cal.com Calendar | `iframe[src*="cal.com"]` |
+| **Book Call** | Page Title | `text=/Book Your FREE/` |
+
+### 6.7 API Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/form/submit-businessx-xmas-campaign` | POST | Opt-in form submission |
+| `/api/assessment/save-results` | POST | Save to Notion |
+| `/api/assessment/complete` | POST | Trigger Prefect webhook |
+
+### 6.8 Environment Variables Required
+
+For the website (sangletech-tailwindcss):
+```bash
+PREFECT_WEBHOOK_URL=https://prefect.galatek.dev/api/webhook/christmas-signup
+# OR for local: http://localhost:8000/webhook/christmas-signup
+```
+
+For Prefect worker:
+```bash
+TESTING_MODE=true  # Fast email intervals (1-6 min)
+```
