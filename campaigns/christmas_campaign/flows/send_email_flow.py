@@ -9,12 +9,12 @@ Key Features (Wave 2):
 - State Tracking: Updates "Email X Sent" field in Notion Email Sequence DB
 - Segment-Aware: Uses correct template based on segment (CRITICAL/URGENT/OPTIMIZE)
 - Retry Logic: 3 retries with exponential backoff (1min, 5min, 15min)
-- Template Fetching: Pulls templates from Notion with fallback support
+- Template Fetching: Pulls templates from Notion (NO FALLBACK - templates MUST exist in Notion)
 
 Flow responsibilities:
 1. Idempotency check via Email Sequence DB
 2. Determine template ID based on email number and segment
-3. Fetch template from Notion (with fallback)
+3. Fetch template from Notion (raises error if not found)
 4. Substitute variables with customer data
 5. Send email via Resend
 6. Update Email Sequence DB with "Email X Sent" timestamp
@@ -40,8 +40,7 @@ from campaigns.christmas_campaign.tasks.notion_operations import (
 # Import Resend operations
 from campaigns.christmas_campaign.tasks.resend_operations import (
     send_template_email,
-    get_email_variables,
-    get_fallback_template
+    get_email_variables
 )
 
 # Import routing utilities
@@ -150,17 +149,23 @@ def send_email_flow(
         template_id = get_email_template_id(email_number, segment)
         logger.info(f"📧 Using template: {template_id}")
 
-        # Step 3: Fetch template from Notion
+        # Step 3: Fetch template from Notion (NO FALLBACK - templates MUST exist in Notion)
         logger.info(f"📥 Fetching template from Notion: {template_id}")
         template_data = fetch_email_template(template_id)
 
-        # Step 3b: Use fallback if Notion fetch fails
+        # Step 3b: Raise error if template not found - NO FALLBACK ALLOWED
         if not template_data:
-            logger.warning(f"⚠️ Template {template_id} not found in Notion, using fallback")
-            template_data = get_fallback_template(template_id)
+            error_msg = f"Template '{template_id}' not found in Notion. All templates must exist in Notion Email Templates database."
+            logger.error(f"❌ {error_msg}")
+            raise ValueError(error_msg)
 
-        subject = template_data.get("subject", "Update from BusOS")
-        html_body = template_data.get("html_body", "")
+        subject = template_data.get("subject")
+        html_body = template_data.get("html_body")
+
+        if not subject or not html_body:
+            error_msg = f"Template '{template_id}' is missing subject or html_body in Notion."
+            logger.error(f"❌ {error_msg}")
+            raise ValueError(error_msg)
 
         # Step 4: Build variables for template substitution
         logger.info("🔧 Building email variables")
