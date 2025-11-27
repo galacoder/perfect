@@ -34,8 +34,8 @@ except Exception as e:
 
 resend.api_key = RESEND_API_KEY
 
-# Sender configuration - using verified galatek.dev domain
-FROM_EMAIL = "noreply@galatek.dev"
+# Sender configuration - using verified galatek.dev domain with alias
+FROM_EMAIL = "value@galatek.dev"
 FROM_NAME = "Sang Le - BusOS"
 
 
