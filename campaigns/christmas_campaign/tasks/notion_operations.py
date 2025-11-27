@@ -827,3 +827,86 @@ def create_postcall_sequence(
     except Exception as e:
         print(f"❌ Error creating post-call sequence for {email}: {e}")
         raise
+
+
+@task(retries=3, retry_delay_seconds=60, name="christmas-create-onboarding-sequence")
+def create_onboarding_sequence(
+    email: str,
+    first_name: str,
+    business_name: str,
+    payment_confirmed: bool,
+    payment_amount: float,
+    payment_date: str,
+    package_type: str = "Phase 1 - Traditional Service Diagnostic",
+    salon_address: Optional[str] = None,
+    observation_dates: Optional[List[str]] = None,
+    start_date: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    Create onboarding sequence tracking record in Email Sequence database.
+
+    This function creates a tracking record for the 3-email onboarding welcome sequence.
+
+    Args:
+        email: Client email address
+        first_name: Client first name
+        business_name: Salon/business name
+        payment_confirmed: Whether payment was confirmed
+        payment_amount: Payment amount (e.g., 2997.00)
+        payment_date: Payment date (ISO format)
+        package_type: Package purchased (default: Phase 1)
+        salon_address: Physical address of salon (optional)
+        observation_dates: List of scheduled observation dates (optional)
+        start_date: Phase 1 start date (ISO format, optional)
+
+    Returns:
+        Created sequence record
+
+    Example:
+        sequence = create_onboarding_sequence(
+            email="sarah@example.com",
+            first_name="Sarah",
+            business_name="Sarah's Salon",
+            payment_confirmed=True,
+            payment_amount=2997.00,
+            payment_date="2025-12-01T15:00:00Z",
+            salon_address="123 Main St, Toronto, ON",
+            observation_dates=["2025-12-10", "2025-12-17"],
+            start_date="2025-12-10"
+        )
+    """
+    try:
+        properties = {
+            "Email": {"email": email},
+            "First Name": {"rich_text": [{"text": {"content": first_name}}]},
+            "Business Name": {"rich_text": [{"text": {"content": business_name}}]},
+            "Template Type": {"select": {"name": "Onboarding"}},
+            "Campaign": {"select": {"name": "Christmas 2025"}},
+            "Payment Amount": {"number": payment_amount},
+            "Payment Date": {"date": {"start": payment_date}},
+            "Package Type": {"rich_text": [{"text": {"content": package_type}}]},
+            "Sequence Created": {"date": {"start": datetime.now().isoformat()}},
+            "Sequence Completed": {"checkbox": False}
+        }
+
+        if salon_address:
+            properties["Salon Address"] = {"rich_text": [{"text": {"content": salon_address}}]}
+
+        if observation_dates:
+            dates_str = ", ".join(observation_dates)
+            properties["Observation Dates"] = {"rich_text": [{"text": {"content": dates_str}}]}
+
+        if start_date:
+            properties["Start Date"] = {"date": {"start": start_date}}
+
+        response = notion.pages.create(
+            parent={"database_id": NOTION_EMAIL_SEQUENCE_DB_ID},
+            properties=properties
+        )
+
+        print(f"✅ Created onboarding sequence for {email} (Package: {package_type})")
+        return response
+
+    except Exception as e:
+        print(f"❌ Error creating onboarding sequence for {email}: {e}")
+        raise
