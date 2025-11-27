@@ -270,3 +270,83 @@ class TestSegmentClassificationIntegration:
 
         # Priority
         assert get_segment_priority(segment) == 3
+
+
+# ==============================================================================
+# New Sequence Types Tests (Wave 1, Feature 1.1)
+# ==============================================================================
+
+class TestGetSequenceTemplateId:
+    """Test get_sequence_template_id function for new sequence types."""
+
+    def test_noshow_email_1(self):
+        """Test no-show recovery email 1 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("noshow", 1)
+        assert template_id == "noshow_recovery_email_1"
+
+    def test_noshow_email_2(self):
+        """Test no-show recovery email 2 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("noshow", 2)
+        assert template_id == "noshow_recovery_email_2"
+
+    def test_noshow_email_3(self):
+        """Test no-show recovery email 3 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("noshow", 3)
+        assert template_id == "noshow_recovery_email_3"
+
+    def test_postcall_email_1(self):
+        """Test post-call maybe email 1 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("postcall", 1)
+        assert template_id == "postcall_maybe_email_1"
+
+    def test_postcall_email_2(self):
+        """Test post-call maybe email 2 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("postcall", 2)
+        assert template_id == "postcall_maybe_email_2"
+
+    def test_postcall_email_3(self):
+        """Test post-call maybe email 3 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("postcall", 3)
+        assert template_id == "postcall_maybe_email_3"
+
+    def test_onboarding_email_1(self):
+        """Test onboarding phase 1 email 1 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("onboarding", 1)
+        assert template_id == "onboarding_phase1_email_1"
+
+    def test_onboarding_email_2(self):
+        """Test onboarding phase 1 email 2 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("onboarding", 2)
+        assert template_id == "onboarding_phase1_email_2"
+
+    def test_onboarding_email_3(self):
+        """Test onboarding phase 1 email 3 template ID."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        template_id = get_sequence_template_id("onboarding", 3)
+        assert template_id == "onboarding_phase1_email_3"
+
+    def test_invalid_sequence_type(self):
+        """Test invalid sequence type raises ValueError."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        with pytest.raises(ValueError, match="Invalid sequence_type"):
+            get_sequence_template_id("invalid_sequence", 1)
+
+    def test_invalid_email_number_zero(self):
+        """Test invalid email number (0) raises ValueError."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        with pytest.raises(ValueError, match="Invalid email_number"):
+            get_sequence_template_id("noshow", 0)
+
+    def test_invalid_email_number_four(self):
+        """Test invalid email number (4) raises ValueError."""
+        from campaigns.christmas_campaign.tasks.routing import get_sequence_template_id
+        with pytest.raises(ValueError, match="Invalid email_number"):
+            get_sequence_template_id("noshow", 4)
