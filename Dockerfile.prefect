@@ -1,0 +1,43 @@
+# Dockerfile for Perfect Prefect Worker
+# This worker executes Prefect flows for the Christmas Campaign
+# Flows are pulled from GitHub via git_clone step in prefect.yaml
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies (git required for flow deployment)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code (needed for local imports during flow execution)
+COPY . .
+
+# Create non-root user for security
+RUN useradd -m -s /bin/bash prefect && \
+    mkdir -p /home/prefect/.prefect && \
+    chown -R prefect:prefect /app /home/prefect
+
+USER prefect
+
+# Environment variables (defaults, override in Coolify)
+ENV PREFECT_API_URL=https://prefect.galatek.dev/api
+ENV PREFECT_LOGGING_LEVEL=INFO
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# Health check - verify Prefect CLI works
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD prefect version || exit 1
+
+# Default command: Start Prefect worker
+CMD ["prefect", "worker", "start", "--pool", "default", "--name", "perfect-worker"]

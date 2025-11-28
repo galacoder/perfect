@@ -1,0 +1,66 @@
+version: '3.8'
+
+# Docker Compose for Coolify Deployment
+# Deploy with: Coolify UI → Add Resource → Docker Compose
+# Repository: galacoder/perfect
+# Branch: main
+
+services:
+  # Prefect Worker - Executes Christmas Campaign flows
+  perfect-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prefect
+    container_name: perfect-worker
+    restart: unless-stopped
+    environment:
+      # Prefect Configuration (set in Coolify environment)
+      - PREFECT_API_URL=${PREFECT_API_URL:-https://prefect.galatek.dev/api}
+      - PREFECT_LOGGING_LEVEL=${PREFECT_LOGGING_LEVEL:-INFO}
+      # GitHub token for git_clone deployment step
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN:-}
+    volumes:
+      - perfect-prefect-data:/home/prefect/.prefect
+    networks:
+      - perfect-network
+    healthcheck:
+      test: ["CMD", "prefect", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # Webhook Server - Receives HTTP requests and triggers Prefect flows
+  perfect-webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook
+    container_name: perfect-webhook
+    restart: unless-stopped
+    environment:
+      # Prefect API for triggering deployments
+      - PREFECT_API_URL=${PREFECT_API_URL:-https://prefect.galatek.dev/api}
+      # Testing mode (1min waits instead of days)
+      - TESTING_MODE=${TESTING_MODE:-true}
+      # Coolify magic variable for FQDN
+      - SERVICE_FQDN_PERFECT_WEBHOOK_8000
+    ports:
+      - "8000:8000"
+    networks:
+      - perfect-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - perfect-worker
+
+networks:
+  perfect-network:
+    driver: bridge
+
+volumes:
+  perfect-prefect-data:
+    driver: local
