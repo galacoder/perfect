@@ -3,10 +3,12 @@
   "last_run": null,
   "summary": {
     "status": "not_run",
-    "total": 12,
+    "total": 53,
     "passing": 0,
     "failing": 0,
-    "not_started": 12
+    "not_started": 53,
+    "wave_5_tests_added": 12,
+    "wave_6_tests_added": 29
   },
   "suites": [
     {
@@ -103,6 +105,352 @@
           "name": "STATUS.md updated with production-ready status",
           "status": "not_started",
           "type": "documentation"
+        }
+      ]
+    },
+    {
+      "name": "Wave 5: E2E Production Integration Tests",
+      "added_at": "2025-11-28T00:15:00Z",
+      "tests": [
+        {
+          "id": "T5.1",
+          "feature_id": "5.1",
+          "name": "Production funnel loads via Puppeteer MCP",
+          "status": "not_started",
+          "type": "e2e",
+          "url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01"
+        },
+        {
+          "id": "T5.2",
+          "feature_id": "5.2",
+          "name": "BusOS assessment form filled correctly",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T5.3",
+          "feature_id": "5.3",
+          "name": "Form submitted with mandatory test email",
+          "status": "not_started",
+          "type": "e2e",
+          "mandatory_email": "lengobaosang@gmail.com"
+        },
+        {
+          "id": "T5.4",
+          "feature_id": "5.4",
+          "name": "Webhook triggers Prefect flow on production server",
+          "status": "not_started",
+          "type": "e2e",
+          "prefect_url": "https://prefect.galatek.dev"
+        },
+        {
+          "id": "T5.5a",
+          "feature_id": "5.5",
+          "name": "christmas-signup webhook triggers 7-email sequence",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T5.5b",
+          "feature_id": "5.5",
+          "name": "calendly-noshow webhook triggers 3-email recovery",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T5.5c",
+          "feature_id": "5.5",
+          "name": "postcall-maybe webhook triggers 3-email follow-up",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T5.5d",
+          "feature_id": "5.5",
+          "name": "onboarding-start webhook triggers 3-email onboarding",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T5.6",
+          "feature_id": "5.6",
+          "name": "All email flow runs complete successfully",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T5.7",
+          "feature_id": "5.7",
+          "name": "All emails delivered via Resend API",
+          "status": "not_started",
+          "type": "e2e",
+          "recipient": "lengobaosang@gmail.com"
+        },
+        {
+          "id": "T5.8a",
+          "feature_id": "5.8",
+          "name": "All pytest tests pass",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T5.8b",
+          "feature_id": "5.8",
+          "name": "Test coverage exceeds 85%",
+          "status": "not_started",
+          "type": "coverage",
+          "target": 85
+        }
+      ]
+    },
+    {
+      "name": "Wave 6: Test Infrastructure Fixes",
+      "added_at": "2025-11-28T01:00:00Z",
+      "tests": [
+        {
+          "id": "T6.1a",
+          "feature_id": "6.1",
+          "name": "Prefect get_client() properly mocked",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/conftest.py"
+        },
+        {
+          "id": "T6.1b",
+          "feature_id": "6.1",
+          "name": "No RuntimeError: Failed to reach API errors",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.1c",
+          "feature_id": "6.1",
+          "name": "10+ previously failing Prefect tests now pass",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.2a",
+          "feature_id": "6.2",
+          "name": "Notion mock responses match database schema",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/conftest.py"
+        },
+        {
+          "id": "T6.2b",
+          "feature_id": "6.2",
+          "name": "No Template Type property errors",
+          "status": "not_started",
+          "type": "unit"
+        }
+      ]
+    },
+    {
+      "name": "Wave 6: Flow Unit Tests",
+      "added_at": "2025-11-28T01:00:00Z",
+      "tests": [
+        {
+          "id": "T6.3a",
+          "feature_id": "6.3",
+          "name": "signup_handler_flow with valid payload",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_signup_handler.py"
+        },
+        {
+          "id": "T6.3b",
+          "feature_id": "6.3",
+          "name": "signup_handler error handling for missing email",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.3c",
+          "feature_id": "6.3",
+          "name": "signup_handler segment classification routing",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.4a",
+          "feature_id": "6.4",
+          "name": "send_email_flow with valid Notion template",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_send_email_flow.py"
+        },
+        {
+          "id": "T6.4b",
+          "feature_id": "6.4",
+          "name": "send_email_flow error on missing template",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.4c",
+          "feature_id": "6.4",
+          "name": "send_email_flow variable substitution",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.5a",
+          "feature_id": "6.5",
+          "name": "noshow_handler with Calendly payload",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_noshow_recovery_handler.py"
+        },
+        {
+          "id": "T6.5b",
+          "feature_id": "6.5",
+          "name": "noshow_handler 3-email sequence scheduling",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.6a",
+          "feature_id": "6.6",
+          "name": "postcall_handler with valid payload",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_postcall_maybe_handler.py"
+        },
+        {
+          "id": "T6.6b",
+          "feature_id": "6.6",
+          "name": "postcall_handler call notes handling",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.7a",
+          "feature_id": "6.7",
+          "name": "email_orchestrator scheduling logic",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_email_sequence_orchestrator.py"
+        },
+        {
+          "id": "T6.7b",
+          "feature_id": "6.7",
+          "name": "email_orchestrator TESTING_MODE intervals",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.8a",
+          "feature_id": "6.8",
+          "name": "notion_operations search_contact_by_email",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_notion_operations.py"
+        },
+        {
+          "id": "T6.8b",
+          "feature_id": "6.8",
+          "name": "notion_operations fetch_template",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.9a",
+          "feature_id": "6.9",
+          "name": "ContactPayload validation",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_models.py"
+        },
+        {
+          "id": "T6.10a",
+          "feature_id": "6.10",
+          "name": "precall_prep_flow with scheduled call",
+          "status": "not_started",
+          "type": "unit",
+          "file": "campaigns/christmas_campaign/tests/test_precall_prep_flow.py"
+        }
+      ]
+    },
+    {
+      "name": "Wave 6: Production E2E Tests",
+      "added_at": "2025-11-28T01:00:00Z",
+      "tests": [
+        {
+          "id": "T6.11a",
+          "feature_id": "6.11",
+          "name": "Playwright: funnel page loads",
+          "status": "not_started",
+          "type": "e2e",
+          "file": "campaigns/christmas_campaign/tests/e2e/test_production_funnel.py",
+          "url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01"
+        },
+        {
+          "id": "T6.11b",
+          "feature_id": "6.11",
+          "name": "Playwright: form fields visible",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T6.11c",
+          "feature_id": "6.11",
+          "name": "Playwright: form submission success",
+          "status": "not_started",
+          "type": "e2e",
+          "mandatory_email": "lengobaosang@gmail.com"
+        },
+        {
+          "id": "T6.12a",
+          "feature_id": "6.12",
+          "name": "Prefect API health check",
+          "status": "not_started",
+          "type": "e2e",
+          "file": "campaigns/christmas_campaign/tests/e2e/test_production_prefect.py",
+          "url": "https://prefect.galatek.dev"
+        },
+        {
+          "id": "T6.12b",
+          "feature_id": "6.12",
+          "name": "Prefect deployment existence verification",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T6.12c",
+          "feature_id": "6.12",
+          "name": "Prefect flow run creation test",
+          "status": "not_started",
+          "type": "e2e"
+        }
+      ]
+    },
+    {
+      "name": "Wave 6: Final Coverage Verification",
+      "added_at": "2025-11-28T01:00:00Z",
+      "tests": [
+        {
+          "id": "T6.13a",
+          "feature_id": "6.13",
+          "name": "All 14 previously failing tests fixed",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T6.13b",
+          "feature_id": "6.13",
+          "name": "All new unit tests pass",
+          "status": "not_started",
+          "type": "unit"
+        },
+        {
+          "id": "T6.13c",
+          "feature_id": "6.13",
+          "name": "Coverage report shows >= 85%",
+          "status": "not_started",
+          "type": "coverage",
+          "target": 85,
+          "current": 46
         }
       ]
     }

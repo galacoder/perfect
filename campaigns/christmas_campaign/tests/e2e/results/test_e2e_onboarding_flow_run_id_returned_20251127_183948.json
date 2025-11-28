@@ -1,0 +1,25 @@
+{
+  "test_name": "test_e2e_onboarding_flow_run_id_returned",
+  "status": "passed",
+  "start_time": "2025-11-27T18:39:48.548827",
+  "end_time": "2025-11-27T18:39:48.549873",
+  "duration_seconds": 0.001046,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/onboarding-start",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Onboarding welcome sequence will begin shortly",
+        "email": "e2e-onboarding-flowid-1764286788548@e2e-test.example.com",
+        "payment_amount": 2997.0,
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-27T18:39:48.549754"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

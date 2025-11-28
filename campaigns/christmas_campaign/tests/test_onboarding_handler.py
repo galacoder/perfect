@@ -50,7 +50,7 @@ def mock_onboarding_sequence():
         "id": "test-sequence-456",
         "properties": {
             "Email": {"email": "test@example.com"},
-            "Template Type": {"select": {"name": "Onboarding"}},
+            "Campaign": {"select": {"name": "Christmas 2025"}},
             "Payment Amount": {"number": 2997.00},
             "Payment Date": {"date": {"start": "2025-12-01T15:00:00Z"}},
             "Salon Address": {"rich_text": [{"plain_text": "123 Main St"}]},

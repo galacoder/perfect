@@ -1,0 +1,25 @@
+{
+  "test_name": "test_e2e_idempotency_prevents_duplicates",
+  "status": "passed",
+  "start_time": "2025-11-27T20:02:38.679417",
+  "end_time": "2025-11-27T20:02:39.683230",
+  "duration_seconds": 1.003813,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "First request accepted for e2e-idempotency-test-1764291758679@e2e-test.example.com",
+      "timestamp": "2025-11-27T20:02:38.680169"
+    },
+    {
+      "note": "Second request accepted (idempotency in flow)",
+      "timestamp": "2025-11-27T20:02:39.682955"
+    },
+    {
+      "note": "Verify in Notion: only ONE sequence record created",
+      "timestamp": "2025-11-27T20:02:39.682962"
+    }
+  ]
+}

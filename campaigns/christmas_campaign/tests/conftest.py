@@ -291,7 +291,7 @@ def mock_schedule_email_sequence(monkeypatch):
     This prevents tests from trying to connect to Prefect API when testing
     signup_handler flow. Returns a successful scheduling result by default.
     """
-    from unittest.mock import Mock
+    from unittest.mock import AsyncMock
 
     mock_return = [
         {
@@ -303,9 +303,28 @@ def mock_schedule_email_sequence(monkeypatch):
         for i in range(1, 8)
     ]
 
-    mock_func = Mock(return_value=mock_return)
+    mock_func = AsyncMock(return_value=mock_return)
     monkeypatch.setattr(
         "campaigns.christmas_campaign.flows.signup_handler.schedule_email_sequence",
+        mock_func
+    )
+
+    return mock_func
+
+
+@pytest.fixture(autouse=True)
+def mock_schedule_email_flow(monkeypatch):
+    """
+    Mock schedule_email_flow from deploy_utils for all tests.
+
+    This prevents Prefect API calls when flows schedule individual emails.
+    Returns a flow run ID for each scheduled email.
+    """
+    from unittest.mock import AsyncMock
+
+    mock_func = AsyncMock(return_value="test-flow-run-id-123")
+    monkeypatch.setattr(
+        "campaigns.christmas_campaign.deployments.deploy_utils.schedule_email_flow",
         mock_func
     )
 
@@ -322,6 +341,112 @@ def testing_mode_enabled(monkeypatch):
 def testing_mode_disabled(monkeypatch):
     """Disable testing mode for production-like tests."""
     monkeypatch.setenv("TESTING_MODE", "false")
+
+
+# ==============================================================================
+# Prefect Client Mocking Fixtures (Wave 6, Feature 6.1)
+# ==============================================================================
+
+@pytest.fixture
+def mock_prefect_client():
+    """
+    Mock Prefect client to avoid ephemeral test server connection errors.
+
+    This fixture mocks the get_client() context manager to prevent
+    RuntimeError: Failed to reach API at http://127.0.0.1:8516/api/.
+
+    Usage:
+        async def test_flow(mock_prefect_client):
+            # get_client() will now return the mocked client
+            result = await my_flow()
+    """
+    from unittest.mock import AsyncMock, MagicMock, patch
+
+    # Create mock client
+    mock_client = MagicMock()
+
+    # Mock common Prefect client methods
+    mock_client.read_deployment_by_name = AsyncMock(
+        return_value=MagicMock(id="test-deployment-id-123")
+    )
+
+    mock_client.create_flow_run_from_deployment = AsyncMock(
+        return_value=MagicMock(
+            id="test-flow-run-id-123",
+            name="test-flow-run",
+            state_type="SCHEDULED"
+        )
+    )
+
+    mock_client.read_flow_run = AsyncMock(
+        return_value=MagicMock(
+            id="test-flow-run-id-123",
+            state_type="COMPLETED"
+        )
+    )
+
+    mock_client.set_flow_run_state = AsyncMock(
+        return_value=MagicMock(status="SUCCESS")
+    )
+
+    # Patch get_client to return our mock
+    with patch('prefect.get_client') as mock_get_client:
+        # Make get_client() return an async context manager
+        mock_get_client.return_value.__aenter__.return_value = mock_client
+        mock_get_client.return_value.__aexit__.return_value = None
+
+        yield mock_client
+
+
+@pytest.fixture(autouse=True)
+def mock_prefect_client_globally(monkeypatch):
+    """
+    Globally mock Prefect get_client() for all tests to prevent API connection errors.
+
+    This is an autouse fixture, so it applies to all tests automatically.
+    Tests that need custom client behavior can override by using mock_prefect_client.
+    """
+    from unittest.mock import AsyncMock, MagicMock, patch
+
+    # Create mock client
+    mock_client = MagicMock()
+
+    # Mock deployment methods
+    mock_client.read_deployment_by_name = AsyncMock(
+        return_value=MagicMock(id="test-deployment-id-123")
+    )
+
+    # Mock flow run creation
+    mock_client.create_flow_run_from_deployment = AsyncMock(
+        return_value=MagicMock(
+            id="test-flow-run-id-123",
+            name="test-flow-run",
+            state_type="SCHEDULED"
+        )
+    )
+
+    # Mock flow run reading
+    mock_client.read_flow_run = AsyncMock(
+        return_value=MagicMock(
+            id="test-flow-run-id-123",
+            state_type="COMPLETED"
+        )
+    )
+
+    # Mock state setting
+    mock_client.set_flow_run_state = AsyncMock(
+        return_value=MagicMock(status="SUCCESS")
+    )
+
+    # Patch get_client
+    patcher = patch('prefect.get_client')
+    mock_get_client = patcher.start()
+    mock_get_client.return_value.__aenter__.return_value = mock_client
+    mock_get_client.return_value.__aexit__.return_value = None
+
+    yield mock_client
+
+    patcher.stop()
 
 
 # ==============================================================================

@@ -140,7 +140,7 @@ class TestNoShowIdempotency:
         mock_search_sequence.return_value = {
             "id": "sequence-123",
             "properties": {
-                "Template Type": {"select": {"name": "No-Show Recovery"}},
+                "Campaign": {"select": {"name": "Christmas 2025"}},
                 "Email": {"email": "test@example.com"}
             }
         }
@@ -160,7 +160,7 @@ class TestNoShowIdempotency:
         mock_search_sequence.return_value = {
             "id": "sequence-123",
             "properties": {
-                "Template Type": {"select": {"name": "Lead Nurture"}},
+                "Campaign": {"select": {"name": "Lead Nurture - BusinessX"}},
                 "Email": {"email": "test@example.com"}
             }
         }
@@ -205,7 +205,7 @@ class TestNoShowSequenceCreation:
 
         # TODO: Implement in Feature 2.2
         # Expected properties in sequence record:
-        # - Template Type: "No-Show Recovery"
+        # - Campaign: "Christmas 2025"
         # - Email: test@example.com
         # - Calendly Event URI: ABC123
         # - Scheduled Time: 2025-12-01T14:00:00Z
