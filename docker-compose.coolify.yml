@@ -44,8 +44,8 @@ services:
       - TESTING_MODE=${TESTING_MODE:-true}
       # Coolify magic variable for FQDN
       - SERVICE_FQDN_PERFECT_WEBHOOK_8000
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     networks:
       - perfect-network
     healthcheck:
