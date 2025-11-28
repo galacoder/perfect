@@ -65,55 +65,29 @@ def get_email_template_id(
     """
     Get template ID for a specific email and segment combination.
 
-    Email Template Mapping:
-    - Email 1: Universal (christmas_email_1)
-    - Email 2: Segment-specific (christmas_email_2a_critical, 2b_urgent, 2c_optimize)
-    - Email 3: Universal (christmas_email_3)
-    - Email 4: Universal (christmas_email_4)
-    - Email 5: Universal (christmas_email_5)
-    - Email 6: Universal (christmas_email_6)
-    - Email 7: Segment-specific (christmas_email_7a_critical, 7b_urgent, 7c_optimize)
+    Email Template Mapping (Christmas 2025 - All Universal):
+    - Email 1-7: Universal templates (christmas_email_1 through christmas_email_7)
+
+    Note: The Christmas 2025 campaign uses universal templates for all segments.
+    The segment parameter is kept for compatibility but not used for template selection.
 
     Args:
         email_number: Email number in sequence (1-7)
-        segment: Contact segment
+        segment: Contact segment (not used for Christmas templates)
 
     Returns:
         Template ID to use
 
     Example:
         template_id = get_email_template_id(email_number=1, segment="CRITICAL")
-        # Returns: "christmas_email_1" (universal)
+        # Returns: "christmas_email_1"
 
         template_id = get_email_template_id(email_number=2, segment="CRITICAL")
-        # Returns: "christmas_email_2a_critical" (segment-specific)
+        # Returns: "christmas_email_2"
     """
-    # Email 1: Universal
-    if email_number == 1:
-        return "christmas_email_1"
-
-    # Email 2: Segment-specific
-    elif email_number == 2:
-        if segment == "CRITICAL":
-            return "christmas_email_2a_critical"
-        elif segment == "URGENT":
-            return "christmas_email_2b_urgent"
-        else:
-            return "christmas_email_2c_optimize"
-
-    # Email 3-6: Universal
-    elif email_number in [3, 4, 5, 6]:
+    # Christmas 2025: All emails use universal templates
+    if 1 <= email_number <= 7:
         return f"christmas_email_{email_number}"
-
-    # Email 7: Segment-specific
-    elif email_number == 7:
-        if segment == "CRITICAL":
-            return "christmas_email_7a_critical"
-        elif segment == "URGENT":
-            return "christmas_email_7b_urgent"
-        else:
-            return "christmas_email_7c_optimize"
-
     else:
         # Fallback
         return "christmas_email_1"
