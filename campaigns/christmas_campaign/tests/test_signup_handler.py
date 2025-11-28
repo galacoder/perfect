@@ -323,10 +323,12 @@ def test_signup_handler_no_existing_contact(
 
 @patch('campaigns.christmas_campaign.flows.signup_handler.search_email_sequence_by_email')
 @patch('campaigns.christmas_campaign.flows.signup_handler.search_contact_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.update_assessment_data')
 @patch('campaigns.christmas_campaign.flows.signup_handler.create_email_sequence')
 
 def test_orchestrator_receives_complete_context(
     mock_create_sequence,
+    mock_update_assessment,
     mock_search_contact,
     mock_search_sequence
 ):
@@ -471,3 +473,200 @@ def test_update_assessment_data_called_with_correct_params(
         green_systems=3,
         segment="CRITICAL"
     )
+
+
+# ==============================================================================
+# Test: Email Scheduling Integration
+# ==============================================================================
+
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_email_sequence_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_contact_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.create_email_sequence')
+@patch('campaigns.christmas_campaign.flows.signup_handler.schedule_email_sequence')
+def test_schedule_email_sequence_called_correctly(
+    mock_schedule,
+    mock_create,
+    mock_search_contact,
+    mock_search_sequence
+):
+    """Test that schedule_email_sequence is called with correct parameters."""
+
+    # Setup mocks
+    mock_search_sequence.return_value = None
+    mock_search_contact.return_value = {"id": "contact-123"}
+    mock_create.return_value = {"id": "seq-456"}
+    mock_schedule.return_value = [
+        {"email_number": 2, "flow_run_id": "run-1", "scheduled_time": "2025-11-20T10:00:00"},
+        {"email_number": 3, "flow_run_id": "run-2", "scheduled_time": "2025-11-22T10:00:00"}
+    ]
+
+    # Run flow
+    result = signup_handler_flow(
+        email="sarah@example.com",
+        first_name="Sarah",
+        business_name="Sarah's Salon",
+        assessment_score=52,
+        red_systems=2,
+        orange_systems=1
+    )
+
+    # Verify schedule_email_sequence was called
+    assert mock_schedule.called
+    call_args = mock_schedule.call_args
+    assert call_args.kwargs["email"] == "sarah@example.com"
+    assert call_args.kwargs["segment"] == "CRITICAL"
+    assert call_args.kwargs["start_from_email"] == 2  # Website sends email 1
+
+    # Verify result includes orchestrator info
+    assert result["orchestrator_result"]["status"] == "success"
+    assert result["orchestrator_result"]["scheduled_count"] == 2
+
+
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_email_sequence_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_contact_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.create_email_sequence')
+@patch('campaigns.christmas_campaign.flows.signup_handler.schedule_email_sequence')
+def test_schedule_email_sequence_failure_handled(
+    mock_schedule,
+    mock_create,
+    mock_search_contact,
+    mock_search_sequence
+):
+    """Test flow handles email scheduling failures gracefully."""
+
+    # Setup mocks
+    mock_search_sequence.return_value = None
+    mock_search_contact.return_value = {"id": "contact-123"}
+    mock_create.return_value = {"id": "seq-456"}
+    mock_schedule.side_effect = Exception("Prefect deployment not found")
+
+    # Run flow - should succeed even if scheduling fails
+    result = signup_handler_flow(
+        email="sarah@example.com",
+        first_name="Sarah",
+        business_name="Sarah's Salon",
+        assessment_score=52,
+        red_systems=2
+    )
+
+    # Verify signup succeeded but orchestrator failed
+    assert result["status"] == "success"
+    assert result["orchestrator_result"]["status"] == "failed"
+    assert "deployment not found" in result["orchestrator_result"]["error"]
+
+
+# ==============================================================================
+# Test: Optional Parameters Handling
+# ==============================================================================
+
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_email_sequence_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_contact_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.create_email_sequence')
+def test_signup_with_optional_params(
+    mock_create,
+    mock_search_contact,
+    mock_search_sequence
+):
+    """Test flow handles optional parameters correctly."""
+
+    # Setup mocks
+    mock_search_sequence.return_value = None
+    mock_search_contact.return_value = {"id": "contact-123"}
+    mock_create.return_value = {"id": "seq-456"}
+
+    # Run flow with ALL optional params
+    result = signup_handler_flow(
+        email="sarah@example.com",
+        first_name="Sarah",
+        business_name="Sarah's Salon",
+        assessment_score=52,
+        red_systems=2,
+        orange_systems=1,
+        yellow_systems=2,
+        green_systems=3,
+        gps_score=45,
+        money_score=38,
+        weakest_system_1="GPS",
+        weakest_system_2="Money",
+        strongest_system="People",
+        revenue_leak_total=14700
+    )
+
+    # Verify successful completion
+    assert result["status"] == "success"
+
+
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_email_sequence_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_contact_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.create_email_sequence')
+def test_signup_with_minimal_params(
+    mock_create,
+    mock_search_contact,
+    mock_search_sequence
+):
+    """Test flow works with only required parameters."""
+
+    # Setup mocks
+    mock_search_sequence.return_value = None
+    mock_search_contact.return_value = {"id": "contact-123"}
+    mock_create.return_value = {"id": "seq-456"}
+
+    # Run flow with ONLY required params
+    result = signup_handler_flow(
+        email="sarah@example.com",
+        first_name="Sarah",
+        business_name="Sarah's Salon",
+        assessment_score=52
+    )
+
+    # Verify successful completion
+    assert result["status"] == "success"
+    assert result["segment"] == "OPTIMIZE"  # No red/orange systems = OPTIMIZE
+
+
+# ==============================================================================
+# Test: Result Structure
+# ==============================================================================
+
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_email_sequence_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.search_contact_by_email')
+@patch('campaigns.christmas_campaign.flows.signup_handler.create_email_sequence')
+def test_result_contains_all_required_fields(
+    mock_create,
+    mock_search_contact,
+    mock_search_sequence
+):
+    """Test that flow result contains all expected fields."""
+
+    # Setup mocks
+    mock_search_sequence.return_value = None
+    mock_search_contact.return_value = {"id": "contact-123"}
+    mock_create.return_value = {"id": "seq-456"}
+
+    # Run flow
+    result = signup_handler_flow(
+        email="sarah@example.com",
+        first_name="Sarah",
+        business_name="Sarah's Salon",
+        assessment_score=52,
+        red_systems=2
+    )
+
+    # Verify all required fields present
+    assert "status" in result
+    assert "email" in result
+    assert "sequence_id" in result
+    assert "contact_id" in result
+    assert "segment" in result
+    assert "campaign" in result
+    assert "timestamp" in result
+    assert "orchestrator_result" in result
+
+    # Verify field types
+    assert isinstance(result["status"], str)
+    assert isinstance(result["email"], str)
+    assert isinstance(result["sequence_id"], str)
+    assert isinstance(result["segment"], str)
+    assert isinstance(result["campaign"], str)
+    assert isinstance(result["timestamp"], str)
+    assert isinstance(result["orchestrator_result"], dict)
