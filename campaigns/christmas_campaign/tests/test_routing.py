@@ -81,59 +81,48 @@ class TestClassifySegment:
 
 
 class TestGetEmailTemplateId:
-    """Test email template ID selection logic."""
+    """Test email template ID selection logic for 5-Day sequence."""
+
+    # 5-Day template names (exact Notion names)
+    E1 = "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
+    E2 = "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
+    E3 = "5-Day E3: Van Tiny Case Study + Soft ASK"
+    E4 = "5-Day E4: Value Stack + Medium ASK"
+    E5 = "5-Day E5: Final Call - HARD ASK (Last Email)"
 
     def test_email_1_universal(self):
         """Test Email 1 is universal (same for all segments)."""
-        assert get_email_template_id(1, "CRITICAL") == "christmas_email_1"
-        assert get_email_template_id(1, "URGENT") == "christmas_email_1"
-        assert get_email_template_id(1, "OPTIMIZE") == "christmas_email_1"
+        assert get_email_template_id(1, "CRITICAL") == self.E1
+        assert get_email_template_id(1, "URGENT") == self.E1
+        assert get_email_template_id(1, "OPTIMIZE") == self.E1
 
-    def test_email_2_segment_specific_critical(self):
-        """Test Email 2 is segment-specific for CRITICAL."""
-        assert get_email_template_id(2, "CRITICAL") == "christmas_email_2a_critical"
-
-    def test_email_2_segment_specific_urgent(self):
-        """Test Email 2 is segment-specific for URGENT."""
-        assert get_email_template_id(2, "URGENT") == "christmas_email_2b_urgent"
-
-    def test_email_2_segment_specific_optimize(self):
-        """Test Email 2 is segment-specific for OPTIMIZE."""
-        assert get_email_template_id(2, "OPTIMIZE") == "christmas_email_2c_optimize"
+    def test_email_2_universal(self):
+        """Test Email 2 is universal (5-Day sequence has no segment variants)."""
+        assert get_email_template_id(2, "CRITICAL") == self.E2
+        assert get_email_template_id(2, "URGENT") == self.E2
+        assert get_email_template_id(2, "OPTIMIZE") == self.E2
 
     def test_email_3_universal(self):
         """Test Email 3 is universal."""
-        assert get_email_template_id(3, "CRITICAL") == "christmas_email_3"
-        assert get_email_template_id(3, "URGENT") == "christmas_email_3"
-        assert get_email_template_id(3, "OPTIMIZE") == "christmas_email_3"
+        assert get_email_template_id(3, "CRITICAL") == self.E3
+        assert get_email_template_id(3, "URGENT") == self.E3
+        assert get_email_template_id(3, "OPTIMIZE") == self.E3
 
     def test_email_4_universal(self):
         """Test Email 4 is universal."""
-        assert get_email_template_id(4, "CRITICAL") == "christmas_email_4"
+        assert get_email_template_id(4, "CRITICAL") == self.E4
+        assert get_email_template_id(4, "URGENT") == self.E4
+        assert get_email_template_id(4, "OPTIMIZE") == self.E4
 
     def test_email_5_universal(self):
         """Test Email 5 is universal."""
-        assert get_email_template_id(5, "OPTIMIZE") == "christmas_email_5"
-
-    def test_email_6_universal(self):
-        """Test Email 6 is universal."""
-        assert get_email_template_id(6, "URGENT") == "christmas_email_6"
-
-    def test_email_7_segment_specific_critical(self):
-        """Test Email 7 is segment-specific for CRITICAL."""
-        assert get_email_template_id(7, "CRITICAL") == "christmas_email_7a_critical"
-
-    def test_email_7_segment_specific_urgent(self):
-        """Test Email 7 is segment-specific for URGENT."""
-        assert get_email_template_id(7, "URGENT") == "christmas_email_7b_urgent"
-
-    def test_email_7_segment_specific_optimize(self):
-        """Test Email 7 is segment-specific for OPTIMIZE."""
-        assert get_email_template_id(7, "OPTIMIZE") == "christmas_email_7c_optimize"
+        assert get_email_template_id(5, "CRITICAL") == self.E5
+        assert get_email_template_id(5, "URGENT") == self.E5
+        assert get_email_template_id(5, "OPTIMIZE") == self.E5
 
     def test_invalid_email_number_fallback(self):
         """Test fallback for invalid email number."""
-        assert get_email_template_id(99, "CRITICAL") == "christmas_email_1"
+        assert get_email_template_id(99, "CRITICAL") == self.E1
 
 
 class TestShouldSendDiscordAlert:
@@ -220,16 +209,21 @@ class TestGetSegmentDescription:
 class TestSegmentClassificationIntegration:
     """Integration tests combining classification and template selection."""
 
+    # 5-Day template names (exact Notion names)
+    E1 = "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
+    E2 = "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
+    E5 = "5-Day E5: Final Call - HARD ASK (Last Email)"
+
     def test_critical_flow_complete(self):
         """Test complete flow for CRITICAL segment."""
         # Classify
         segment = classify_segment(red_systems=3, orange_systems=2, yellow_systems=2, green_systems=1)
         assert segment == "CRITICAL"
 
-        # Template selection
-        assert get_email_template_id(1, segment) == "christmas_email_1"
-        assert get_email_template_id(2, segment) == "christmas_email_2a_critical"
-        assert get_email_template_id(7, segment) == "christmas_email_7a_critical"
+        # Template selection (5-Day sequence - all universal)
+        assert get_email_template_id(1, segment) == self.E1
+        assert get_email_template_id(2, segment) == self.E2
+        assert get_email_template_id(5, segment) == self.E5
 
         # Discord alert
         assert should_send_discord_alert(segment) is True
@@ -243,10 +237,10 @@ class TestSegmentClassificationIntegration:
         segment = classify_segment(red_systems=1, orange_systems=1, yellow_systems=3, green_systems=3)
         assert segment == "URGENT"
 
-        # Template selection
-        assert get_email_template_id(1, segment) == "christmas_email_1"
-        assert get_email_template_id(2, segment) == "christmas_email_2b_urgent"
-        assert get_email_template_id(7, segment) == "christmas_email_7b_urgent"
+        # Template selection (5-Day sequence - all universal)
+        assert get_email_template_id(1, segment) == self.E1
+        assert get_email_template_id(2, segment) == self.E2
+        assert get_email_template_id(5, segment) == self.E5
 
         # Discord alert
         assert should_send_discord_alert(segment) is False
@@ -260,10 +254,10 @@ class TestSegmentClassificationIntegration:
         segment = classify_segment(red_systems=0, orange_systems=1, yellow_systems=3, green_systems=4)
         assert segment == "OPTIMIZE"
 
-        # Template selection
-        assert get_email_template_id(1, segment) == "christmas_email_1"
-        assert get_email_template_id(2, segment) == "christmas_email_2c_optimize"
-        assert get_email_template_id(7, segment) == "christmas_email_7c_optimize"
+        # Template selection (5-Day sequence - all universal)
+        assert get_email_template_id(1, segment) == self.E1
+        assert get_email_template_id(2, segment) == self.E2
+        assert get_email_template_id(5, segment) == self.E5
 
         # Discord alert
         assert should_send_discord_alert(segment) is False

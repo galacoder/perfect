@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_postcall_webhook_valid_payload_accepted",
+  "status": "passed",
+  "start_time": "2025-11-27T20:50:25.147201",
+  "end_time": "2025-11-27T20:50:25.148297",
+  "duration_seconds": 0.001096,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Post-call follow-up sequence will begin shortly",
+        "email": "e2e-postcall-valid-1764294625147@e2e-test.example.com",
+        "call_outcome": "Maybe",
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-27T20:50:25.148133"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Flow triggered for e2e-postcall-valid-1764294625147@e2e-test.example.com",
+      "timestamp": "2025-11-27T20:50:25.148141"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "test_name": "test_e2e_health_endpoint_responds",
+  "status": "passed",
+  "start_time": "2025-11-27T20:25:53.199568",
+  "end_time": "2025-11-27T20:25:53.200426",
+  "duration_seconds": 0.000858,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Health endpoint: OK",
+      "timestamp": "2025-11-27T20:25:53.200322"
+    },
+    {
+      "note": "Testing mode: true",
+      "timestamp": "2025-11-27T20:25:53.200324"
+    },
+    {
+      "note": "Notion configured: True",
+      "timestamp": "2025-11-27T20:25:53.200326"
+    },
+    {
+      "note": "Resend configured: True",
+      "timestamp": "2025-11-27T20:25:53.200327"
+    }
+  ]
+}

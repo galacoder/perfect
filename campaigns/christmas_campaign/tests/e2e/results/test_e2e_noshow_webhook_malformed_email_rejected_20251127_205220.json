@@ -1,0 +1,34 @@
+{
+  "test_name": "test_e2e_noshow_webhook_malformed_email_rejected",
+  "status": "passed",
+  "start_time": "2025-11-27T20:52:20.946615",
+  "end_time": "2025-11-27T20:52:20.947406",
+  "duration_seconds": 0.000791,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/calendly-noshow",
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "value_error",
+            "loc": [
+              "body",
+              "email"
+            ],
+            "msg": "value is not a valid email address: An email address must have an @-sign.",
+            "input": "not-an-email",
+            "ctx": {
+              "reason": "An email address must have an @-sign."
+            }
+          }
+        ]
+      },
+      "timestamp": "2025-11-27T20:52:20.947303"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

@@ -5,13 +5,19 @@ This flow handles new customer signups from the Christmas campaign:
 1. Receives signup data from webhook
 2. Creates/updates contact in BusinessX Canada Database
 3. Creates email sequence tracking record in Email Sequence Database
-4. Schedules 7-email nurture sequence via Prefect Deployment
+4. Schedules 5-email nurture sequence via Prefect Deployment (Emails 2-5)
+
+Architecture (Website-First):
+- Website sends Email 1 immediately after signup
+- Website marks "Email 1 Sent" in Notion Email Sequence DB
+- Prefect schedules and sends Emails 2-5
 
 The flow ensures idempotency - if the customer already exists in the email
 sequence, it will not create duplicate records or schedule duplicate emails.
 
 Author: Christmas Campaign Team
 Created: 2025-11-19
+Updated: 2025-11-28 (Changed to 5-day sequence, website-first architecture)
 """
 
 from prefect import flow, get_run_logger
@@ -55,15 +61,21 @@ def schedule_email_sequence(
     money_score: Optional[int] = None,
     weakest_system_1: Optional[str] = None,
     weakest_system_2: Optional[str] = None,
-    revenue_leak_total: Optional[int] = None
+    strongest_system: Optional[str] = None,
+    revenue_leak_total: Optional[int] = None,
+    start_from_email: int = 2
 ) -> List[Dict[str, Any]]:
     """
-    Schedule all 7 emails using Prefect Deployment.
+    Schedule emails 2-5 using Prefect Deployment (5-day sequence).
 
-    This function creates 7 separate flow runs of the send_email_flow, each scheduled
-    at the appropriate delay from now. The delay timing depends on TESTING_MODE:
-    - Production: [0h, 24h, 72h, 120h, 168h, 216h, 264h] (11 days total)
-    - Testing: [0min, 1min, 2min, 3min, 4min, 5min, 6min] (~6 minutes total)
+    Architecture:
+    - Website sends Email 1 immediately after signup
+    - This function schedules Emails 2-5 via Prefect
+    - By default, starts from Email 2 (website-first architecture)
+
+    This function creates flow runs for each scheduled email. Timing depends on TESTING_MODE:
+    - Production: Email 2 at +24h, Email 3 at +72h, Email 4 at +96h, Email 5 at +120h
+    - Testing: Email 2 at +1min, Email 3 at +2min, Email 4 at +3min, Email 5 at +4min
 
     Args:
         email: Customer email address
@@ -79,7 +91,9 @@ def schedule_email_sequence(
         money_score: Money system score (optional)
         weakest_system_1: Weakest system name (optional)
         weakest_system_2: Second weakest system (optional)
+        strongest_system: Strongest system name (optional)
         revenue_leak_total: Revenue leak estimate (optional)
+        start_from_email: Email number to start from (default: 2, since website sends Email 1)
 
     Returns:
         List of scheduled flow run details (email_number, flow_run_id, scheduled_time)
@@ -94,8 +108,8 @@ def schedule_email_sequence(
             red_systems=2
         )
         # Returns: [
-        #   {"email_number": 1, "flow_run_id": "...", "scheduled_time": "2025-11-19T10:00:00"},
         #   {"email_number": 2, "flow_run_id": "...", "scheduled_time": "2025-11-20T10:00:00"},
+        #   {"email_number": 3, "flow_run_id": "...", "scheduled_time": "2025-11-22T10:00:00"},
         #   ...
         # ]
     """
@@ -123,15 +137,30 @@ def schedule_email_sequence(
             logger.warning(f"⚠️ Failed to load testing-mode Secret: {e}")
             testing_mode = os.getenv("TESTING_MODE", "false").lower() == "true"
 
-        # Email timing (hours from now)
-        # Production: Day 0, Day 1, Day 3, Day 5, Day 7, Day 9, Day 11
-        # Testing: 0min, 1min, 2min, 3min, 4min, 5min, 6min
+        # 5-Day Email Sequence Timing (hours from now)
+        # Email 1 is sent by website immediately, so we skip it
+        # Production: Email 2 at +24h, Email 3 at +72h, Email 4 at +96h, Email 5 at +120h
+        # Testing: Email 2 at +1min, Email 3 at +2min, Email 4 at +3min, Email 5 at +4min
         if testing_mode:
-            delays_hours = [0, 1/60, 2/60, 3/60, 4/60, 5/60, 6/60]  # Minutes converted to hours
+            # Testing mode: 1 minute between emails
+            delays_hours = {
+                1: 0,       # Email 1: sent by website
+                2: 1/60,    # Email 2: 1 minute
+                3: 2/60,    # Email 3: 2 minutes
+                4: 3/60,    # Email 4: 3 minutes
+                5: 4/60     # Email 5: 4 minutes
+            }
             logger.info("⚡ TESTING MODE: Using fast delays (minutes)")
         else:
-            delays_hours = [0, 24, 72, 120, 168, 216, 264]  # Production delays
-            logger.info("🚀 PRODUCTION MODE: Using standard delays (days)")
+            # Production mode: 5-day sequence
+            delays_hours = {
+                1: 0,       # Email 1: sent by website (Day 0)
+                2: 24,      # Email 2: Day 1 (24 hours)
+                3: 72,      # Email 3: Day 3 (72 hours)
+                4: 96,      # Email 4: Day 4 (96 hours)
+                5: 120      # Email 5: Day 5 (120 hours)
+            }
+            logger.info("🚀 PRODUCTION MODE: Using 5-day delays")
 
         async with get_client() as client:
             # Find the deployment
@@ -145,9 +174,10 @@ def schedule_email_sequence(
                 logger.error(f"   Make sure to run: python campaigns/christmas_campaign/deployments/deploy_christmas.py")
                 raise
 
-            # Schedule each of the 7 emails
-            for email_number in range(1, 8):
-                delay_hours = delays_hours[email_number - 1]
+            # Schedule emails from start_from_email to 5 (5-day sequence)
+            # Default: start_from_email=2 (website sends Email 1)
+            for email_number in range(start_from_email, 6):  # 2, 3, 4, 5
+                delay_hours = delays_hours.get(email_number, 0)
                 scheduled_time = datetime.now() + timedelta(hours=delay_hours)
 
                 logger.info(
@@ -175,6 +205,7 @@ def schedule_email_sequence(
                         "money_score": money_score,
                         "weakest_system_1": weakest_system_1,
                         "weakest_system_2": weakest_system_2,
+                        "strongest_system": strongest_system,
                         "revenue_leak_total": revenue_leak_total
                     },
                     state=Scheduled(scheduled_time=scheduled_time)
@@ -202,7 +233,7 @@ def schedule_email_sequence(
 
 @flow(
     name="christmas-signup-handler",
-    description="Handle Christmas campaign signup and start email sequence",
+    description="Handle Christmas campaign signup and start 5-day email sequence (Emails 2-5)",
     log_prints=True
 )
 def signup_handler_flow(
@@ -218,6 +249,7 @@ def signup_handler_flow(
     money_score: Optional[int] = None,
     weakest_system_1: Optional[str] = None,
     weakest_system_2: Optional[str] = None,
+    strongest_system: Optional[str] = None,
     revenue_leak_total: Optional[int] = None
 ) -> dict:
     """
@@ -272,10 +304,10 @@ def signup_handler_flow(
         logger.warning(f"⚠️ Email sequence already exists for {email}")
         logger.warning(f"   Sequence ID: {sequence_id}, Campaign: {campaign}")
 
-        # Check if any emails have been sent
+        # Check if any emails have been sent (5-day sequence)
         props = existing_sequence["properties"]
         emails_sent = []
-        for i in range(1, 8):
+        for i in range(1, 6):  # 5-day sequence: Emails 1-5
             if props.get(f"Email {i} Sent", {}).get("date"):
                 emails_sent.append(i)
 
@@ -366,11 +398,23 @@ def signup_handler_flow(
         logger.info(f"✅ Using existing email sequence record: {sequence_id}")
 
     # ==============================================================================
-    # Step 5: Schedule 7-email nurture sequence via Prefect Deployment
+    # Step 5: Schedule 5-day nurture sequence via Prefect Deployment (Emails 2-5)
     # ==============================================================================
 
-    logger.info(f"🚀 Scheduling 7-email sequence via Prefect Deployment")
-    logger.info(f"   Sequence ID: {sequence_id}, Segment: {segment}")
+    # Determine start email: Check if Email 1 was already sent by website
+    start_email = 2  # Default: website sends Email 1
+    if existing_sequence:
+        email_1_sent = existing_sequence["properties"].get("Email 1 Sent", {}).get("date")
+        if email_1_sent:
+            logger.info(f"✅ Email 1 already sent at {email_1_sent['start']} (website)")
+            start_email = 2
+        else:
+            # Website hasn't sent Email 1 yet - Prefect will send all 5
+            logger.warning(f"⚠️ Email 1 not yet sent - Prefect will schedule from Email 1")
+            start_email = 1
+
+    logger.info(f"🚀 Scheduling 5-day email sequence via Prefect Deployment")
+    logger.info(f"   Starting from Email #{start_email}, Sequence ID: {sequence_id}, Segment: {segment}")
 
     try:
         scheduled_flows = schedule_email_sequence(
@@ -387,7 +431,9 @@ def signup_handler_flow(
             money_score=money_score,
             weakest_system_1=weakest_system_1,
             weakest_system_2=weakest_system_2,
-            revenue_leak_total=revenue_leak_total
+            strongest_system=strongest_system,
+            revenue_leak_total=revenue_leak_total,
+            start_from_email=start_email
         )
 
         logger.info(f"✅ Scheduled {len(scheduled_flows)} email flows")

@@ -1,0 +1,149 @@
+{
+  "task_id": "1127-christmas-e2e-production-test",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 0,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 20
+  },
+  "test_categories": [
+    {
+      "name": "Pre-flight Checks",
+      "tests": [
+        {
+          "id": "test_prefect_api_reachable",
+          "feature_id": "1.1",
+          "description": "Verify Prefect API responds to health check",
+          "status": "not_run"
+        },
+        {
+          "id": "test_testing_mode_enabled",
+          "feature_id": "1.2",
+          "description": "Verify TESTING_MODE secret block is true",
+          "status": "not_run"
+        },
+        {
+          "id": "test_worker_pool_active",
+          "feature_id": "1.3",
+          "description": "Verify default work pool has online workers",
+          "status": "not_run"
+        },
+        {
+          "id": "test_deployment_exists",
+          "feature_id": "1.4",
+          "description": "Verify christmas-signup-handler deployment exists",
+          "status": "not_run"
+        }
+      ]
+    },
+    {
+      "name": "Funnel Navigation",
+      "tests": [
+        {
+          "id": "test_funnel_page_loads",
+          "feature_id": "2.1",
+          "description": "Production funnel page loads without errors",
+          "status": "not_run"
+        },
+        {
+          "id": "test_form_fields_present",
+          "feature_id": "2.2",
+          "description": "All required form fields are present and fillable",
+          "status": "not_run"
+        },
+        {
+          "id": "test_form_submission",
+          "feature_id": "2.4",
+          "description": "Form submits successfully and navigates to next page",
+          "status": "not_run"
+        }
+      ]
+    },
+    {
+      "name": "Webhook Verification",
+      "tests": [
+        {
+          "id": "test_christmas_signup_webhook",
+          "feature_id": "3.1",
+          "description": "Christmas signup webhook creates flow run",
+          "status": "not_run"
+        },
+        {
+          "id": "test_flow_run_parameters",
+          "feature_id": "3.2",
+          "description": "Flow run has correct parameters from webhook",
+          "status": "not_run"
+        },
+        {
+          "id": "test_notion_sequence_created",
+          "feature_id": "3.3",
+          "description": "Email Sequence record created in Notion",
+          "status": "not_run"
+        },
+        {
+          "id": "test_seven_emails_scheduled",
+          "feature_id": "3.4",
+          "description": "7 email flow runs scheduled with correct timing",
+          "status": "not_run"
+        }
+      ]
+    },
+    {
+      "name": "Email Delivery",
+      "tests": [
+        {
+          "id": "test_email_sequence_completes",
+          "feature_id": "4.1",
+          "description": "All 7 emails sent within expected timeframe",
+          "status": "not_run"
+        },
+        {
+          "id": "test_notion_timestamps_updated",
+          "feature_id": "4.2",
+          "description": "Email sent timestamps updated in Notion",
+          "status": "not_run"
+        },
+        {
+          "id": "test_all_flow_runs_completed",
+          "feature_id": "4.3",
+          "description": "All 7 send_email flow runs show Completed state",
+          "status": "not_run"
+        }
+      ]
+    },
+    {
+      "name": "Traditional Service Webhooks",
+      "tests": [
+        {
+          "id": "test_noshow_webhook",
+          "feature_id": "5.1",
+          "description": "No-show webhook creates 3-email recovery sequence",
+          "status": "not_run"
+        },
+        {
+          "id": "test_postcall_webhook",
+          "feature_id": "5.2",
+          "description": "Post-call webhook creates 3-email follow-up sequence",
+          "status": "not_run"
+        },
+        {
+          "id": "test_onboarding_webhook",
+          "feature_id": "5.3",
+          "description": "Onboarding webhook creates 3-email welcome sequence",
+          "status": "not_run"
+        },
+        {
+          "id": "test_all_traditional_flows_complete",
+          "feature_id": "5.4",
+          "description": "All Traditional Service flows complete successfully",
+          "status": "not_run"
+        }
+      ]
+    }
+  ],
+  "suites": [],
+  "failures": [],
+  "history": []
+}

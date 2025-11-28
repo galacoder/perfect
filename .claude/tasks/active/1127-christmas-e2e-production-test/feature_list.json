@@ -1,0 +1,275 @@
+{
+  "task_id": "1127-christmas-e2e-production-test",
+  "domain": "coding",
+  "status": "awaiting_approval",
+  "current_phase": "PLAN",
+  "current_wave": null,
+  "current_feature_id": null,
+  "created_at": "2025-11-27T21:00:00Z",
+  "updated_at": "2025-11-27T21:00:00Z",
+  "meta": {
+    "title": "Christmas Campaign E2E Production Test",
+    "description": "Test Christmas Campaign automation flows E2E in production using Puppeteer MCP before ads launch. Navigate production funnel, fill forms, trigger webhooks, verify Prefect flows execute, confirm email sequences complete.",
+    "estimated_hours": 2,
+    "test_email": "lengobaosang@gmail.com",
+    "production_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+    "prefect_api": "https://prefect.galatek.dev/api",
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    }
+  },
+  "waves": [
+    {
+      "id": 1,
+      "name": "Pre-flight Checks",
+      "objective": "Verify production environment is ready for E2E testing",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "name": "Funnel Navigation & Form Submission",
+      "objective": "Use Puppeteer to navigate production funnel and submit form",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "name": "Christmas Signup Flow Verification",
+      "objective": "Verify signup webhook triggers Prefect flow and schedules emails",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "name": "Email Delivery Verification",
+      "objective": "Wait for email sequence and verify delivery",
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "name": "Traditional Service Webhooks",
+      "objective": "Test no-show, post-call, and onboarding webhook flows",
+      "status": "pending"
+    }
+  ],
+  "features": [
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Verify Prefect server connectivity",
+      "description": "Check that Prefect API at https://prefect.galatek.dev/api is reachable",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Verify TESTING_MODE is enabled",
+      "description": "Confirm testing-mode Secret block is set to true for fast email timing",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Check worker pool status",
+      "description": "Verify default work pool has active workers",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "1.4",
+      "wave": 1,
+      "name": "Verify deployment exists",
+      "description": "Confirm christmas-signup-handler deployment ID 1ae3a3b3-e076-49c5-9b08-9c176aa47aa0 exists",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Navigate to production funnel",
+      "description": "Use Puppeteer to navigate to https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Fill signup form",
+      "description": "Enter test data: firstName='E2E Test', email='lengobaosang@gmail.com', monthlyRevenue='20k-50k', biggestChallenge='systems'",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Accept privacy checkbox",
+      "description": "Click privacy consent checkbox",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Submit form and capture response",
+      "description": "Click submit button and verify navigation to assessment page",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "2.5",
+      "wave": 2,
+      "name": "Complete assessment (if multi-step)",
+      "description": "Navigate through assessment questions if required",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Trigger christmas-signup webhook directly",
+      "description": "POST to Prefect deployment with test payload to verify flow execution",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Verify flow run created",
+      "description": "Check Prefect API for new flow run with expected parameters",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Verify Email Sequence record in Notion",
+      "description": "Check Notion Email Sequence database for new entry with correct data",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "3.4",
+      "wave": 3,
+      "name": "Verify 7 scheduled email flow runs",
+      "description": "Confirm 7 child flow runs scheduled with correct timing",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Wait for email sequence (7 minutes)",
+      "description": "Allow time for all 7 emails to be sent in TESTING_MODE",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Verify Email 1 sent timestamp in Notion",
+      "description": "Check Email 1 Sent field is populated in Email Sequence record",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Verify all 7 flow runs completed",
+      "description": "Check Prefect dashboard for 7 completed send_email flow runs",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "Check Resend delivery status (optional)",
+      "description": "If API access available, verify email delivery in Resend dashboard",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false
+    },
+    {
+      "id": "5.1",
+      "wave": 5,
+      "name": "Test calendly-noshow webhook",
+      "description": "POST to /webhook/calendly-noshow and verify 3-email recovery sequence",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false
+    },
+    {
+      "id": "5.2",
+      "wave": 5,
+      "name": "Test postcall-maybe webhook",
+      "description": "POST to /webhook/postcall-maybe and verify 3-email follow-up sequence",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false
+    },
+    {
+      "id": "5.3",
+      "wave": 5,
+      "name": "Test onboarding-start webhook",
+      "description": "POST to /webhook/onboarding-start and verify 3-email welcome sequence",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false
+    },
+    {
+      "id": "5.4",
+      "wave": 5,
+      "name": "Verify all Traditional Service flows completed",
+      "description": "Check all 3 Traditional Service sequences completed successfully",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false
+    }
+  ],
+  "progress": {
+    "total_features": 20,
+    "completed_features": 0,
+    "total_waves": 5,
+    "completed_waves": 0,
+    "percentage": 0
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-27T21:00:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-27T21:05:00Z",
+      "action": "EXPLORE phase - Read flow files and STATUS.md"
+    },
+    {
+      "timestamp": "2025-11-27T21:10:00Z",
+      "action": "EXPLORE phase - Navigated production funnel with Puppeteer"
+    },
+    {
+      "timestamp": "2025-11-27T21:15:00Z",
+      "action": "EXPLORE phase - Identified form fields and webhook payloads"
+    },
+    {
+      "timestamp": "2025-11-27T21:20:00Z",
+      "action": "PLAN phase complete - awaiting approval"
+    }
+  ]
+}

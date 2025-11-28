@@ -23,14 +23,6 @@ from campaigns.christmas_campaign.flows.onboarding_handler import (
 
 
 @pytest.fixture
-def prefect_test_harness():
-    """Fixture to provide Prefect test harness for flow execution."""
-    from prefect.testing.utilities import prefect_test_harness
-    with prefect_test_harness():
-        yield
-
-
-@pytest.fixture
 def mock_contact():
     """Mock contact returned from Notion."""
     return {
@@ -45,12 +37,13 @@ def mock_contact():
 
 @pytest.fixture
 def mock_onboarding_sequence():
-    """Mock onboarding sequence returned from Notion."""
+    """Mock onboarding sequence returned from Notion with Template Type=Onboarding."""
     return {
         "id": "test-sequence-456",
         "properties": {
             "Email": {"email": "test@example.com"},
             "Campaign": {"select": {"name": "Christmas 2025"}},
+            "Template Type": {"select": {"name": "Onboarding"}},  # Required for idempotency check
             "Payment Amount": {"number": 2997.00},
             "Payment Date": {"date": {"start": "2025-12-01T15:00:00Z"}},
             "Salon Address": {"rich_text": [{"plain_text": "123 Main St"}]},
@@ -92,7 +85,7 @@ class TestOnboardingHandlerFlowStructure:
 class TestOnboardingHandlerFlow:
     """Test onboarding handler flow functionality (Wave 4)."""
 
-    def test_flow_rejects_unconfirmed_payment(self, prefect_test_harness):
+    def test_flow_rejects_unconfirmed_payment(self):
         """Test flow rejects requests without payment confirmation."""
         result = onboarding_handler_flow(
             email="test@example.com",
@@ -107,7 +100,7 @@ class TestOnboardingHandlerFlow:
         assert "payment not confirmed" in result["message"].lower()
 
     @patch('campaigns.christmas_campaign.flows.onboarding_handler.search_contact_by_email')
-    def test_flow_handles_contact_not_found(self, mock_search, prefect_test_harness):
+    def test_flow_handles_contact_not_found(self, mock_search):
         """Test flow handles contact not found gracefully."""
         mock_search.return_value = None
 
@@ -130,7 +123,7 @@ class TestOnboardingHandlerFlow:
     @patch('campaigns.christmas_campaign.flows.onboarding_handler.search_contact_by_email')
     def test_flow_creates_sequence_and_schedules_emails(
         self, mock_search_contact, mock_search_sequence, mock_create_sequence,
-        mock_schedule, mock_contact, mock_onboarding_sequence, prefect_test_harness
+        mock_schedule, mock_contact, mock_onboarding_sequence
     ):
         """Test successful flow execution creates sequence and schedules emails."""
         mock_search_contact.return_value = mock_contact
@@ -164,7 +157,7 @@ class TestOnboardingHandlerFlow:
     @patch('campaigns.christmas_campaign.flows.onboarding_handler.search_contact_by_email')
     def test_flow_skips_duplicate_onboarding_sequence(
         self, mock_search_contact, mock_search_sequence,
-        mock_contact, mock_onboarding_sequence, prefect_test_harness
+        mock_contact, mock_onboarding_sequence
     ):
         """Test idempotency - skip if onboarding sequence already exists."""
         mock_search_contact.return_value = mock_contact

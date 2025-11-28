@@ -1,0 +1,105 @@
+{
+  "test_name": "test_e2e_full_journey_complete_path",
+  "status": "passed",
+  "start_time": "2025-11-28T14:21:56.410248",
+  "end_time": "2025-11-28T14:22:02.428717",
+  "duration_seconds": 6.018469,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/christmas-signup",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Christmas signup received and email sequence will begin shortly",
+        "email": "e2e-full-journey-1764357716410@e2e-test.example.com",
+        "campaign": "Christmas 2025",
+        "timestamp": "2025-11-28T14:21:56.411156"
+      },
+      "timestamp": "2025-11-28T14:21:56.411510"
+    },
+    {
+      "endpoint": "/webhook/calendly-noshow",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "No-show recovery sequence will begin shortly",
+        "email": "e2e-full-journey-1764357716410@e2e-test.example.com",
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-28T14:21:58.416312"
+    },
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Post-call follow-up sequence will begin shortly",
+        "email": "e2e-full-journey-1764357716410@e2e-test.example.com",
+        "call_outcome": "Maybe",
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-28T14:22:00.421878"
+    },
+    {
+      "endpoint": "/webhook/onboarding-start",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Onboarding welcome sequence will begin shortly",
+        "email": "e2e-full-journey-1764357716410@e2e-test.example.com",
+        "payment_amount": 2997.0,
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-28T14:22:02.428243"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "=== Step 1: Opt-in (Lead Nurture) ===",
+      "timestamp": "2025-11-28T14:21:56.410636"
+    },
+    {
+      "note": "Lead Nurture triggered for e2e-full-journey-1764357716410@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:21:56.411513"
+    },
+    {
+      "note": "=== Step 2: No-show (Recovery Sequence) ===",
+      "timestamp": "2025-11-28T14:21:58.415067"
+    },
+    {
+      "note": "No-Show Recovery triggered for e2e-full-journey-1764357716410@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:21:58.416317"
+    },
+    {
+      "note": "=== Step 3: Maybe (Post-Call Sequence) ===",
+      "timestamp": "2025-11-28T14:22:00.419997"
+    },
+    {
+      "note": "Post-Call Maybe triggered for e2e-full-journey-1764357716410@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:22:00.421885"
+    },
+    {
+      "note": "=== Step 4: Close (Onboarding Sequence) ===",
+      "timestamp": "2025-11-28T14:22:02.426934"
+    },
+    {
+      "note": "Onboarding triggered for e2e-full-journey-1764357716410@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:22:02.428249"
+    },
+    {
+      "note": "=== Journey Complete ===",
+      "timestamp": "2025-11-28T14:22:02.428251"
+    },
+    {
+      "note": "Customer email: e2e-full-journey-1764357716410@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:22:02.428252"
+    },
+    {
+      "note": "Sequences triggered: Lead Nurture, No-Show, Post-Call, Onboarding",
+      "timestamp": "2025-11-28T14:22:02.428254"
+    }
+  ]
+}

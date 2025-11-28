@@ -65,32 +65,45 @@ def get_email_template_id(
     """
     Get template ID for a specific email and segment combination.
 
-    Email Template Mapping (Christmas 2025 - All Universal):
-    - Email 1-7: Universal templates (christmas_email_1 through christmas_email_7)
+    Email Template Mapping (Christmas 2025 - 5-Day Sequence):
+    - Email 1: "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
+    - Email 2: "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
+    - Email 3: "5-Day E3: Van Tiny Case Study + Soft ASK"
+    - Email 4: "5-Day E4: Value Stack + Medium ASK"
+    - Email 5: "5-Day E5: Final Call - HARD ASK (Last Email)"
 
-    Note: The Christmas 2025 campaign uses universal templates for all segments.
+    Note: The Christmas 2025 campaign now uses a 5-day sequence (not 7-day).
     The segment parameter is kept for compatibility but not used for template selection.
+    Website sends Email 1, Prefect sends Emails 2-5.
 
     Args:
-        email_number: Email number in sequence (1-7)
+        email_number: Email number in sequence (1-5)
         segment: Contact segment (not used for Christmas templates)
 
     Returns:
-        Template ID to use
+        Template ID to use (exact Notion template name)
 
     Example:
         template_id = get_email_template_id(email_number=1, segment="CRITICAL")
-        # Returns: "christmas_email_1"
+        # Returns: "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
 
         template_id = get_email_template_id(email_number=2, segment="CRITICAL")
-        # Returns: "christmas_email_2"
+        # Returns: "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
     """
-    # Christmas 2025: All emails use universal templates
-    if 1 <= email_number <= 7:
-        return f"christmas_email_{email_number}"
+    # Christmas 2025: 5-Day Sequence templates (exact Notion names)
+    templates = {
+        1: "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)",
+        2: "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)",
+        3: "5-Day E3: Van Tiny Case Study + Soft ASK",
+        4: "5-Day E4: Value Stack + Medium ASK",
+        5: "5-Day E5: Final Call - HARD ASK (Last Email)"
+    }
+
+    if email_number in templates:
+        return templates[email_number]
     else:
-        # Fallback
-        return "christmas_email_1"
+        # Fallback to Email 1
+        return templates[1]
 
 
 def should_send_discord_alert(segment: Literal["CRITICAL", "URGENT", "OPTIMIZE"]) -> bool:

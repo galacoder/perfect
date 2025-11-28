@@ -49,7 +49,7 @@ from campaigns.christmas_campaign.tasks.routing import get_email_template_id
 
 @flow(
     name="christmas-send-email",
-    description="Send single email in Christmas campaign nurture sequence",
+    description="Send single email in Christmas 5-day campaign nurture sequence",
     retries=1,
     retry_delay_seconds=300
 )
@@ -69,6 +69,7 @@ def send_email_flow(
     money_score: Optional[int] = None,
     weakest_system_1: Optional[str] = None,
     weakest_system_2: Optional[str] = None,
+    strongest_system: Optional[str] = None,
     revenue_leak_total: Optional[int] = None
 ) -> dict:
     """
@@ -168,12 +169,23 @@ def send_email_flow(
             raise ValueError(error_msg)
 
         # Step 4: Build variables for template substitution
-        logger.info("🔧 Building email variables")
+        # Pass ALL parameters for 5-Day sequence templates
+        logger.info("🔧 Building email variables (all 20+ fields for 5-Day templates)")
         variables = get_email_variables(
             first_name=first_name,
             business_name=business_name,
             assessment_score=assessment_score,
-            segment=segment
+            segment=segment,
+            red_systems=red_systems,
+            orange_systems=orange_systems,
+            yellow_systems=yellow_systems,
+            green_systems=green_systems,
+            gps_score=gps_score,
+            money_score=money_score,
+            weakest_system_1=weakest_system_1,
+            weakest_system_2=weakest_system_2,
+            strongest_system=strongest_system,
+            revenue_leak_total=revenue_leak_total
         )
 
         # Step 5: Send email via Resend

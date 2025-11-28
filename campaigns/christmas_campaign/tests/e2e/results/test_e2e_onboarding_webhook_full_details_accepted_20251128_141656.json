@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_onboarding_webhook_full_details_accepted",
+  "status": "passed",
+  "start_time": "2025-11-28T14:16:56.150445",
+  "end_time": "2025-11-28T14:16:56.152313",
+  "duration_seconds": 0.001868,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/onboarding-start",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Onboarding welcome sequence will begin shortly",
+        "email": "e2e-onboarding-full-1764357416150@e2e-test.example.com",
+        "payment_amount": 2997.0,
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-28T14:16:56.152060"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Full details captured: salon_address, observation_dates",
+      "timestamp": "2025-11-28T14:16:56.152072"
+    }
+  ]
+}

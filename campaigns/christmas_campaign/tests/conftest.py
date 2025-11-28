@@ -272,10 +272,14 @@ def mock_future_time():
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_mode():
     """
-    Enable Prefect test harness for all unit tests.
+    Disable Prefect API calls for all unit tests.
 
-    This creates an in-memory test database and prevents API calls.
-    Uses Prefect's official testing utilities for reliable test isolation.
+    Uses Prefect's official test harness which provides:
+    - In-memory SQLite database
+    - Ephemeral API server
+    - Proper test isolation
+
+    Note: Individual tests may need additional mocks for external services.
     """
     from prefect.testing.utilities import prefect_test_harness
 

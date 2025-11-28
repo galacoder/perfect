@@ -330,6 +330,373 @@ def test_form_submission(page: Page):
 
 ---
 
+---
+
+## Wave 7: Debug Email Delivery & Replace Python 3.12 Workers (NEW - Added 2025-11-28)
+**Objective**: Investigate why production funnel signup did not trigger email delivery, diagnose webhook-to-Prefect integration, and replace Python 3.12 workers with Python 3.11 via Coolify
+**Status**: Pending
+**Priority**: CRITICAL
+**Added via**: /add-tasks-coding
+
+### Issue 1: Email Delivery Failure
+
+**Problem**: User signed up via production funnel (https://sangletech.com/en/flows/businessX/dfu/xmas-a01) with lengobaosang@gmail.com but did NOT receive any emails.
+
+**Investigation Features**:
+- [ ] 7.1: Investigate website-to-webhook integration
+  - Check if website form actually calls Prefect webhook
+  - Verify webhook URL in website config/environment
+  - Test webhook reachability from internet
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.2: Check Prefect flow runs for test email
+  - Query Prefect API for christmas-signup-handler runs
+  - Filter by email = lengobaosang@gmail.com
+  - Check flow run states (COMPLETED, FAILED, CRASHED)
+  - Review logs for errors
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.3: Verify email templates exist in Notion
+  - Query templates database
+  - Verify all 7 Christmas templates exist
+  - Verify each has Subject and HTML Body
+  - **Templates**: christmas_email_1 through christmas_email_7
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.4: Check Resend delivery logs
+  - Search for emails to lengobaosang@gmail.com
+  - Determine if emails bounced or never sent
+  - Review error messages
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.5: Fix webhook integration issue
+  - Implement fix based on root cause from 7.1-7.4
+  - Test with manual webhook call
+  - Verify email delivered
+  - **Estimate**: 1 hour
+
+### Issue 2: Python 3.12 Worker Crash
+
+**Problem**: Production workers running Python 3.12 crash with `asyncio.get_child_watcher()` NotImplementedError on first flow execution.
+
+**Solution Features**:
+- [ ] 7.6: List Python 3.12 workers in Coolify
+  - Use `coolify-integration` skill
+  - List all services/workers
+  - Identify Python version for each
+  - Note service names/IDs for removal
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.7: Stop/Remove Python 3.12 workers
+  - Use `coolify-integration` skill
+  - Stop and remove crashing workers
+  - Verify removal
+  - Document for audit trail
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.8: Create new Python 3.11 worker via Coolify
+  - Create service with Python 3.11 base image
+  - Configure Prefect worker command
+  - Set environment variables:
+    - PREFECT_API_URL=https://prefect.galatek.dev/api
+    - PYTHONPATH=/app
+    - TESTING_MODE=true
+  - Deploy and start
+  - **Estimate**: 1 hour
+
+- [ ] 7.9: Verify new worker connects to Prefect
+  - Check Prefect dashboard for worker in pool
+  - Verify "online" status
+  - Trigger test flow run
+  - Confirm no asyncio errors
+  - **Estimate**: 0.5 hours
+
+- [ ] 7.10: Full E2E test with new worker
+  - Submit form via production funnel
+  - Verify webhook triggers flow
+  - Verify flow runs on Python 3.11 worker
+  - Confirm email delivered to lengobaosang@gmail.com
+  - **Estimate**: 0.5 hours
+
+### Skills Required
+- `coolify-integration` - For server/worker management
+- `prefect-marketing-automation` - For Prefect API operations
+
+### Success Criteria
+- [ ] Root cause of email delivery failure identified
+- [ ] Webhook integration fixed and verified
+- [ ] Python 3.12 workers removed from Coolify
+- [ ] Python 3.11 workers deployed and running
+- [ ] Full E2E test passes with email delivery confirmed
+
+---
+
+## Updated Estimated Timeline
+
+| Wave | Duration | Dependencies | Status |
+|------|----------|--------------|--------|
+| Wave 0 | 30 min | None | Complete |
+| Wave 1 | 30 min | Server access | Skipped |
+| Wave 2 | 30 min | None | Complete |
+| Wave 3 | 15 min | Waves 0-2 complete | Complete |
+| Wave 4 | 15 min | Wave 3 complete | Complete |
+| Wave 5 | 120 min | Waves 0-4 complete | Complete |
+| Wave 6 | 180 min | Wave 5 complete | **Pending** |
+| Wave 7 | 240 min | Wave 6 in progress | **Pending** (CRITICAL) |
+| **Total** | **~14 hours** | | |
+
+---
+
+## Dependencies
+
+### External Access Required
+- Coolify skill for server management
+- Puppeteer MCP for browser automation
+- Playwright skill for E2E testing
+- Production Prefect at https://prefect.galatek.dev
+
+### Mandatory Test Email
+**CRITICAL**: Use `lengobaosang@gmail.com` for ALL testing
+
+### Pre-requisites
+- TESTING_MODE Secret block must be set to "true"
+- All Notion email templates must exist
+- Prefect Secret blocks configured on production
+- Playwright installed for E2E tests
+- Coolify access configured
+
+---
+
+## Blockers
+
+| ID | Severity | Description | Status | Solution |
+|----|----------|-------------|--------|----------|
+| B1 | Critical | Python 3.12 asyncio.get_child_watcher() deprecated | Resolved | Using local Python 3.11.8 worker |
+| B2 | High | 14 failing tests (Prefect API + Notion property) | Resolved | Wave 6 features 6.1-6.2 fixed |
+| B3 | High | Test coverage at 46% (target: 85%) | Pending | Wave 6 features 6.3-6.13 |
+| B4 | **Critical** | Production funnel signup did not trigger email delivery | **Pending** | Wave 7 features 7.1-7.5 |
+| B5 | High | Python 3.12 workers on production crash | **Pending** | Wave 7 features 7.6-7.10 |
+
+---
+
+## Wave 8: Production Readiness & Full E2E Testing (NEW - Added 2025-11-28)
+**Objective**: Verify Notion-only templates, establish deployment naming strategy for multi-campaign, document website-to-Prefect API integration, and run comprehensive E2E tests for all 4 flows
+**Status**: Pending
+**Priority**: CRITICAL
+**Added via**: /add-tasks-coding
+
+### Context
+
+User discovered:
+1. Prefect Server API can be called directly (no separate webhook server needed)
+2. Worker is deployed and ONLINE on Coolify (perfect-worker)
+3. Flow runs work when triggered via `POST /api/deployments/{id}/create_flow_run`
+4. User is planning additional campaigns and needs naming strategy
+
+### Deployment IDs (Known)
+
+| Deployment Name | Deployment ID |
+|----------------|---------------|
+| christmas-signup-handler | 1ae3a3b3-e076-49c5-9b08-9c176aa47aa0 |
+| christmas-noshow-recovery-handler | 3400e152-1cbe-4d8f-9f8a-0dd73569afa1 |
+| christmas-postcall-maybe-handler | ed929cd9-34b3-4655-b128-1a1e08a59cbd |
+| christmas-onboarding-handler | db47b919-1e55-4de2-b52c-6e2b0b2a2285 |
+
+### Feature Group 1: Verify Notion-Only Templates (Features 8.1-8.6)
+
+**Objective**: Audit all handler files to ensure templates come from Notion ONLY - no fallbacks, no hardcoding.
+
+- [ ] 8.1: Audit signup_handler.py for hardcoded templates
+  - grep for hardcoded template strings
+  - grep for fallback function calls
+  - Verify template_name passed to fetch_template
+  - **File**: `campaigns/christmas_campaign/flows/signup_handler.py`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.2: Audit noshow_recovery_handler.py for hardcoded templates
+  - Verify all 3 templates: noshow_recovery_email_1/2/3
+  - **File**: `campaigns/christmas_campaign/flows/noshow_recovery_handler.py`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.3: Audit postcall_maybe_handler.py for hardcoded templates
+  - Verify all 3 templates: postcall_maybe_email_1/2/3
+  - **File**: `campaigns/christmas_campaign/flows/postcall_maybe_handler.py`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.4: Audit onboarding_handler.py for hardcoded templates
+  - Verify all 3 templates: onboarding_phase1_email_1/2/3
+  - **File**: `campaigns/christmas_campaign/flows/onboarding_handler.py`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.5: Audit send_email_flow.py for hardcoded templates
+  - Verify ValueError raised on missing template
+  - Verify no get_fallback_template calls
+  - **File**: `campaigns/christmas_campaign/flows/send_email_flow.py`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.6: Document template variable mappings
+  - Variables: first_name, last_name, business_name, email, assessment_score, red_systems, orange_systems, green_systems, segment
+  - **Output**: `campaigns/christmas_campaign/docs/TEMPLATE_VARIABLES.md`
+  - **Estimate**: 0.5 hours
+
+### Feature Group 2: Deployment Naming Strategy (Features 8.7-8.10)
+
+**Objective**: Design and document deployment naming convention for multi-campaign support.
+
+- [ ] 8.7: Design deployment naming convention
+  - Format options: `{campaign}{year}-{flow}-handler`, `{campaign}-{flow}-v{version}`, `{campaign_code}-{flow}`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.8: Rename current deployments if needed
+  - Evaluate naming collision risks
+  - Create new deployments if needed
+  - Test new deployments work
+  - **Estimate**: 1 hour
+
+- [ ] 8.9: Document naming convention in ARCHITECTURE.md
+  - Add sections: Deployment Naming Convention, Multi-Campaign Strategy, Version Management
+  - **File**: `campaigns/christmas_campaign/ARCHITECTURE.md`
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.10: Create deployment registry table
+  - Columns: deployment_name, deployment_id, flow_name, campaign, work_pool, status
+  - **Output**: `campaigns/DEPLOYMENT_REGISTRY.md`
+  - **Estimate**: 0.5 hours
+
+### Feature Group 3: Website-to-Prefect Direct Integration (Features 8.11-8.14)
+
+**Objective**: Document API endpoints and create integration guide for website team.
+
+- [ ] 8.11: Document Prefect API endpoints for all 4 flows
+  - Endpoint format: `POST /api/deployments/{deployment_id}/create_flow_run`
+  - Include all 4 deployment IDs
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.12: Create API integration guide for website team
+  - Sections: Authentication, Endpoint URLs, Request payload, curl examples, Response/Error handling
+  - **Output**: `campaigns/christmas_campaign/WEBSITE_API_INTEGRATION.md`
+  - **Estimate**: 1 hour
+
+- [ ] 8.13: Verify template variables from website form
+  - Check website form fields map to template variables
+  - Test with sample form submission
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.14: Test website to Prefect API pipeline manually
+  - Submit curl request to deployment endpoint
+  - Verify flow run created and picked up by worker
+  - **Test Email**: lengobaosang@gmail.com
+  - **Estimate**: 0.5 hours
+
+### Feature Group 4: Comprehensive E2E Testing (Features 8.15-8.20)
+
+**Objective**: Run full E2E tests for all 4 flows via Prefect API, verify email delivery.
+
+- [ ] 8.15: E2E test: Signup flow via Prefect API
+  - POST to deployment endpoint with test payload
+  - Verify 7 emails scheduled in Notion
+  - **Deployment ID**: 1ae3a3b3-e076-49c5-9b08-9c176aa47aa0
+  - **Estimate**: 1 hour
+
+- [ ] 8.16: E2E test: Noshow recovery flow
+  - Verify 3 emails scheduled
+  - Check Resend for delivery to lengobaosang@gmail.com
+  - **Deployment ID**: 3400e152-1cbe-4d8f-9f8a-0dd73569afa1
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.17: E2E test: Postcall maybe flow
+  - Verify 3 emails scheduled
+  - Check Resend for delivery to lengobaosang@gmail.com
+  - **Deployment ID**: ed929cd9-34b3-4655-b128-1a1e08a59cbd
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.18: E2E test: Onboarding flow
+  - Verify 3 emails scheduled
+  - Check Resend for delivery to lengobaosang@gmail.com
+  - **Deployment ID**: db47b919-1e55-4de2-b52c-6e2b0b2a2285
+  - **Estimate**: 0.5 hours
+
+- [ ] 8.19: E2E test: Full sales funnel journey
+  - Complete journey: signup (7) -> noshow (3) -> postcall (3) -> onboarding (3)
+  - Verify no conflicts between sequences
+  - Verify total 16 emails scheduled correctly
+  - **Estimate**: 1.5 hours
+
+- [ ] 8.20: Production readiness checklist and sign-off
+  - All 4 flows deployed and accessible
+  - Worker online and healthy (Python 3.11)
+  - All 16+ templates in Notion with content
+  - No hardcoded templates in codebase
+  - API integration guide complete
+  - Deployment registry complete
+  - All E2E tests pass
+  - Test coverage >= 85%
+  - STATUS.md updated with final status
+  - **Estimate**: 0.5 hours
+
+### Wave 8 Success Criteria
+
+- [ ] All 5 handler files audited - no hardcoded templates
+- [ ] Template variable documentation complete
+- [ ] Deployment naming convention documented
+- [ ] Deployment registry created
+- [ ] API integration guide for website team complete
+- [ ] All 4 flows tested via Prefect API
+- [ ] Full sales funnel journey test passes
+- [ ] Production readiness checklist signed off
+
+---
+
+## Updated Estimated Timeline
+
+| Wave | Duration | Dependencies | Status |
+|------|----------|--------------|--------|
+| Wave 0 | 30 min | None | Complete |
+| Wave 1 | 30 min | Server access | Skipped |
+| Wave 2 | 30 min | None | Complete |
+| Wave 3 | 15 min | Waves 0-2 complete | Complete |
+| Wave 4 | 15 min | Wave 3 complete | Complete |
+| Wave 5 | 120 min | Waves 0-4 complete | Complete |
+| Wave 6 | 180 min | Wave 5 complete | **Pending** |
+| Wave 7 | 240 min | Wave 6 in progress | **Pending** (CRITICAL) |
+| Wave 8 | 720 min (12h) | Wave 7 complete | **Pending** |
+| **Total** | **~26 hours** | | |
+
+---
+
+## Dependencies
+
+### External Access Required
+- Coolify skill for server management
+- Puppeteer MCP for browser automation
+- Playwright skill for E2E testing
+- Production Prefect at https://prefect.galatek.dev
+
+### Mandatory Test Email
+**CRITICAL**: Use `lengobaosang@gmail.com` for ALL testing
+
+### Pre-requisites
+- TESTING_MODE Secret block must be set to "true"
+- All Notion email templates must exist
+- Prefect Secret blocks configured on production
+- Playwright installed for E2E tests
+- Coolify access configured
+
+---
+
+## Blockers
+
+| ID | Severity | Description | Status | Solution |
+|----|----------|-------------|--------|----------|
+| B1 | Critical | Python 3.12 asyncio.get_child_watcher() deprecated | Resolved | Using local Python 3.11.8 worker |
+| B2 | High | 14 failing tests (Prefect API + Notion property) | Resolved | Wave 6 features 6.1-6.2 fixed |
+| B3 | High | Test coverage at 46% (target: 85%) | Pending | Wave 6 features 6.3-6.13 |
+| B4 | **Critical** | Production funnel signup did not trigger email delivery | **Pending** | Wave 7 features 7.1-7.5 |
+| B5 | High | Python 3.12 workers on production crash | **Pending** | Wave 7 features 7.6-7.10 |
+
+---
+
 **Plan Created**: 2025-11-27
-**Updated**: 2025-11-28 (Wave 6 added via /add-tasks-coding)
+**Updated**: 2025-11-28 (Wave 8 added via /add-tasks-coding)
+**Total Features**: 78 (58 previous + 20 new)
 **Awaiting**: User approval to proceed to /execute-coding

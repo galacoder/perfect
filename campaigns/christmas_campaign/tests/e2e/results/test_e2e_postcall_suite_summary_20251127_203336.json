@@ -1,0 +1,41 @@
+{
+  "test_name": "test_e2e_postcall_suite_summary",
+  "status": "passed",
+  "start_time": "2025-11-27T20:33:36.979684",
+  "end_time": "2025-11-27T20:33:36.979882",
+  "duration_seconds": 0.000198,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Post-Call Maybe E2E Test Suite",
+      "timestamp": "2025-11-27T20:33:36.979796"
+    },
+    {
+      "note": "Tests covered:",
+      "timestamp": "2025-11-27T20:33:36.979798"
+    },
+    {
+      "note": "  - Webhook validation (valid/invalid payloads)",
+      "timestamp": "2025-11-27T20:33:36.979799"
+    },
+    {
+      "note": "  - Call notes and objections capture",
+      "timestamp": "2025-11-27T20:33:36.979800"
+    },
+    {
+      "note": "  - Flow triggering",
+      "timestamp": "2025-11-27T20:33:36.979801"
+    },
+    {
+      "note": "  - Sequence record creation (manual verification)",
+      "timestamp": "2025-11-27T20:33:36.979802"
+    },
+    {
+      "note": "  - Email timing (manual verification in testing mode)",
+      "timestamp": "2025-11-27T20:33:36.979803"
+    }
+  ]
+}

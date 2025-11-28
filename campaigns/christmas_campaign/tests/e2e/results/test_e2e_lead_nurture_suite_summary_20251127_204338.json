@@ -1,0 +1,41 @@
+{
+  "test_name": "test_e2e_lead_nurture_suite_summary",
+  "status": "passed",
+  "start_time": "2025-11-27T20:43:38.464996",
+  "end_time": "2025-11-27T20:43:38.465213",
+  "duration_seconds": 0.000217,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Lead Nurture Funnel E2E Test Suite",
+      "timestamp": "2025-11-27T20:43:38.465124"
+    },
+    {
+      "note": "Tests covered:",
+      "timestamp": "2025-11-27T20:43:38.465126"
+    },
+    {
+      "note": "  - Christmas signup webhook (3 segments)",
+      "timestamp": "2025-11-27T20:43:38.465127"
+    },
+    {
+      "note": "  - Flow triggering",
+      "timestamp": "2025-11-27T20:43:38.465128"
+    },
+    {
+      "note": "  - Sequence creation (manual verification)",
+      "timestamp": "2025-11-27T20:43:38.465129"
+    },
+    {
+      "note": "  - Browser automation (Puppeteer)",
+      "timestamp": "2025-11-27T20:43:38.465130"
+    },
+    {
+      "note": "  - Email monitoring (manual verification)",
+      "timestamp": "2025-11-27T20:43:38.465131"
+    }
+  ]
+}

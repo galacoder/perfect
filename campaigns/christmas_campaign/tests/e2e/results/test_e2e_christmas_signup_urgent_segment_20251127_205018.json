@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_christmas_signup_urgent_segment",
+  "status": "passed",
+  "start_time": "2025-11-27T20:50:18.972058",
+  "end_time": "2025-11-27T20:50:18.973080",
+  "duration_seconds": 0.001022,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/christmas-signup",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Christmas signup received and email sequence will begin shortly",
+        "email": "e2e-urgent-1764294618972@e2e-test.example.com",
+        "campaign": "Christmas 2025",
+        "timestamp": "2025-11-27T20:50:18.972625"
+      },
+      "timestamp": "2025-11-27T20:50:18.972926"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "URGENT segment: e2e-urgent-1764294618972@e2e-test.example.com",
+      "timestamp": "2025-11-27T20:50:18.972933"
+    }
+  ]
+}

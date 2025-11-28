@@ -1,0 +1,37 @@
+{
+  "test_name": "test_e2e_proper_handoff_between_sequences",
+  "status": "passed",
+  "start_time": "2025-11-28T14:25:25.359956",
+  "end_time": "2025-11-28T14:25:27.382257",
+  "duration_seconds": 2.022301,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "/christmas-signup: accepted",
+      "timestamp": "2025-11-28T14:25:25.361040"
+    },
+    {
+      "note": "/calendly-noshow: accepted",
+      "timestamp": "2025-11-28T14:25:25.864744"
+    },
+    {
+      "note": "/postcall-maybe: accepted",
+      "timestamp": "2025-11-28T14:25:26.370772"
+    },
+    {
+      "note": "/onboarding-start: accepted",
+      "timestamp": "2025-11-28T14:25:26.876850"
+    },
+    {
+      "note": "All 4 sequence types triggered for e2e-handoff-test-1764357925360@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:25:27.381885"
+    },
+    {
+      "note": "Verify in Notion: 4 separate sequence records",
+      "timestamp": "2025-11-28T14:25:27.381895"
+    }
+  ]
+}

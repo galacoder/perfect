@@ -1,0 +1,21 @@
+{
+  "test_name": "test_e2e_sequences_dont_conflict",
+  "status": "passed",
+  "start_time": "2025-11-28T14:16:48.949012",
+  "end_time": "2025-11-28T14:16:48.953418",
+  "duration_seconds": 0.004406,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Both sequences accepted for e2e-conflict-test-1764357408949@e2e-test.example.com",
+      "timestamp": "2025-11-28T14:16:48.953037"
+    },
+    {
+      "note": "No conflict between Lead Nurture and No-Show sequences",
+      "timestamp": "2025-11-28T14:16:48.953045"
+    }
+  ]
+}

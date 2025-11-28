@@ -1,0 +1,141 @@
+{
+  "test_name": "test_e2e_production_checklist",
+  "status": "passed",
+  "start_time": "2025-11-28T16:36:11.928493",
+  "end_time": "2025-11-28T16:36:11.928776",
+  "duration_seconds": 0.000283,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "=== Production Readiness Checklist ===",
+      "timestamp": "2025-11-28T16:36:11.928647"
+    },
+    {
+      "note": "",
+      "timestamp": "2025-11-28T16:36:11.928650"
+    },
+    {
+      "note": "[ ] Prefect Deployments:",
+      "timestamp": "2025-11-28T16:36:11.928651"
+    },
+    {
+      "note": "    [ ] signup_handler/christmas-campaign",
+      "timestamp": "2025-11-28T16:36:11.928652"
+    },
+    {
+      "note": "    [ ] noshow_recovery_handler/christmas-campaign",
+      "timestamp": "2025-11-28T16:36:11.928653"
+    },
+    {
+      "note": "    [ ] postcall_maybe_handler/christmas-campaign",
+      "timestamp": "2025-11-28T16:36:11.928654"
+    },
+    {
+      "note": "    [ ] onboarding_handler/christmas-campaign",
+      "timestamp": "2025-11-28T16:36:11.928654"
+    },
+    {
+      "note": "",
+      "timestamp": "2025-11-28T16:36:11.928655"
+    },
+    {
+      "note": "[ ] Secret Blocks:",
+      "timestamp": "2025-11-28T16:36:11.928656"
+    },
+    {
+      "note": "    [ ] notion-token",
+      "timestamp": "2025-11-28T16:36:11.928656"
+    },
+    {
+      "note": "    [ ] notion-db-id (Templates DB)",
+      "timestamp": "2025-11-28T16:36:11.928657"
+    },
+    {
+      "note": "    [ ] notion-email-sequence-db-id",
+      "timestamp": "2025-11-28T16:36:11.928658"
+    },
+    {
+      "note": "    [ ] notion-businessx-db-id",
+      "timestamp": "2025-11-28T16:36:11.928658"
+    },
+    {
+      "note": "    [ ] resend-api-key",
+      "timestamp": "2025-11-28T16:36:11.928659"
+    },
+    {
+      "note": "",
+      "timestamp": "2025-11-28T16:36:11.928660"
+    },
+    {
+      "note": "[ ] Environment:",
+      "timestamp": "2025-11-28T16:36:11.928660"
+    },
+    {
+      "note": "    [ ] TESTING_MODE=false for production",
+      "timestamp": "2025-11-28T16:36:11.928661"
+    },
+    {
+      "note": "    [ ] Git pull step configured",
+      "timestamp": "2025-11-28T16:36:11.928662"
+    },
+    {
+      "note": "    [ ] Worker running with prefect-github",
+      "timestamp": "2025-11-28T16:36:11.928663"
+    },
+    {
+      "note": "",
+      "timestamp": "2025-11-28T16:36:11.928663"
+    },
+    {
+      "note": "[ ] Endpoints:",
+      "timestamp": "2025-11-28T16:36:11.928664"
+    },
+    {
+      "note": "    [ ] /health responds",
+      "timestamp": "2025-11-28T16:36:11.928664"
+    },
+    {
+      "note": "    [ ] /webhook/christmas-signup",
+      "timestamp": "2025-11-28T16:36:11.928665"
+    },
+    {
+      "note": "    [ ] /webhook/calendly-noshow",
+      "timestamp": "2025-11-28T16:36:11.928666"
+    },
+    {
+      "note": "    [ ] /webhook/postcall-maybe",
+      "timestamp": "2025-11-28T16:36:11.928666"
+    },
+    {
+      "note": "    [ ] /webhook/onboarding-start",
+      "timestamp": "2025-11-28T16:36:11.928667"
+    },
+    {
+      "note": "",
+      "timestamp": "2025-11-28T16:36:11.928668"
+    },
+    {
+      "note": "[ ] Email Templates:",
+      "timestamp": "2025-11-28T16:36:11.928668"
+    },
+    {
+      "note": "    [ ] Lead Nurture (7 templates)",
+      "timestamp": "2025-11-28T16:36:11.928669"
+    },
+    {
+      "note": "    [ ] No-Show Recovery (3 templates)",
+      "timestamp": "2025-11-28T16:36:11.928670"
+    },
+    {
+      "note": "    [ ] Post-Call Maybe (3 templates)",
+      "timestamp": "2025-11-28T16:36:11.928671"
+    },
+    {
+      "note": "    [ ] Onboarding (3 templates)",
+      "timestamp": "2025-11-28T16:36:11.928671"
+    }
+  ]
+}

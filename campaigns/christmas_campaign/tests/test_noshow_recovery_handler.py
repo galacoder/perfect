@@ -82,15 +82,41 @@ class TestNoShowRecoveryHandlerFlowStructure:
 class TestNoShowRecoveryHandlerSuccess:
     """Test successful no-show recovery handler execution (Wave 2, Feature 2.1)."""
 
+    @patch("campaigns.christmas_campaign.flows.noshow_recovery_handler.schedule_noshow_emails")
+    @patch("campaigns.christmas_campaign.flows.noshow_recovery_handler.create_noshow_sequence")
+    @patch("campaigns.christmas_campaign.flows.noshow_recovery_handler.search_email_sequence_by_email")
     @patch("campaigns.christmas_campaign.flows.noshow_recovery_handler.search_contact_by_email")
-    def test_noshow_handler_contact_found(self, mock_search):
-        """Test flow finds contact successfully."""
-        mock_search.return_value = {
+    def test_noshow_handler_contact_found(
+        self, mock_search_contact, mock_search_sequence, mock_create_sequence, mock_schedule
+    ):
+        """Test flow finds contact successfully and schedules recovery emails."""
+        # Mock contact found
+        mock_search_contact.return_value = {
             "id": "contact-123",
             "properties": {
                 "email": {"email": "test@example.com"}
             }
         }
+
+        # Mock no existing no-show sequence
+        mock_search_sequence.return_value = None
+
+        # Mock sequence creation
+        mock_create_sequence.return_value = {
+            "id": "sequence-456",
+            "properties": {
+                "Email": {"email": "test@example.com"},
+                "Campaign": {"select": {"name": "Christmas 2025"}},
+                "Template Type": {"select": {"name": "No-Show Recovery"}}
+            }
+        }
+
+        # Mock email scheduling
+        mock_schedule.return_value = [
+            {"email_number": 1, "flow_run_id": "run-1", "delay_hours": 0.0833},
+            {"email_number": 2, "flow_run_id": "run-2", "delay_hours": 24},
+            {"email_number": 3, "flow_run_id": "run-3", "delay_hours": 48}
+        ]
 
         result = noshow_recovery_handler_flow(
             email="test@example.com",
@@ -100,9 +126,17 @@ class TestNoShowRecoveryHandlerSuccess:
             scheduled_time="2025-12-01T14:00:00Z"
         )
 
-        assert mock_search.called
-        # For now, skeleton should return skeleton_complete
-        # This will change in Wave 2.2 when we implement the full flow
+        # Verify mocks were called
+        assert mock_search_contact.called
+        assert mock_search_sequence.called
+        assert mock_create_sequence.called
+        assert mock_schedule.called
+
+        # Verify result
+        assert result["status"] == "success"
+        assert result["sequence_id"] == "sequence-456"
+        assert result["contact_id"] == "contact-123"
+        assert len(result["scheduled_emails"]) == 3
 
 
 class TestNoShowRecoveryHandlerErrors:

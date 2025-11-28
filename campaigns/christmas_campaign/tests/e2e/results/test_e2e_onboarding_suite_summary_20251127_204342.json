@@ -1,0 +1,45 @@
+{
+  "test_name": "test_e2e_onboarding_suite_summary",
+  "status": "passed",
+  "start_time": "2025-11-27T20:43:42.557795",
+  "end_time": "2025-11-27T20:43:42.558022",
+  "duration_seconds": 0.000227,
+  "flow_run_ids": [],
+  "webhook_responses": [],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Onboarding E2E Test Suite",
+      "timestamp": "2025-11-27T20:43:42.557924"
+    },
+    {
+      "note": "Tests covered:",
+      "timestamp": "2025-11-27T20:43:42.557926"
+    },
+    {
+      "note": "  - Webhook validation (valid/invalid payloads)",
+      "timestamp": "2025-11-27T20:43:42.557927"
+    },
+    {
+      "note": "  - Payment validation",
+      "timestamp": "2025-11-27T20:43:42.557928"
+    },
+    {
+      "note": "  - Salon address and observation dates capture",
+      "timestamp": "2025-11-27T20:43:42.557929"
+    },
+    {
+      "note": "  - Flow triggering",
+      "timestamp": "2025-11-27T20:43:42.557931"
+    },
+    {
+      "note": "  - Sequence record creation (manual verification)",
+      "timestamp": "2025-11-27T20:43:42.557931"
+    },
+    {
+      "note": "  - Email timing (manual verification in testing mode)",
+      "timestamp": "2025-11-27T20:43:42.557932"
+    }
+  ]
+}

@@ -162,47 +162,136 @@ def get_email_variables(
     assessment_score: Optional[int] = None,
     segment: Optional[str] = None,
     diagnostic_call_date: Optional[str] = None,
-    portal_url: Optional[str] = None
+    portal_url: Optional[str] = None,
+    # Additional assessment data for 5-Day sequence templates
+    red_systems: Optional[int] = None,
+    orange_systems: Optional[int] = None,
+    yellow_systems: Optional[int] = None,
+    green_systems: Optional[int] = None,
+    gps_score: Optional[int] = None,
+    money_score: Optional[int] = None,
+    weakest_system_1: Optional[str] = None,
+    weakest_system_2: Optional[str] = None,
+    strongest_system: Optional[str] = None,
+    revenue_leak_total: Optional[int] = None,
+    calendly_link: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Build email variables dictionary for template substitution.
 
+    This function prepares ALL variables needed for the 5-Day email sequence:
+    - E1: 12 variables (TotalRevenueLeak_K, first_name, overall_score, etc.)
+    - E2: 2 variables (first_name, WeakestSystem1)
+    - E3-E5: 0 variables (static templates)
+
+    Variables are provided in BOTH snake_case and CamelCase for template compatibility.
+
     Args:
         first_name: Contact first name (default: "there")
         business_name: Business name (default: "your business")
-        assessment_score: BusOS score (optional)
-        segment: Contact segment (optional)
+        assessment_score: BusOS overall score (0-100)
+        segment: Contact segment (CRITICAL/URGENT/OPTIMIZE)
         diagnostic_call_date: Scheduled call date (optional)
         portal_url: Customer portal URL (optional)
+        red_systems: Number of red (broken) systems
+        orange_systems: Number of orange (struggling) systems
+        yellow_systems: Number of yellow (functional) systems
+        green_systems: Number of green (optimized) systems
+        gps_score: GPS system score (optional)
+        money_score: Money system score (optional)
+        weakest_system_1: First weakest system name
+        weakest_system_2: Second weakest system name
+        strongest_system: Strongest system name
+        revenue_leak_total: Total revenue leak estimate
+        calendly_link: Calendly booking link
 
     Returns:
-        Dictionary of variables for template substitution
+        Dictionary of variables for template substitution (both cases)
 
     Example:
         variables = get_email_variables(
-            first_name="John",
-            business_name="Test Corp",
+            first_name="Sarah",
+            business_name="Sarah's Salon",
             assessment_score=45,
-            segment="URGENT"
+            segment="CRITICAL",
+            weakest_system_1="GPS",
+            weakest_system_2="FUEL",
+            strongest_system="CABIN",
+            revenue_leak_total=14700
         )
-        # Result: {
-        #     "first_name": "John",
-        #     "business_name": "Test Corp",
-        #     "assessment_score": "45",
-        #     "segment": "URGENT"
-        # }
+        # Result includes: first_name, WeakestSystem1, TotalRevenueLeak_K, etc.
     """
+    from datetime import datetime
+
+    # Calculate days to deadline (December 5, 2025)
+    deadline_date = "December 5, 2025"
+    deadline = datetime(2025, 12, 5)
+    today = datetime.now()
+    days_to_deadline = max(0, (deadline - today).days)
+
+    # Determine readiness zone based on segment
+    readiness_zones = {
+        "CRITICAL": "Crisis Zone",
+        "URGENT": "Warning Zone",
+        "OPTIMIZE": "Growth Zone"
+    }
+    readiness_zone = readiness_zones.get(segment, "Growth Zone")
+
+    # Generate personalized tips based on weakest systems
+    tips = _generate_personalized_tips(weakest_system_1, weakest_system_2)
+
+    # Calculate revenue leak in K
+    total_revenue_leak_k = round(revenue_leak_total / 1000) if revenue_leak_total else 0
+
+    # Default calendly link
+    default_calendly = "https://cal.com/sangletech/discovery-call"
+
+    # Build variables dictionary with BOTH snake_case and CamelCase
     variables = {
+        # Core variables (snake_case)
         "first_name": first_name,
-        "business_name": business_name
+        "business_name": business_name,
+
+        # Assessment data (snake_case)
+        "overall_score": str(assessment_score) if assessment_score is not None else "N/A",
+        "assessment_score": str(assessment_score) if assessment_score is not None else "N/A",
+        "segment": segment or "OPTIMIZE",
+        "readiness_zone": readiness_zone,
+
+        # Weakest/Strongest systems (snake_case)
+        "weakest_system_1": weakest_system_1 or "GPS",
+        "weakest_system_2": weakest_system_2 or "FUEL",
+        "strongest_system": strongest_system or "CABIN",
+
+        # CamelCase variants for templates
+        "WeakestSystem1": weakest_system_1 or "GPS",
+        "WeakestSystem2": weakest_system_2 or "FUEL",
+        "StrongestSystem": strongest_system or "CABIN",
+
+        # Revenue leak (snake_case and template format)
+        "revenue_leak_total": str(revenue_leak_total) if revenue_leak_total else "0",
+        "TotalRevenueLeak_K": str(total_revenue_leak_k),
+
+        # Deadline info
+        "days_to_deadline": str(days_to_deadline),
+        "deadline_date": deadline_date,
+
+        # Personalized tips
+        "personalized_tip_1": tips[0],
+        "personalized_tip_2": tips[1],
+        "personalized_tip_3": tips[2],
+
+        # Links
+        "calendly_link": calendly_link or default_calendly,
+
+        # System counts (for debugging/analytics)
+        "red_systems": str(red_systems) if red_systems is not None else "0",
+        "orange_systems": str(orange_systems) if orange_systems is not None else "0",
+        "yellow_systems": str(yellow_systems) if yellow_systems is not None else "0",
+        "green_systems": str(green_systems) if green_systems is not None else "0",
     }
 
-    if assessment_score is not None:
-        variables["assessment_score"] = str(assessment_score)
-
-    if segment:
-        variables["segment"] = segment
-
+    # Add optional fields if provided
     if diagnostic_call_date:
         variables["diagnostic_call_date"] = diagnostic_call_date
 
@@ -210,3 +299,47 @@ def get_email_variables(
         variables["portal_url"] = portal_url
 
     return variables
+
+
+def _generate_personalized_tips(weakest1: Optional[str], weakest2: Optional[str]) -> list:
+    """
+    Generate personalized tips based on weakest systems.
+
+    Args:
+        weakest1: First weakest system name
+        weakest2: Second weakest system name
+
+    Returns:
+        List of 3 personalized tips
+    """
+    tips_by_system = {
+        "GPS": "Map your customer journey from first contact to payment in a Google Doc",
+        "CREW": "Write down 3 tasks you do every day that someone else could do with a checklist",
+        "ENGINE": "List your top 3 services by profit margin (not revenue)",
+        "FUEL": "Track where your last 10 clients came from",
+        "CABIN": "Send a 'How are we doing?' text to 5 recent clients today",
+        "COCKPIT": "Check if you know your exact profit margin per service",
+        "RADAR": "Create a simple spreadsheet tracking daily bookings for 1 week",
+        "AUTOPILOT": "Identify 1 task you do manually that could be automated"
+    }
+
+    tips = []
+
+    # Tip 1: Based on weakest system
+    if weakest1:
+        w1_key = next((k for k in tips_by_system.keys() if weakest1.upper().find(k) != -1), None)
+        tips.append(tips_by_system.get(w1_key, tips_by_system["GPS"]))
+    else:
+        tips.append(tips_by_system["GPS"])
+
+    # Tip 2: Based on second weakest or default
+    if weakest2:
+        w2_key = next((k for k in tips_by_system.keys() if weakest2.upper().find(k) != -1), None)
+        tips.append(tips_by_system.get(w2_key, tips_by_system["CREW"]))
+    else:
+        tips.append(tips_by_system["CREW"])
+
+    # Tip 3: General holiday prep
+    tips.append("Block 2 hours this weekend to plan your December capacity.")
+
+    return tips

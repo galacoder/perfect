@@ -3,12 +3,14 @@
   "last_run": null,
   "summary": {
     "status": "not_run",
-    "total": 53,
+    "total": 117,
     "passing": 0,
     "failing": 0,
-    "not_started": 53,
+    "not_started": 117,
     "wave_5_tests_added": 12,
-    "wave_6_tests_added": 29
+    "wave_6_tests_added": 29,
+    "wave_7_tests_added": 24,
+    "wave_8_tests_added": 40
   },
   "suites": [
     {
@@ -451,6 +453,525 @@
           "type": "coverage",
           "target": 85,
           "current": 46
+        }
+      ]
+    },
+    {
+      "name": "Wave 7: Email Delivery Investigation",
+      "added_at": "2025-11-28T02:30:00Z",
+      "tests": [
+        {
+          "id": "T7.1a",
+          "feature_id": "7.1",
+          "name": "Website form submission calls webhook",
+          "status": "not_started",
+          "type": "e2e",
+          "url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01"
+        },
+        {
+          "id": "T7.1b",
+          "feature_id": "7.1",
+          "name": "Webhook URL correctly configured in website",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T7.1c",
+          "feature_id": "7.1",
+          "name": "Webhook server reachable from internet",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.2a",
+          "feature_id": "7.2",
+          "name": "Query Prefect for flow runs with test email",
+          "status": "not_started",
+          "type": "integration",
+          "prefect_url": "https://prefect.galatek.dev"
+        },
+        {
+          "id": "T7.2b",
+          "feature_id": "7.2",
+          "name": "Check flow run states for failures",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.3a",
+          "feature_id": "7.3",
+          "name": "Verify 7 Christmas templates exist in Notion",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.3b",
+          "feature_id": "7.3",
+          "name": "Verify templates have Subject and HTML Body",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.4a",
+          "feature_id": "7.4",
+          "name": "Check Resend for emails to test email",
+          "status": "not_started",
+          "type": "integration",
+          "email": "lengobaosang@gmail.com"
+        },
+        {
+          "id": "T7.4b",
+          "feature_id": "7.4",
+          "name": "Determine if emails bounced or never sent",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.5a",
+          "feature_id": "7.5",
+          "name": "Fix implemented based on root cause",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.5b",
+          "feature_id": "7.5",
+          "name": "Manual webhook test succeeds",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T7.5c",
+          "feature_id": "7.5",
+          "name": "Email delivered after fix",
+          "status": "not_started",
+          "type": "e2e",
+          "email": "lengobaosang@gmail.com"
+        }
+      ]
+    },
+    {
+      "name": "Wave 7: Python 3.12 Worker Replacement",
+      "added_at": "2025-11-28T02:30:00Z",
+      "tests": [
+        {
+          "id": "T7.6a",
+          "feature_id": "7.6",
+          "name": "List all services via Coolify skill",
+          "status": "not_started",
+          "type": "integration",
+          "skill": "coolify-integration"
+        },
+        {
+          "id": "T7.6b",
+          "feature_id": "7.6",
+          "name": "Identify Python 3.12 workers",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.7a",
+          "feature_id": "7.7",
+          "name": "Stop Python 3.12 workers via Coolify",
+          "status": "not_started",
+          "type": "integration",
+          "skill": "coolify-integration"
+        },
+        {
+          "id": "T7.7b",
+          "feature_id": "7.7",
+          "name": "Remove/delete stopped services",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.8a",
+          "feature_id": "7.8",
+          "name": "Create Python 3.11 worker service",
+          "status": "not_started",
+          "type": "integration",
+          "skill": "coolify-integration"
+        },
+        {
+          "id": "T7.8b",
+          "feature_id": "7.8",
+          "name": "Configure environment variables",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.8c",
+          "feature_id": "7.8",
+          "name": "Deploy and start new worker",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T7.9a",
+          "feature_id": "7.9",
+          "name": "Worker appears in Prefect work pool",
+          "status": "not_started",
+          "type": "e2e",
+          "prefect_url": "https://prefect.galatek.dev"
+        },
+        {
+          "id": "T7.9b",
+          "feature_id": "7.9",
+          "name": "Worker shows online status",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T7.9c",
+          "feature_id": "7.9",
+          "name": "Test flow runs without asyncio error",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T7.10a",
+          "feature_id": "7.10",
+          "name": "Production form submission triggers flow",
+          "status": "not_started",
+          "type": "e2e",
+          "url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01"
+        },
+        {
+          "id": "T7.10b",
+          "feature_id": "7.10",
+          "name": "Flow runs on new Python 3.11 worker",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T7.10c",
+          "feature_id": "7.10",
+          "name": "Email delivered successfully",
+          "status": "not_started",
+          "type": "e2e",
+          "email": "lengobaosang@gmail.com"
+        }
+      ]
+    },
+    {
+      "name": "Wave 8: Notion-Only Template Verification",
+      "added_at": "2025-11-28T03:00:00Z",
+      "tests": [
+        {
+          "id": "T8.1a",
+          "feature_id": "8.1",
+          "name": "signup_handler.py has no hardcoded templates",
+          "status": "not_started",
+          "type": "audit"
+        },
+        {
+          "id": "T8.1b",
+          "feature_id": "8.1",
+          "name": "signup_handler.py has no fallback function calls",
+          "status": "not_started",
+          "type": "audit"
+        },
+        {
+          "id": "T8.2a",
+          "feature_id": "8.2",
+          "name": "noshow_recovery_handler.py fetches from Notion only",
+          "status": "not_started",
+          "type": "audit"
+        },
+        {
+          "id": "T8.3a",
+          "feature_id": "8.3",
+          "name": "postcall_maybe_handler.py fetches from Notion only",
+          "status": "not_started",
+          "type": "audit"
+        },
+        {
+          "id": "T8.4a",
+          "feature_id": "8.4",
+          "name": "onboarding_handler.py fetches from Notion only",
+          "status": "not_started",
+          "type": "audit"
+        },
+        {
+          "id": "T8.5a",
+          "feature_id": "8.5",
+          "name": "send_email_flow.py errors on missing template",
+          "status": "not_started",
+          "type": "audit"
+        },
+        {
+          "id": "T8.6a",
+          "feature_id": "8.6",
+          "name": "Template variable documentation complete",
+          "status": "not_started",
+          "type": "documentation"
+        }
+      ]
+    },
+    {
+      "name": "Wave 8: Deployment Naming Strategy",
+      "added_at": "2025-11-28T03:00:00Z",
+      "tests": [
+        {
+          "id": "T8.7a",
+          "feature_id": "8.7",
+          "name": "Naming convention designed and documented",
+          "status": "not_started",
+          "type": "documentation"
+        },
+        {
+          "id": "T8.8a",
+          "feature_id": "8.8",
+          "name": "Deployment renaming evaluated",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T8.8b",
+          "feature_id": "8.8",
+          "name": "New deployments tested if renamed",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T8.9a",
+          "feature_id": "8.9",
+          "name": "ARCHITECTURE.md updated with naming convention",
+          "status": "not_started",
+          "type": "documentation"
+        },
+        {
+          "id": "T8.10a",
+          "feature_id": "8.10",
+          "name": "Deployment registry table created",
+          "status": "not_started",
+          "type": "documentation"
+        }
+      ]
+    },
+    {
+      "name": "Wave 8: Website-to-Prefect Integration",
+      "added_at": "2025-11-28T03:00:00Z",
+      "tests": [
+        {
+          "id": "T8.11a",
+          "feature_id": "8.11",
+          "name": "Prefect API endpoints documented",
+          "status": "not_started",
+          "type": "documentation"
+        },
+        {
+          "id": "T8.12a",
+          "feature_id": "8.12",
+          "name": "API integration guide created",
+          "status": "not_started",
+          "type": "documentation"
+        },
+        {
+          "id": "T8.12b",
+          "feature_id": "8.12",
+          "name": "curl examples for all 4 flows",
+          "status": "not_started",
+          "type": "documentation"
+        },
+        {
+          "id": "T8.13a",
+          "feature_id": "8.13",
+          "name": "Template variables match website form data",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T8.13b",
+          "feature_id": "8.13",
+          "name": "All variables reach email templates",
+          "status": "not_started",
+          "type": "integration"
+        },
+        {
+          "id": "T8.14a",
+          "feature_id": "8.14",
+          "name": "Manual curl request to Prefect API succeeds",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.14b",
+          "feature_id": "8.14",
+          "name": "Worker picks up flow run",
+          "status": "not_started",
+          "type": "e2e"
+        }
+      ]
+    },
+    {
+      "name": "Wave 8: Comprehensive E2E Testing",
+      "added_at": "2025-11-28T03:00:00Z",
+      "tests": [
+        {
+          "id": "T8.15a",
+          "feature_id": "8.15",
+          "name": "Signup flow via Prefect API creates flow run",
+          "status": "not_started",
+          "type": "e2e",
+          "deployment_id": "1ae3a3b3-e076-49c5-9b08-9c176aa47aa0"
+        },
+        {
+          "id": "T8.15b",
+          "feature_id": "8.15",
+          "name": "7 emails scheduled in Notion",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.15c",
+          "feature_id": "8.15",
+          "name": "Flow run transitions to COMPLETED",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.16a",
+          "feature_id": "8.16",
+          "name": "Noshow recovery flow via Prefect API",
+          "status": "not_started",
+          "type": "e2e",
+          "deployment_id": "3400e152-1cbe-4d8f-9f8a-0dd73569afa1"
+        },
+        {
+          "id": "T8.16b",
+          "feature_id": "8.16",
+          "name": "Email delivered to lengobaosang@gmail.com",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.17a",
+          "feature_id": "8.17",
+          "name": "Postcall maybe flow via Prefect API",
+          "status": "not_started",
+          "type": "e2e",
+          "deployment_id": "ed929cd9-34b3-4655-b128-1a1e08a59cbd"
+        },
+        {
+          "id": "T8.17b",
+          "feature_id": "8.17",
+          "name": "Email delivered to lengobaosang@gmail.com",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.18a",
+          "feature_id": "8.18",
+          "name": "Onboarding flow via Prefect API",
+          "status": "not_started",
+          "type": "e2e",
+          "deployment_id": "db47b919-1e55-4de2-b52c-6e2b0b2a2285"
+        },
+        {
+          "id": "T8.18b",
+          "feature_id": "8.18",
+          "name": "Email delivered to lengobaosang@gmail.com",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.19a",
+          "feature_id": "8.19",
+          "name": "Full funnel journey: signup triggered",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.19b",
+          "feature_id": "8.19",
+          "name": "Full funnel journey: noshow triggered",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.19c",
+          "feature_id": "8.19",
+          "name": "Full funnel journey: postcall triggered",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.19d",
+          "feature_id": "8.19",
+          "name": "Full funnel journey: onboarding triggered",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.19e",
+          "feature_id": "8.19",
+          "name": "No sequence conflicts between flows",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.19f",
+          "feature_id": "8.19",
+          "name": "Total 16 emails scheduled correctly",
+          "status": "not_started",
+          "type": "e2e"
+        },
+        {
+          "id": "T8.20a",
+          "feature_id": "8.20",
+          "name": "All 4 flows deployed and accessible",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20b",
+          "feature_id": "8.20",
+          "name": "Worker online and healthy (Python 3.11)",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20c",
+          "feature_id": "8.20",
+          "name": "All 16+ templates in Notion with content",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20d",
+          "feature_id": "8.20",
+          "name": "No hardcoded templates in codebase",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20e",
+          "feature_id": "8.20",
+          "name": "API integration guide complete",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20f",
+          "feature_id": "8.20",
+          "name": "Deployment registry complete",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20g",
+          "feature_id": "8.20",
+          "name": "All E2E tests pass",
+          "status": "not_started",
+          "type": "checklist"
+        },
+        {
+          "id": "T8.20h",
+          "feature_id": "8.20",
+          "name": "STATUS.md updated with final status",
+          "status": "not_started",
+          "type": "checklist"
         }
       ]
     }

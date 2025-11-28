@@ -1,0 +1,36 @@
+{
+  "test_name": "test_e2e_noshow_webhook_missing_email_rejected",
+  "status": "passed",
+  "start_time": "2025-11-28T14:16:03.379961",
+  "end_time": "2025-11-28T14:16:03.380741",
+  "duration_seconds": 0.00078,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/calendly-noshow",
+      "status_code": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "email"
+            ],
+            "msg": "Field required",
+            "input": {
+              "first_name": "NoShow Test",
+              "business_name": "NoShow Test Salon",
+              "calendly_event_uri": "https://calendly.com/events/E2E-TEST-NOSHOW-001",
+              "scheduled_time": "2025-12-01T14:00:00Z"
+            }
+          }
+        ]
+      },
+      "timestamp": "2025-11-28T14:16:03.380623"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": []
+}

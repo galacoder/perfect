@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_postcall_webhook_with_call_notes",
+  "status": "passed",
+  "start_time": "2025-11-28T15:29:13.823998",
+  "end_time": "2025-11-28T15:29:13.824869",
+  "duration_seconds": 0.000871,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Post-call follow-up sequence will begin shortly",
+        "email": "e2e-postcall-notes-1764361753824@e2e-test.example.com",
+        "call_outcome": "Maybe",
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-28T15:29:13.824695"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Call notes captured for e2e-postcall-notes-1764361753824@e2e-test.example.com",
+      "timestamp": "2025-11-28T15:29:13.824702"
+    }
+  ]
+}

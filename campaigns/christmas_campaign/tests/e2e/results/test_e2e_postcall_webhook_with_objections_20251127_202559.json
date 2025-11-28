@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_postcall_webhook_with_objections",
+  "status": "passed",
+  "start_time": "2025-11-27T20:25:59.342321",
+  "end_time": "2025-11-27T20:25:59.343108",
+  "duration_seconds": 0.000787,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Post-call follow-up sequence will begin shortly",
+        "email": "e2e-postcall-objections-1764293159342@e2e-test.example.com",
+        "call_outcome": "Maybe",
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-27T20:25:59.343007"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Objections captured: ['Price too high', 'Need to think about it', 'Already working with competitor', 'Not right timing']",
+      "timestamp": "2025-11-27T20:25:59.343014"
+    }
+  ]
+}

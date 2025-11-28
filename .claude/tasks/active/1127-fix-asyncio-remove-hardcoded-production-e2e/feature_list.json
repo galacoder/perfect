@@ -3,14 +3,14 @@
   "domain": "coding",
   "status": "in_progress",
   "current_phase": "CODE",
-  "current_wave": 6,
-  "current_feature_id": "6.1",
+  "current_wave": 7,
+  "current_feature_id": "7.1",
   "created_at": "2025-11-27T15:00:00Z",
-  "updated_at": "2025-11-27T20:19:58.190571Z",
+  "updated_at": "2025-11-28T02:30:00Z",
   "meta": {
     "title": "Fix AsyncIO, Remove Hardcoded Templates, E2E Production Test",
     "description": "Fix Python 3.12 asyncio event loop issue on production workers, remove all hardcoded/fallback email templates so templates come from Notion ONLY, and run full E2E production test via Puppeteer",
-    "estimated_hours": 10,
+    "estimated_hours": 14,
     "model_selection": {
       "planning": "opus",
       "execution": "sonnet",
@@ -76,11 +76,47 @@
     {
       "id": 6,
       "name": "Test Coverage Improvement to 85%+",
-      "objective": "Fix 14 failing tests, add unit tests for uncovered flows, implement production E2E tests via Puppeteer for sales funnel and Prefect production server",
+      "objective": "Fix 14 failing tests, add unit tests for uncovered flows, implement production E2E tests via Playwright for sales funnel and Prefect production server",
       "status": "pending",
       "priority": "high",
       "added_at": "2025-11-28T01:00:00Z",
       "added_via": "/add-tasks-coding"
+    },
+    {
+      "id": 7,
+      "name": "Debug Email Delivery & Replace Python 3.12 Workers",
+      "objective": "Investigate why production funnel signup did not trigger email delivery, diagnose webhook-to-Prefect integration, and replace Python 3.12 workers with Python 3.11 via Coolify",
+      "status": "pending",
+      "priority": "critical",
+      "added_at": "2025-11-28T02:30:00Z",
+      "added_via": "/add-tasks-coding"
+    },
+    {
+      "id": 8,
+      "name": "Production Readiness & Full E2E Testing",
+      "objective": "Verify Notion-only templates, establish deployment naming strategy for multi-campaign, document website-to-Prefect API integration, and run comprehensive E2E tests for all 4 flows",
+      "status": "pending",
+      "priority": "critical",
+      "added_at": "2025-11-28T03:00:00Z",
+      "added_via": "/add-tasks-coding",
+      "feature_groups": [
+        {
+          "name": "Verify Notion-Only Templates",
+          "features": ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6"]
+        },
+        {
+          "name": "Deployment Naming Strategy",
+          "features": ["8.7", "8.8", "8.9", "8.10"]
+        },
+        {
+          "name": "Website-to-Prefect Integration",
+          "features": ["8.11", "8.12", "8.13", "8.14"]
+        },
+        {
+          "name": "Comprehensive E2E Testing",
+          "features": ["8.15", "8.16", "8.17", "8.18", "8.19", "8.20"]
+        }
+      ]
     }
   ],
   "features": [
@@ -797,17 +833,620 @@
         "Production E2E tests pass",
         "Coverage report shows >= 85%"
       ]
+    },
+    {
+      "id": "7.1",
+      "wave": 7,
+      "name": "Investigate website-to-webhook integration",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Check if production website (sangletech.com) actually calls the Prefect webhook when user submits assessment form. Verify the webhook URL configured in the website matches production server.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "production_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Check website form submission handler code",
+        "Verify webhook URL in website config/environment",
+        "Check browser network tab for webhook calls on form submit",
+        "Verify webhook server is reachable from internet"
+      ]
+    },
+    {
+      "id": "7.2",
+      "wave": 7,
+      "name": "Check Prefect flow runs for test email",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Query Prefect dashboard/API to find any flow runs associated with lengobaosang@gmail.com from the production signup attempt. Check if flow was triggered but failed.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "prefect_url": "https://prefect.galatek.dev",
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Query Prefect API for recent christmas-signup-handler runs",
+        "Filter by email parameter = lengobaosang@gmail.com",
+        "Check flow run states (COMPLETED, FAILED, CRASHED)",
+        "Review flow run logs for errors"
+      ]
+    },
+    {
+      "id": "7.3",
+      "wave": 7,
+      "name": "Verify email templates exist in Notion",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Query Notion email templates database to confirm all 7 Christmas campaign templates exist and have valid HTML content.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "templates_to_verify": [
+        "christmas_email_1",
+        "christmas_email_2",
+        "christmas_email_3",
+        "christmas_email_4",
+        "christmas_email_5",
+        "christmas_email_6",
+        "christmas_email_7"
+      ],
+      "test_scenarios": [
+        "Query Notion templates database",
+        "Verify all 7 templates exist",
+        "Verify each template has Subject field",
+        "Verify each template has HTML Body field with content"
+      ]
+    },
+    {
+      "id": "7.4",
+      "wave": 7,
+      "name": "Check Resend delivery logs",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Check Resend dashboard/API for any email delivery attempts to lengobaosang@gmail.com from the production signup. Determine if emails were sent but bounced, or never sent at all.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Login to Resend dashboard",
+        "Search for emails to lengobaosang@gmail.com",
+        "Check email status (delivered, bounced, blocked, never sent)",
+        "Review any error messages or bounce reasons"
+      ]
+    },
+    {
+      "id": "7.5",
+      "wave": 7,
+      "name": "Fix webhook integration issue",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Based on findings from 7.1-7.4, implement fix for the broken integration. Could be: webhook URL misconfiguration, worker not running, Prefect deployment issue, or other root cause.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 1,
+      "test_scenarios": [
+        "Implement fix based on root cause analysis",
+        "Test fix with manual webhook call",
+        "Verify fix with end-to-end production test",
+        "Confirm email delivered to lengobaosang@gmail.com"
+      ]
+    },
+    {
+      "id": "7.6",
+      "wave": 7,
+      "name": "List Python 3.12 workers in Coolify",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Use coolify-integration skill to list all services/workers on the production server. Identify which ones are running Python 3.12 and crashing with get_child_watcher() error.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "coolify_skill": "required",
+      "test_scenarios": [
+        "Use coolify-integration skill to list services",
+        "Identify Python version for each worker",
+        "Find workers with Python 3.12",
+        "Note service names/IDs for removal"
+      ]
+    },
+    {
+      "id": "7.7",
+      "wave": 7,
+      "name": "Stop/Remove Python 3.12 workers",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Use coolify-integration skill to stop and remove the Python 3.12 workers that are crashing. Document the removal for audit trail.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "coolify_skill": "required",
+      "test_scenarios": [
+        "Stop Python 3.12 worker services via Coolify",
+        "Remove/delete the stopped services",
+        "Verify services no longer appear in Coolify",
+        "Document which services were removed"
+      ]
+    },
+    {
+      "id": "7.8",
+      "wave": 7,
+      "name": "Create new Python 3.11 worker via Coolify",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Use coolify-integration skill to create a new Prefect worker service using Python 3.11 image. Configure with correct environment variables and Prefect API URL.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 1,
+      "coolify_skill": "required",
+      "python_version": "3.11",
+      "environment": {
+        "PREFECT_API_URL": "https://prefect.galatek.dev/api",
+        "PYTHONPATH": "/app",
+        "TESTING_MODE": "true"
+      },
+      "test_scenarios": [
+        "Create new service with Python 3.11 base image",
+        "Configure Prefect worker command",
+        "Set required environment variables",
+        "Deploy and start the new worker"
+      ]
+    },
+    {
+      "id": "7.9",
+      "wave": 7,
+      "name": "Verify new worker connects to Prefect",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify the new Python 3.11 worker successfully connects to Prefect server and appears in the work pool. Test with a simple flow run.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "prefect_url": "https://prefect.galatek.dev",
+      "test_scenarios": [
+        "Check Prefect dashboard for new worker in work pool",
+        "Verify worker shows as 'online' status",
+        "Trigger test flow run",
+        "Verify flow executes without asyncio error"
+      ]
+    },
+    {
+      "id": "7.10",
+      "wave": 7,
+      "name": "Full E2E test with new worker",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Run complete end-to-end test: submit production funnel form, verify webhook triggers flow on new Python 3.11 worker, confirm email delivery.",
+      "added_at": "2025-11-28T02:30:00Z",
+      "estimate_hours": 0.5,
+      "production_url": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Submit form via production funnel URL",
+        "Verify webhook triggers christmas-signup-handler",
+        "Verify flow runs on new Python 3.11 worker",
+        "Confirm no asyncio.get_child_watcher() errors",
+        "Verify email delivered to lengobaosang@gmail.com"
+      ]
+    },
+    {
+      "id": "8.1",
+      "wave": 8,
+      "name": "Audit signup_handler.py for hardcoded templates",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify signup_handler.py fetches ALL templates from Notion only. No fallbacks, no hardcoded HTML/subject strings.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/signup_handler.py",
+      "test_scenarios": [
+        "grep for hardcoded template strings",
+        "grep for fallback function calls",
+        "Verify template_name passed to fetch_template",
+        "Confirm error raised if template not found"
+      ]
+    },
+    {
+      "id": "8.2",
+      "wave": 8,
+      "name": "Audit noshow_recovery_handler.py for hardcoded templates",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify noshow_recovery_handler.py fetches ALL 3 templates from Notion only. No fallbacks.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/noshow_recovery_handler.py",
+      "templates": ["noshow_recovery_email_1", "noshow_recovery_email_2", "noshow_recovery_email_3"],
+      "test_scenarios": [
+        "grep for hardcoded template strings",
+        "grep for fallback function calls",
+        "Verify all 3 template names correct",
+        "Confirm error raised if template not found"
+      ]
+    },
+    {
+      "id": "8.3",
+      "wave": 8,
+      "name": "Audit postcall_maybe_handler.py for hardcoded templates",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify postcall_maybe_handler.py fetches ALL 3 templates from Notion only. No fallbacks.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/postcall_maybe_handler.py",
+      "templates": ["postcall_maybe_email_1", "postcall_maybe_email_2", "postcall_maybe_email_3"],
+      "test_scenarios": [
+        "grep for hardcoded template strings",
+        "grep for fallback function calls",
+        "Verify all 3 template names correct",
+        "Confirm error raised if template not found"
+      ]
+    },
+    {
+      "id": "8.4",
+      "wave": 8,
+      "name": "Audit onboarding_handler.py for hardcoded templates",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify onboarding_handler.py fetches ALL 3 templates from Notion only. No fallbacks.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/onboarding_handler.py",
+      "templates": ["onboarding_phase1_email_1", "onboarding_phase1_email_2", "onboarding_phase1_email_3"],
+      "test_scenarios": [
+        "grep for hardcoded template strings",
+        "grep for fallback function calls",
+        "Verify all 3 template names correct",
+        "Confirm error raised if template not found"
+      ]
+    },
+    {
+      "id": "8.5",
+      "wave": 8,
+      "name": "Audit send_email_flow.py for hardcoded templates",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify send_email_flow.py has NO hardcoded templates or fallback logic. Must error if Notion template not found.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/send_email_flow.py",
+      "test_scenarios": [
+        "grep for get_fallback_template",
+        "grep for hardcoded HTML",
+        "Verify ValueError raised on missing template",
+        "Confirm template variable substitution works"
+      ]
+    },
+    {
+      "id": "8.6",
+      "wave": 8,
+      "name": "Document template variable mappings",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Create comprehensive documentation of all template variables available: first_name, last_name, business_name, email, assessment results, etc.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "output_file": "campaigns/christmas_campaign/docs/TEMPLATE_VARIABLES.md",
+      "variables_to_document": [
+        "first_name",
+        "last_name",
+        "business_name",
+        "email",
+        "assessment_score",
+        "red_systems",
+        "orange_systems",
+        "green_systems",
+        "segment"
+      ]
+    },
+    {
+      "id": "8.7",
+      "wave": 8,
+      "name": "Design deployment naming convention",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Design naming convention for multi-campaign deployments. Format: {campaign}-{flow}-{version} or {campaign}{year}-{flow}",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "current_naming": {
+        "christmas-signup-handler": "1ae3a3b3-e076-49c5-9b08-9c176aa47aa0",
+        "christmas-noshow-recovery-handler": "3400e152-1cbe-4d8f-9f8a-0dd73569afa1",
+        "christmas-postcall-maybe-handler": "ed929cd9-34b3-4655-b128-1a1e08a59cbd",
+        "christmas-onboarding-handler": "db47b919-1e55-4de2-b52c-6e2b0b2a2285"
+      },
+      "proposed_conventions": [
+        "{campaign}{year}-{flow}-handler (e.g., christmas2025-signup-handler)",
+        "{campaign}-{flow}-v{version} (e.g., christmas-signup-v1)",
+        "{campaign_code}-{flow} (e.g., xmas25-signup)"
+      ]
+    },
+    {
+      "id": "8.8",
+      "wave": 8,
+      "name": "Rename current deployments if needed",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "description": "Evaluate if current deployment names need renaming. If yes, create new deployments with new names and deprecate old ones.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 1,
+      "current_deployments": [
+        "christmas-signup-handler",
+        "christmas-noshow-recovery-handler",
+        "christmas-postcall-maybe-handler",
+        "christmas-onboarding-handler"
+      ],
+      "test_scenarios": [
+        "Evaluate naming collision risks",
+        "Create new deployments if needed",
+        "Test new deployments work",
+        "Document deprecation of old names"
+      ]
+    },
+    {
+      "id": "8.9",
+      "wave": 8,
+      "name": "Document naming convention in ARCHITECTURE.md",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Update ARCHITECTURE.md with official deployment naming convention for future campaigns.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/ARCHITECTURE.md",
+      "sections_to_add": [
+        "Deployment Naming Convention",
+        "Multi-Campaign Strategy",
+        "Version Management"
+      ]
+    },
+    {
+      "id": "8.10",
+      "wave": 8,
+      "name": "Create deployment registry table",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Create a registry table mapping deployment_id to flow_name to campaign for easy reference.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "output_file": "campaigns/DEPLOYMENT_REGISTRY.md",
+      "columns": ["deployment_name", "deployment_id", "flow_name", "campaign", "work_pool", "status"]
+    },
+    {
+      "id": "8.11",
+      "wave": 8,
+      "name": "Document Prefect API endpoints for all 4 flows",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Document the Prefect API endpoints with deployment IDs for website-to-Prefect direct integration.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "prefect_api_url": "https://prefect.galatek.dev/api",
+      "deployment_ids": {
+        "christmas-signup-handler": "1ae3a3b3-e076-49c5-9b08-9c176aa47aa0",
+        "christmas-noshow-recovery-handler": "3400e152-1cbe-4d8f-9f8a-0dd73569afa1",
+        "christmas-postcall-maybe-handler": "ed929cd9-34b3-4655-b128-1a1e08a59cbd",
+        "christmas-onboarding-handler": "db47b919-1e55-4de2-b52c-6e2b0b2a2285"
+      },
+      "endpoint_format": "POST /api/deployments/{deployment_id}/create_flow_run"
+    },
+    {
+      "id": "8.12",
+      "wave": 8,
+      "name": "Create API integration guide for website team",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Create comprehensive API integration guide with curl examples, required parameters, and response handling.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 1,
+      "output_file": "campaigns/christmas_campaign/WEBSITE_API_INTEGRATION.md",
+      "sections": [
+        "Authentication (if any)",
+        "Endpoint URLs",
+        "Request payload structure",
+        "curl examples for each flow",
+        "Response handling",
+        "Error handling"
+      ]
+    },
+    {
+      "id": "8.13",
+      "wave": 8,
+      "name": "Verify template variables from website form",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify all template variables (first_name, business_name, etc.) are available from website form data passed to Prefect.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "variables_to_verify": [
+        "email (required)",
+        "first_name (from form or parsed from name)",
+        "last_name (from form or parsed from name)",
+        "business_name (if collected)",
+        "assessment_score (calculated)",
+        "red_systems (from assessment)",
+        "orange_systems (from assessment)",
+        "segment (calculated)"
+      ],
+      "test_scenarios": [
+        "Check website form fields",
+        "Verify parameter mapping in API call",
+        "Test with sample form submission",
+        "Confirm all variables reach email templates"
+      ]
+    },
+    {
+      "id": "8.14",
+      "wave": 8,
+      "name": "Test website to Prefect API pipeline manually",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Manual end-to-end test: website form submission directly to Prefect API endpoint, verify worker picks up and executes.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "test_email": "lengobaosang@gmail.com",
+      "prefect_api_url": "https://prefect.galatek.dev/api",
+      "test_scenarios": [
+        "Submit curl request to deployment endpoint",
+        "Verify flow run created in Prefect dashboard",
+        "Verify worker picks up the flow run",
+        "Confirm flow completes successfully"
+      ]
+    },
+    {
+      "id": "8.15",
+      "wave": 8,
+      "name": "E2E test: Signup flow via Prefect API",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Comprehensive E2E test: trigger signup flow via Prefect API, verify 7 emails scheduled in Notion sequence tracker.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 1,
+      "deployment_id": "1ae3a3b3-e076-49c5-9b08-9c176aa47aa0",
+      "test_email": "lengobaosang@gmail.com",
+      "expected_emails": 7,
+      "test_scenarios": [
+        "POST to /api/deployments/{id}/create_flow_run with test payload",
+        "Verify flow run transitions to COMPLETED",
+        "Query Notion for scheduled emails",
+        "Verify 7 emails scheduled with correct times",
+        "Verify correct template names in sequence"
+      ]
+    },
+    {
+      "id": "8.16",
+      "wave": 8,
+      "name": "E2E test: Noshow recovery flow",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "E2E test: trigger noshow recovery flow via Prefect API, verify email delivered to lengobaosang@gmail.com.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "deployment_id": "3400e152-1cbe-4d8f-9f8a-0dd73569afa1",
+      "test_email": "lengobaosang@gmail.com",
+      "expected_emails": 3,
+      "test_scenarios": [
+        "POST to deployment endpoint with Calendly-style payload",
+        "Verify flow run transitions to COMPLETED",
+        "Check Resend dashboard for email delivery",
+        "Verify email content from Notion template"
+      ]
+    },
+    {
+      "id": "8.17",
+      "wave": 8,
+      "name": "E2E test: Postcall maybe flow",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "E2E test: trigger postcall maybe flow via Prefect API, verify email delivered to lengobaosang@gmail.com.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "deployment_id": "ed929cd9-34b3-4655-b128-1a1e08a59cbd",
+      "test_email": "lengobaosang@gmail.com",
+      "expected_emails": 3,
+      "test_scenarios": [
+        "POST to deployment endpoint with postcall payload",
+        "Verify flow run transitions to COMPLETED",
+        "Check Resend dashboard for email delivery",
+        "Verify email content from Notion template"
+      ]
+    },
+    {
+      "id": "8.18",
+      "wave": 8,
+      "name": "E2E test: Onboarding flow",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "E2E test: trigger onboarding flow via Prefect API, verify email delivered to lengobaosang@gmail.com.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "deployment_id": "db47b919-1e55-4de2-b52c-6e2b0b2a2285",
+      "test_email": "lengobaosang@gmail.com",
+      "expected_emails": 3,
+      "test_scenarios": [
+        "POST to deployment endpoint with onboarding payload",
+        "Verify flow run transitions to COMPLETED",
+        "Check Resend dashboard for email delivery",
+        "Verify email content from Notion template"
+      ]
+    },
+    {
+      "id": "8.19",
+      "wave": 8,
+      "name": "E2E test: Full sales funnel journey",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Complete E2E test simulating full customer journey: signup -> noshow -> postcall -> onboarding. Verify all transitions work.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 1.5,
+      "test_email": "lengobaosang@gmail.com",
+      "journey_steps": [
+        "1. Signup via christmas-signup-handler (7 emails)",
+        "2. Simulate no-show via christmas-noshow-recovery-handler (3 emails)",
+        "3. Simulate maybe call via christmas-postcall-maybe-handler (3 emails)",
+        "4. Start onboarding via christmas-onboarding-handler (3 emails)"
+      ],
+      "total_emails_expected": 16,
+      "test_scenarios": [
+        "Trigger all 4 flows in sequence",
+        "Verify no conflicts between sequences",
+        "Verify all emails scheduled correctly",
+        "Verify final email count matches expected"
+      ]
+    },
+    {
+      "id": "8.20",
+      "wave": 8,
+      "name": "Production readiness checklist and sign-off",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Final production readiness checklist: all tests pass, all E2E verified, documentation complete, sign-off for go-live.",
+      "added_at": "2025-11-28T03:00:00Z",
+      "estimate_hours": 0.5,
+      "checklist_items": [
+        "All 4 flows deployed and accessible",
+        "Worker online and healthy (Python 3.11)",
+        "All 16+ email templates in Notion with content",
+        "No hardcoded templates in codebase",
+        "API integration guide complete",
+        "Deployment registry complete",
+        "All E2E tests pass",
+        "Test coverage >= 85%",
+        "STATUS.md updated with final status"
+      ]
     }
   ],
   "progress": {
-    "total_features": 48,
-    "completed_features": 33,
-    "pending_features": 17,
-    "total_waves": 7,
+    "total_features": 78,
+    "completed_features": 35,
+    "pending_features": 43,
+    "total_waves": 9,
     "completed_waves": 5,
-    "percentage": 68.75,
+    "percentage": 44.87,
     "wave_5_features_added": 8,
-    "wave_6_features_added": 13
+    "wave_6_features_added": 13,
+    "wave_7_features_added": 10,
+    "wave_8_features_added": 20
   },
   "session_log": [
     {
@@ -862,16 +1501,7 @@
       "timestamp": "2025-11-28T00:15:00Z",
       "action": "Added Wave 5 with 8 features via /add-tasks-coding",
       "details": {
-        "features_added": [
-          "5.1",
-          "5.2",
-          "5.3",
-          "5.4",
-          "5.5",
-          "5.6",
-          "5.7",
-          "5.8"
-        ],
+        "features_added": ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8"],
         "wave_added": 5,
         "wave_name": "E2E Production Integration Test",
         "reason": "User requested full E2E production test suite with sales funnel, all 4 webhooks, email delivery verification, and 85%+ coverage",
@@ -887,56 +1517,93 @@
       "timestamp": "2025-11-28T01:00:00Z",
       "action": "Added Wave 6 with 13 features via /add-tasks-coding",
       "details": {
-        "features_added": [
-          "6.1",
-          "6.2",
-          "6.3",
-          "6.4",
-          "6.5",
-          "6.6",
-          "6.7",
-          "6.8",
-          "6.9",
-          "6.10",
-          "6.11",
-          "6.12",
-          "6.13"
-        ],
+        "features_added": ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "6.9", "6.10", "6.11", "6.12", "6.13"],
         "wave_added": 6,
         "wave_name": "Test Coverage Improvement to 85%+",
-        "reason": "User requested 85%+ test coverage. Current coverage at 46% with 14 failing tests. Wave 6 addresses: (1) fixing 14 failing tests by mocking Prefect API and fixing Notion property mismatches, (2) adding unit tests for 8 uncovered flow/task files, (3) production E2E tests via Playwright for sales funnel and Prefect server",
-        "impact_hours": 3,
-        "coverage_analysis": {
-          "current_coverage": 46,
-          "target_coverage": 85,
-          "gap": 39,
-          "failing_tests": 14,
-          "uncovered_files": [
-            "flows/email_sequence_orchestrator.py (0%)",
-            "flows/send_email_flow.py (0%)",
-            "flows/precall_prep_flow.py (0%)",
-            "flows/signup_handler.py (10%)",
-            "flows/postcall_maybe_handler.py (10%)",
-            "flows/noshow_recovery_handler.py (30%)",
-            "tasks/notion_operations.py (36%)",
-            "orchestrate_sequence.py (0%)",
-            "tasks/models.py (0%)"
-          ]
-        },
-        "production_urls": {
-          "sales_funnel": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
-          "prefect_server": "https://prefect.galatek.dev"
-        },
-        "mandatory_email": "lengobaosang@gmail.com"
+        "reason": "User requested 85%+ test coverage. Current coverage at 46% with 14 failing tests.",
+        "impact_hours": 3
       }
     },
     {
       "timestamp": "2025-11-27T20:19:58.190579Z",
       "action": "Completed features 6.1-6.2: Fixed Prefect API mocking and Notion property mismatches",
-      "feature_ids": [
-        "6.1",
-        "6.2"
-      ]
+      "feature_ids": ["6.1", "6.2"]
+    },
+    {
+      "timestamp": "2025-11-28T02:30:00Z",
+      "action": "Added Wave 7 with 10 features via /add-tasks-coding",
+      "details": {
+        "features_added": ["7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "7.9", "7.10"],
+        "wave_added": 7,
+        "wave_name": "Debug Email Delivery & Replace Python 3.12 Workers",
+        "reason": "User reported signing up via production funnel (lengobaosang@gmail.com) but did NOT receive any emails. Also need to replace Python 3.12 workers with Python 3.11 via Coolify due to asyncio.get_child_watcher() NotImplementedError.",
+        "impact_hours": 4,
+        "mandatory_email": "lengobaosang@gmail.com",
+        "production_urls": {
+          "sales_funnel": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01",
+          "prefect_server": "https://prefect.galatek.dev"
+        },
+        "issue_1": {
+          "name": "Email Delivery Failure",
+          "description": "User signed up via production funnel but received no emails",
+          "features": ["7.1", "7.2", "7.3", "7.4", "7.5"],
+          "investigation_areas": [
+            "Website-to-webhook integration",
+            "Prefect flow execution logs",
+            "Notion template verification",
+            "Resend delivery logs"
+          ]
+        },
+        "issue_2": {
+          "name": "Python 3.12 Worker Crash",
+          "description": "Production workers running Python 3.12 crash with asyncio.get_child_watcher() NotImplementedError",
+          "features": ["7.6", "7.7", "7.8", "7.9", "7.10"],
+          "solution": "Remove Python 3.12 workers and create new Python 3.11 workers via Coolify"
+        },
+        "skills_required": ["coolify-integration", "prefect-marketing-automation"]
+      }
+    },
+    {
+      "timestamp": "2025-11-28T03:00:00Z",
+      "action": "Added Wave 8 with 20 features via /add-tasks-coding",
+      "details": {
+        "features_added": ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "8.10", "8.11", "8.12", "8.13", "8.14", "8.15", "8.16", "8.17", "8.18", "8.19", "8.20"],
+        "wave_added": 8,
+        "wave_name": "Production Readiness & Full E2E Testing",
+        "reason": "User discovered Prefect API can be called directly (no webhook server needed), worker is ONLINE on Coolify, and is planning additional campaigns requiring naming strategy",
+        "impact_hours": 12,
+        "mandatory_email": "lengobaosang@gmail.com",
+        "feature_groups": {
+          "group_1": {
+            "name": "Verify Notion-Only Templates (No Hardcoding)",
+            "features": ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6"],
+            "description": "Audit all handler files to ensure templates come from Notion only"
+          },
+          "group_2": {
+            "name": "Deployment Naming Strategy for Multi-Campaign",
+            "features": ["8.7", "8.8", "8.9", "8.10"],
+            "description": "Design and document deployment naming convention for future campaigns"
+          },
+          "group_3": {
+            "name": "Website-to-Prefect Direct Integration",
+            "features": ["8.11", "8.12", "8.13", "8.14"],
+            "description": "Document API endpoints and create integration guide for website team"
+          },
+          "group_4": {
+            "name": "Comprehensive E2E Testing (All 4 Flows)",
+            "features": ["8.15", "8.16", "8.17", "8.18", "8.19", "8.20"],
+            "description": "Run full E2E tests for all flows via Prefect API"
+          }
+        },
+        "deployment_ids": {
+          "christmas-signup-handler": "1ae3a3b3-e076-49c5-9b08-9c176aa47aa0",
+          "christmas-noshow-recovery-handler": "3400e152-1cbe-4d8f-9f8a-0dd73569afa1",
+          "christmas-postcall-maybe-handler": "ed929cd9-34b3-4655-b128-1a1e08a59cbd",
+          "christmas-onboarding-handler": "db47b919-1e55-4de2-b52c-6e2b0b2a2285"
+        },
+        "prefect_api_url": "https://prefect.galatek.dev/api",
+        "skills_required": ["prefect-marketing-automation"]
+      }
     }
   ],
   "blockers": [
@@ -951,8 +1618,8 @@
       "id": "B2",
       "severity": "high",
       "description": "14 failing tests due to Prefect ephemeral server connection and Notion property mismatches",
-      "status": "pending",
-      "solution": "Wave 6 features 6.1 and 6.2 will fix these by adding proper mocks"
+      "status": "resolved",
+      "solution": "Wave 6 features 6.1 and 6.2 fixed with proper mocks"
     },
     {
       "id": "B3",
@@ -960,6 +1627,22 @@
       "description": "Test coverage at 46% - below 85% target",
       "status": "pending",
       "solution": "Wave 6 features 6.3-6.13 will add comprehensive unit tests and production E2E tests"
+    },
+    {
+      "id": "B4",
+      "severity": "critical",
+      "description": "Production funnel signup did not trigger email delivery for lengobaosang@gmail.com",
+      "status": "pending",
+      "solution": "Wave 7 features 7.1-7.5 will investigate and fix the integration issue",
+      "added_at": "2025-11-28T02:30:00Z"
+    },
+    {
+      "id": "B5",
+      "severity": "high",
+      "description": "Python 3.12 workers on production server crash with asyncio error - need replacement",
+      "status": "pending",
+      "solution": "Wave 7 features 7.6-7.10 will remove Python 3.12 workers and create Python 3.11 workers via Coolify",
+      "added_at": "2025-11-28T02:30:00Z"
     }
   ],
   "dependencies": {

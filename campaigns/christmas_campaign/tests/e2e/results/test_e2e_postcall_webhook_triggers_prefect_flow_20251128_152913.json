@@ -1,0 +1,30 @@
+{
+  "test_name": "test_e2e_postcall_webhook_triggers_prefect_flow",
+  "status": "passed",
+  "start_time": "2025-11-28T15:29:13.839224",
+  "end_time": "2025-11-28T15:29:15.845296",
+  "duration_seconds": 2.006072,
+  "flow_run_ids": [],
+  "webhook_responses": [
+    {
+      "endpoint": "/webhook/postcall-maybe",
+      "status_code": 200,
+      "response": {
+        "status": "accepted",
+        "message": "Post-call follow-up sequence will begin shortly",
+        "email": "e2e-postcall-flow-1764361753839@e2e-test.example.com",
+        "call_outcome": "Maybe",
+        "campaign": "Christmas Traditional Service"
+      },
+      "timestamp": "2025-11-28T15:29:13.840018"
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "notes": [
+    {
+      "note": "Flow triggered for e2e-postcall-flow-1764361753839@e2e-test.example.com - verify in Prefect UI",
+      "timestamp": "2025-11-28T15:29:15.845037"
+    }
+  ]
+}
