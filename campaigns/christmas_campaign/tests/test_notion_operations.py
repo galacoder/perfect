@@ -24,6 +24,9 @@ from unittest.mock import Mock, patch, MagicMock
 
 # ==============================================================================
 # Feature 0.1: Verify 7 lead nurture templates accessible
+# DEPRECATED (Wave 11): These tests verify archived lead_nurture_email_* templates.
+# These templates have been archived in Notion and replaced with 5-Day E* templates.
+# Tests kept for backward compatibility - see "Active 5-Day E* Template Tests" below.
 # ==============================================================================
 
 class TestFetchTemplate:
@@ -523,3 +526,188 @@ class TestFetchTemplateNewFormat:
         result = notion_operations.fetch_email_template.fn("nonexistent_template")
 
         assert result is None
+
+    # ==============================================================================
+    # Active 5-Day E* Template Tests (Wave 11: Template Naming Alignment)
+    # ==============================================================================
+
+    def test_fetch_template_5day_e1_exists(self, monkeypatch):
+        """Verify 5-Day E1 template exists and is fetchable."""
+        from campaigns.christmas_campaign.tasks import notion_operations
+
+        mock_notion = MagicMock()
+        mock_notion.databases.query.return_value = {
+            "results": [
+                {
+                    "properties": {
+                        "Template ID": {
+                            "title": [{"plain_text": "5-Day E1"}]
+                        },
+                        "Subject Line": {
+                            "rich_text": [{"plain_text": "Your BusOS Assessment Results"}]
+                        },
+                        "HTML Body": {
+                            "rich_text": [{"plain_text": "<html>Email 1 body</html>"}]
+                        },
+                        "Campaign": {
+                            "select": {"name": "Christmas 2025"}
+                        }
+                    }
+                }
+            ]
+        }
+
+        monkeypatch.setattr(
+            "campaigns.christmas_campaign.tasks.notion_operations.notion",
+            mock_notion
+        )
+
+        result = notion_operations.fetch_email_template.fn("5-Day E1")
+
+        assert result is not None
+        assert result["template_id"] == "5-Day E1"
+        assert result["subject"] == "Your BusOS Assessment Results"
+
+    def test_fetch_template_5day_e2_exists(self, monkeypatch):
+        """Verify 5-Day E2 template exists and is fetchable."""
+        from campaigns.christmas_campaign.tasks import notion_operations
+
+        mock_notion = MagicMock()
+        mock_notion.databases.query.return_value = {
+            "results": [
+                {
+                    "properties": {
+                        "Template ID": {
+                            "title": [{"plain_text": "5-Day E2"}]
+                        },
+                        "Subject Line": {
+                            "rich_text": [{"plain_text": "The $500K Mistake"}]
+                        },
+                        "HTML Body": {
+                            "rich_text": [{"plain_text": "<html>Email 2 body</html>"}]
+                        },
+                        "Campaign": {
+                            "select": {"name": "Christmas 2025"}
+                        }
+                    }
+                }
+            ]
+        }
+
+        monkeypatch.setattr(
+            "campaigns.christmas_campaign.tasks.notion_operations.notion",
+            mock_notion
+        )
+
+        result = notion_operations.fetch_email_template.fn("5-Day E2")
+
+        assert result is not None
+        assert result["template_id"] == "5-Day E2"
+
+    def test_fetch_template_5day_e3_exists(self, monkeypatch):
+        """Verify 5-Day E3 template exists and is fetchable."""
+        from campaigns.christmas_campaign.tasks import notion_operations
+
+        mock_notion = MagicMock()
+        mock_notion.databases.query.return_value = {
+            "results": [
+                {
+                    "properties": {
+                        "Template ID": {
+                            "title": [{"plain_text": "5-Day E3"}]
+                        },
+                        "Subject Line": {
+                            "rich_text": [{"plain_text": "Van Tiny Case Study"}]
+                        },
+                        "HTML Body": {
+                            "rich_text": [{"plain_text": "<html>Email 3 body</html>"}]
+                        },
+                        "Campaign": {
+                            "select": {"name": "Christmas 2025"}
+                        }
+                    }
+                }
+            ]
+        }
+
+        monkeypatch.setattr(
+            "campaigns.christmas_campaign.tasks.notion_operations.notion",
+            mock_notion
+        )
+
+        result = notion_operations.fetch_email_template.fn("5-Day E3")
+
+        assert result is not None
+        assert result["template_id"] == "5-Day E3"
+
+    def test_fetch_template_5day_e4_exists(self, monkeypatch):
+        """Verify 5-Day E4 template exists and is fetchable."""
+        from campaigns.christmas_campaign.tasks import notion_operations
+
+        mock_notion = MagicMock()
+        mock_notion.databases.query.return_value = {
+            "results": [
+                {
+                    "properties": {
+                        "Template ID": {
+                            "title": [{"plain_text": "5-Day E4"}]
+                        },
+                        "Subject Line": {
+                            "rich_text": [{"plain_text": "Value Stack"}]
+                        },
+                        "HTML Body": {
+                            "rich_text": [{"plain_text": "<html>Email 4 body</html>"}]
+                        },
+                        "Campaign": {
+                            "select": {"name": "Christmas 2025"}
+                        }
+                    }
+                }
+            ]
+        }
+
+        monkeypatch.setattr(
+            "campaigns.christmas_campaign.tasks.notion_operations.notion",
+            mock_notion
+        )
+
+        result = notion_operations.fetch_email_template.fn("5-Day E4")
+
+        assert result is not None
+        assert result["template_id"] == "5-Day E4"
+
+    def test_fetch_template_5day_e5_exists(self, monkeypatch):
+        """Verify 5-Day E5 template exists and is fetchable."""
+        from campaigns.christmas_campaign.tasks import notion_operations
+
+        mock_notion = MagicMock()
+        mock_notion.databases.query.return_value = {
+            "results": [
+                {
+                    "properties": {
+                        "Template ID": {
+                            "title": [{"plain_text": "5-Day E5"}]
+                        },
+                        "Subject Line": {
+                            "rich_text": [{"plain_text": "Final Call"}]
+                        },
+                        "HTML Body": {
+                            "rich_text": [{"plain_text": "<html>Email 5 body</html>"}]
+                        },
+                        "Campaign": {
+                            "select": {"name": "Christmas 2025"}
+                        }
+                    }
+                }
+            ]
+        }
+
+        monkeypatch.setattr(
+            "campaigns.christmas_campaign.tasks.notion_operations.notion",
+            mock_notion
+        )
+
+        result = notion_operations.fetch_email_template.fn("5-Day E5")
+
+        assert result is not None
+        assert result["template_id"] == "5-Day E5"

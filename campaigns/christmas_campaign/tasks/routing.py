@@ -66,13 +66,13 @@ def get_email_template_id(
     Get template ID for a specific email and segment combination.
 
     Email Template Mapping (Christmas 2025 - 5-Day Sequence):
-    - Email 1: "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
-    - Email 2: "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
-    - Email 3: "5-Day E3: Van Tiny Case Study + Soft ASK"
-    - Email 4: "5-Day E4: Value Stack + Medium ASK"
-    - Email 5: "5-Day E5: Final Call - HARD ASK (Last Email)"
+    - Email 1: "5-Day E1" (Your Assessment Results + Dec 5 Deadline - GIVE)
+    - Email 2: "5-Day E2" (The $500K Mistake + BusOS Framework - GIVE)
+    - Email 3: "5-Day E3" (Van Tiny Case Study + Soft ASK)
+    - Email 4: "5-Day E4" (Value Stack + Medium ASK)
+    - Email 5: "5-Day E5" (Final Call - HARD ASK, Last Email)
 
-    Note: The Christmas 2025 campaign now uses a 5-day sequence (not 7-day).
+    Note: Template names in Notion use SHORT format ("5-Day E1") without descriptive suffixes.
     The segment parameter is kept for compatibility but not used for template selection.
     Website sends Email 1, Prefect sends Emails 2-5.
 
@@ -85,18 +85,18 @@ def get_email_template_id(
 
     Example:
         template_id = get_email_template_id(email_number=1, segment="CRITICAL")
-        # Returns: "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
+        # Returns: "5-Day E1"
 
         template_id = get_email_template_id(email_number=2, segment="CRITICAL")
-        # Returns: "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
+        # Returns: "5-Day E2"
     """
-    # Christmas 2025: 5-Day Sequence templates (exact Notion names)
+    # Christmas 2025: 5-Day Sequence templates (exact Notion names - SHORT format)
     templates = {
-        1: "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)",
-        2: "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)",
-        3: "5-Day E3: Van Tiny Case Study + Soft ASK",
-        4: "5-Day E4: Value Stack + Medium ASK",
-        5: "5-Day E5: Final Call - HARD ASK (Last Email)"
+        1: "5-Day E1",
+        2: "5-Day E2",
+        3: "5-Day E3",
+        4: "5-Day E4",
+        5: "5-Day E5"
     }
 
     if email_number in templates:

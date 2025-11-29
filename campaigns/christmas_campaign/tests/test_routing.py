@@ -83,12 +83,12 @@ class TestClassifySegment:
 class TestGetEmailTemplateId:
     """Test email template ID selection logic for 5-Day sequence."""
 
-    # 5-Day template names (exact Notion names)
-    E1 = "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
-    E2 = "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
-    E3 = "5-Day E3: Van Tiny Case Study + Soft ASK"
-    E4 = "5-Day E4: Value Stack + Medium ASK"
-    E5 = "5-Day E5: Final Call - HARD ASK (Last Email)"
+    # 5-Day template names (exact Notion names - SHORT format)
+    E1 = "5-Day E1"
+    E2 = "5-Day E2"
+    E3 = "5-Day E3"
+    E4 = "5-Day E4"
+    E5 = "5-Day E5"
 
     def test_email_1_universal(self):
         """Test Email 1 is universal (same for all segments)."""
@@ -209,10 +209,10 @@ class TestGetSegmentDescription:
 class TestSegmentClassificationIntegration:
     """Integration tests combining classification and template selection."""
 
-    # 5-Day template names (exact Notion names)
-    E1 = "5-Day E1: Your Assessment Results + Dec 5 Deadline (GIVE)"
-    E2 = "5-Day E2: The $500K Mistake + BusOS Framework (GIVE)"
-    E5 = "5-Day E5: Final Call - HARD ASK (Last Email)"
+    # 5-Day template names (exact Notion names - SHORT format)
+    E1 = "5-Day E1"
+    E2 = "5-Day E2"
+    E5 = "5-Day E5"
 
     def test_critical_flow_complete(self):
         """Test complete flow for CRITICAL segment."""
