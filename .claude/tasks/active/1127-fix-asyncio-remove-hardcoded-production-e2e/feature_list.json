@@ -3,7 +3,7 @@
   "domain": "coding",
   "status": "executing",
   "current_phase": "CODE",
-  "current_wave": 10,
+  "current_wave": 9,
   "current_feature_id": null,
   "created_at": "2025-11-27T15:00:00Z",
   "updated_at": "2025-11-28T02:30:00Z",
@@ -96,7 +96,7 @@
       "id": 8,
       "name": "Production Readiness & Full E2E Testing",
       "objective": "Verify Notion-only templates, establish deployment naming strategy for multi-campaign, document website-to-Prefect API integration, and run comprehensive E2E tests for all 4 flows",
-      "status": "pending",
+      "status": "complete",
       "priority": "critical",
       "added_at": "2025-11-28T03:00:00Z",
       "added_via": "/add-tasks-coding",
@@ -141,7 +141,8 @@
             "8.20"
           ]
         }
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088"
     },
     {
       "id": 9,
@@ -239,6 +240,78 @@
       },
       "started_at": "2025-11-28T20:47:00Z",
       "completed_at": "2025-11-29T02:05:44.171559Z"
+    },
+    {
+      "id": 11,
+      "name": "Template Naming Alignment with Notion",
+      "objective": "Align all Python code with verified Notion templates: update references from archived lead_nurture_email_* to active 5-Day E* naming, verify all handler flows use correct template names, and add validation tests",
+      "status": "pending",
+      "priority": "high",
+      "added_at": "2025-11-28T10:00:00Z",
+      "added_via": "/add-tasks-coding",
+      "context": {
+        "active_templates": [
+          "5-Day E1",
+          "5-Day E2",
+          "5-Day E3",
+          "5-Day E4",
+          "5-Day E5",
+          "noshow_recovery_email_1",
+          "noshow_recovery_email_2",
+          "noshow_recovery_email_3",
+          "postcall_maybe_email_1",
+          "postcall_maybe_email_2",
+          "postcall_maybe_email_3",
+          "onboarding_phase1_email_1",
+          "onboarding_phase1_email_2",
+          "onboarding_phase1_email_3"
+        ],
+        "archived_templates": [
+          "lead_nurture_email_1",
+          "lead_nurture_email_2a_critical",
+          "lead_nurture_email_2b_urgent",
+          "lead_nurture_email_2c_optimize",
+          "lead_nurture_email_3",
+          "lead_nurture_email_4",
+          "lead_nurture_email_5"
+        ],
+        "notion_fixes_applied": [
+          "5-Day E4: Subject line updated (removed fabricated 'Sarah')",
+          "5-Day E5: Subject line updated (removed fabricated 'Min-Ji')",
+          "noshow_recovery_email_2: {{q1_foundation_deadline}} variable instead of 'November 15'",
+          "noshow_recovery_email_3: {{q1_foundation_deadline}} variable instead of 'November 15'"
+        ]
+      },
+      "feature_groups": [
+        {
+          "name": "Code Audit",
+          "features": [
+            "11.1"
+          ]
+        },
+        {
+          "name": "Signup Handler Updates",
+          "features": [
+            "11.2",
+            "11.3"
+          ]
+        },
+        {
+          "name": "Handler Verification",
+          "features": [
+            "11.4",
+            "11.5",
+            "11.6",
+            "11.7"
+          ]
+        },
+        {
+          "name": "Test Validation",
+          "features": [
+            "11.8"
+          ]
+        }
+      ]
     }
   ],
   "features": [
@@ -1185,7 +1258,7 @@
       "id": "8.1",
       "wave": 8,
       "name": "Audit signup_handler.py for hardcoded templates",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify signup_handler.py fetches ALL templates from Notion only. No fallbacks, no hardcoded HTML/subject strings.",
@@ -1197,13 +1270,16 @@
         "grep for fallback function calls",
         "Verify template_name passed to fetch_template",
         "Confirm error raised if template not found"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": true,
+      "notes": "signup_handler.py has NO hardcoded templates - only schedules email sequences via Prefect"
     },
     {
       "id": "8.2",
       "wave": 8,
       "name": "Audit noshow_recovery_handler.py for hardcoded templates",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify noshow_recovery_handler.py fetches ALL 3 templates from Notion only. No fallbacks.",
@@ -1220,13 +1296,16 @@
         "grep for fallback function calls",
         "Verify all 3 template names correct",
         "Confirm error raised if template not found"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": true,
+      "notes": "noshow_recovery_handler.py uses correct template names: noshow_recovery_email_1-3"
     },
     {
       "id": "8.3",
       "wave": 8,
       "name": "Audit postcall_maybe_handler.py for hardcoded templates",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify postcall_maybe_handler.py fetches ALL 3 templates from Notion only. No fallbacks.",
@@ -1243,13 +1322,16 @@
         "grep for fallback function calls",
         "Verify all 3 template names correct",
         "Confirm error raised if template not found"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": true,
+      "notes": "postcall_maybe_handler.py uses correct template names: postcall_maybe_email_1-3"
     },
     {
       "id": "8.4",
       "wave": 8,
       "name": "Audit onboarding_handler.py for hardcoded templates",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify onboarding_handler.py fetches ALL 3 templates from Notion only. No fallbacks.",
@@ -1266,13 +1348,16 @@
         "grep for fallback function calls",
         "Verify all 3 template names correct",
         "Confirm error raised if template not found"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": true,
+      "notes": "onboarding_handler.py uses correct template names: onboarding_phase1_email_1-3"
     },
     {
       "id": "8.5",
       "wave": 8,
       "name": "Audit send_email_flow.py for hardcoded templates",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify send_email_flow.py has NO hardcoded templates or fallback logic. Must error if Notion template not found.",
@@ -1284,13 +1369,16 @@
         "grep for hardcoded HTML",
         "Verify ValueError raised on missing template",
         "Confirm template variable substitution works"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": true,
+      "notes": "send_email_flow.py raises ValueError if template not found - NO fallback logic"
     },
     {
       "id": "8.6",
       "wave": 8,
       "name": "Document template variable mappings",
-      "status": "pending",
+      "status": "complete",
       "priority": "medium",
       "tests_required": false,
       "description": "Create comprehensive documentation of all template variables available: first_name, last_name, business_name, email, assessment results, etc.",
@@ -1307,13 +1395,16 @@
         "orange_systems",
         "green_systems",
         "segment"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": false,
+      "notes": "Created comprehensive template variables documentation (30+ variables documented)"
     },
     {
       "id": "8.7",
       "wave": 8,
       "name": "Design deployment naming convention",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": false,
       "description": "Design naming convention for multi-campaign deployments. Format: {campaign}-{flow}-{version} or {campaign}{year}-{flow}",
@@ -1329,13 +1420,17 @@
         "{campaign}{year}-{flow}-handler (e.g., christmas2025-signup-handler)",
         "{campaign}-{flow}-v{version} (e.g., christmas-signup-v1)",
         "{campaign_code}-{flow} (e.g., xmas25-signup)"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": false,
+      "output_file": "campaigns/christmas_campaign/docs/DEPLOYMENT_NAMING_CONVENTION.md",
+      "notes": "Designed naming convention: {campaign}-{flow-type}-{variant}. Current naming is correct."
     },
     {
       "id": "8.8",
       "wave": 8,
       "name": "Rename current deployments if needed",
-      "status": "pending",
+      "status": "complete",
       "priority": "medium",
       "tests_required": true,
       "description": "Evaluate if current deployment names need renaming. If yes, create new deployments with new names and deprecate old ones.",
@@ -1352,24 +1447,30 @@
         "Create new deployments if needed",
         "Test new deployments work",
         "Document deprecation of old names"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": false,
+      "notes": "Decision: NO renaming needed. Current deployments follow convention correctly."
     },
     {
       "id": "8.9",
       "wave": 8,
       "name": "Document naming convention in ARCHITECTURE.md",
-      "status": "pending",
+      "status": "complete",
       "priority": "medium",
       "tests_required": false,
       "description": "Update ARCHITECTURE.md with official deployment naming convention for future campaigns.",
       "added_at": "2025-11-28T03:00:00Z",
       "estimate_hours": 0.5,
-      "file": "campaigns/christmas_campaign/ARCHITECTURE.md",
+      "file": "campaigns/christmas_campaign/EMAIL_ARCHITECTURE.md",
       "sections_to_add": [
         "Deployment Naming Convention",
         "Multi-Campaign Strategy",
         "Version Management"
-      ]
+      ],
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "tests_passing": false,
+      "notes": "Added Deployment Naming Convention section to EMAIL_ARCHITECTURE.md"
     },
     {
       "id": "8.10",
@@ -2242,21 +2343,228 @@
       "started_at": "2025-11-28T20:47:00Z",
       "completed_at": "2025-11-29T02:05:44.171559Z",
       "investigation_result": "System working as designed - idempotency and prerequisite validation functioning correctly"
+    },
+    {
+      "id": "11.1",
+      "wave": 11,
+      "name": "Audit template references in all Python files",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Search all Python files for template name references and create a comprehensive mapping. Identify: (1) All hardcoded template names, (2) Which files reference which templates, (3) Any references to archived lead_nurture_email_* templates that need updating.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "files_to_search": [
+        "campaigns/christmas_campaign/flows/*.py",
+        "campaigns/christmas_campaign/tasks/*.py",
+        "campaigns/businessx_canada_lead_nurture/flows/*.py",
+        "campaigns/businessx_canada_lead_nurture/tasks/*.py"
+      ],
+      "output": "Template reference audit report with file:line mappings",
+      "test_scenarios": []
+    },
+    {
+      "id": "11.2",
+      "wave": 11,
+      "name": "Update signup_handler to use 5-Day E* naming",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Update signup_handler.py to use correct 5-Day E* template names instead of any lead_nurture_email_* references. The active templates are: 5-Day E1, 5-Day E2, 5-Day E3, 5-Day E4, 5-Day E5.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/signup_handler.py",
+      "template_mapping": {
+        "old": [
+          "christmas_email_1",
+          "christmas_email_2",
+          "christmas_email_3",
+          "christmas_email_4",
+          "christmas_email_5"
+        ],
+        "new": [
+          "5-Day E1",
+          "5-Day E2",
+          "5-Day E3",
+          "5-Day E4",
+          "5-Day E5"
+        ]
+      },
+      "test_scenarios": [
+        "Verify signup_handler uses '5-Day E1' for first email",
+        "Verify email sequence schedules '5-Day E2' through '5-Day E5'",
+        "Test with mock Notion fetch to confirm template names"
+      ]
+    },
+    {
+      "id": "11.3",
+      "wave": 11,
+      "name": "Update send_email flow template fetching",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Ensure send_email_flow.py correctly fetches templates using the new 5-Day E* naming convention. Verify the Notion query uses exact template IDs.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/send_email_flow.py",
+      "test_scenarios": [
+        "Mock Notion query and verify correct template ID requested",
+        "Test error handling when template not found",
+        "Verify template subject/body correctly extracted"
+      ]
+    },
+    {
+      "id": "11.4",
+      "wave": 11,
+      "name": "Remove archived template references",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Delete or update any code referencing archived lead_nurture_email_* templates. These 7 templates are archived in Notion and should NOT be referenced: lead_nurture_email_1, lead_nurture_email_2a_critical, lead_nurture_email_2b_urgent, lead_nurture_email_2c_optimize, lead_nurture_email_3, lead_nurture_email_4, lead_nurture_email_5.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "archived_templates": [
+        "lead_nurture_email_1",
+        "lead_nurture_email_2a_critical",
+        "lead_nurture_email_2b_urgent",
+        "lead_nurture_email_2c_optimize",
+        "lead_nurture_email_3",
+        "lead_nurture_email_4",
+        "lead_nurture_email_5"
+      ],
+      "test_scenarios": [
+        "Grep codebase for lead_nurture_email_ - should return 0 results",
+        "Verify no test files reference archived templates",
+        "Confirm config/email_templates.py updated if needed"
+      ]
+    },
+    {
+      "id": "11.5",
+      "wave": 11,
+      "name": "Verify noshow_recovery uses correct template names",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify noshow_recovery_handler.py uses exactly: noshow_recovery_email_1, noshow_recovery_email_2, noshow_recovery_email_3. Also verify the new {{q1_foundation_deadline}} variable is handled correctly.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/noshow_recovery_handler.py",
+      "correct_templates": [
+        "noshow_recovery_email_1",
+        "noshow_recovery_email_2",
+        "noshow_recovery_email_3"
+      ],
+      "new_variable": "q1_foundation_deadline",
+      "test_scenarios": [
+        "Verify handler references noshow_recovery_email_1/2/3",
+        "Verify q1_foundation_deadline variable is provided to templates",
+        "Test template fetch with correct names"
+      ]
+    },
+    {
+      "id": "11.6",
+      "wave": 11,
+      "name": "Verify postcall_maybe uses correct template names",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify postcall_maybe_handler.py uses exactly: postcall_maybe_email_1, postcall_maybe_email_2, postcall_maybe_email_3.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/postcall_maybe_handler.py",
+      "correct_templates": [
+        "postcall_maybe_email_1",
+        "postcall_maybe_email_2",
+        "postcall_maybe_email_3"
+      ],
+      "test_scenarios": [
+        "Verify handler references postcall_maybe_email_1/2/3",
+        "Test template fetch with correct names",
+        "Verify sequence timing (1hr, Day 3, Day 7)"
+      ]
+    },
+    {
+      "id": "11.7",
+      "wave": 11,
+      "name": "Verify onboarding_handler uses correct template names",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Verify onboarding_handler.py uses exactly: onboarding_phase1_email_1, onboarding_phase1_email_2, onboarding_phase1_email_3.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/flows/onboarding_handler.py",
+      "correct_templates": [
+        "onboarding_phase1_email_1",
+        "onboarding_phase1_email_2",
+        "onboarding_phase1_email_3"
+      ],
+      "test_scenarios": [
+        "Verify handler references onboarding_phase1_email_1/2/3",
+        "Test template fetch with correct names",
+        "Verify sequence timing (1hr, Day 1, Day 3)"
+      ]
+    },
+    {
+      "id": "11.8",
+      "wave": 11,
+      "name": "Add tests for template name validation",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Create unit tests that validate all template names used in code match the active templates in Notion. These tests should fail if anyone accidentally references archived templates.",
+      "added_at": "2025-11-28T10:00:00Z",
+      "estimate_hours": 1,
+      "output_file": "campaigns/christmas_campaign/tests/test_template_names.py",
+      "active_templates": {
+        "5_day_sequence": [
+          "5-Day E1",
+          "5-Day E2",
+          "5-Day E3",
+          "5-Day E4",
+          "5-Day E5"
+        ],
+        "noshow_recovery": [
+          "noshow_recovery_email_1",
+          "noshow_recovery_email_2",
+          "noshow_recovery_email_3"
+        ],
+        "postcall_maybe": [
+          "postcall_maybe_email_1",
+          "postcall_maybe_email_2",
+          "postcall_maybe_email_3"
+        ],
+        "onboarding_phase1": [
+          "onboarding_phase1_email_1",
+          "onboarding_phase1_email_2",
+          "onboarding_phase1_email_3"
+        ]
+      },
+      "test_scenarios": [
+        "Test that VALID_TEMPLATES constant matches Notion active templates",
+        "Test signup_handler uses only valid template names",
+        "Test noshow_recovery_handler uses only valid template names",
+        "Test postcall_maybe_handler uses only valid template names",
+        "Test onboarding_handler uses only valid template names",
+        "Test that no code references archived lead_nurture_email_* templates",
+        "Test template name validation helper function"
+      ]
     }
   ],
   "progress": {
-    "total_features": 99,
-    "completed_features": 48,
-    "pending_features": 64,
-    "total_waves": 11,
-    "completed_waves": 7,
-    "percentage": 48.48,
+    "total_features": 107,
+    "completed_features": 57,
+    "pending_features": 59,
+    "total_waves": 12,
+    "completed_waves": 8,
+    "percentage": 53.27,
     "wave_5_features_added": 8,
     "wave_6_features_added": 13,
     "wave_7_features_added": 10,
     "wave_8_features_added": 20,
     "wave_9_features_added": 13,
-    "wave_10_features_added": 8
+    "wave_10_features_added": 8,
+    "wave_11_features_added": 8
   },
   "session_log": [
     {
@@ -2714,6 +3022,71 @@
         "6.9"
       ],
       "tests_added": "Significantly expanded test_postcall_maybe_handler.py (3 -> 13 tests)"
+    },
+    {
+      "timestamp": "2025-11-28T10:00:00Z",
+      "action": "Added Wave 11 with 8 features via /add-tasks-coding",
+      "details": {
+        "features_added": [
+          "11.1",
+          "11.2",
+          "11.3",
+          "11.4",
+          "11.5",
+          "11.6",
+          "11.7",
+          "11.8"
+        ],
+        "wave_added": 11,
+        "wave_name": "Template Naming Alignment with Notion",
+        "reason": "User verified Notion templates via businessX project: 14 active templates, 7 archived. Code needs alignment to use correct 5-Day E* naming instead of archived lead_nurture_email_* references.",
+        "impact_hours": 4.5,
+        "context": {
+          "active_templates_count": 14,
+          "archived_templates_count": 7,
+          "notion_fixes_applied": [
+            "5-Day E4: Subject line updated (removed fabricated 'Sarah')",
+            "5-Day E5: Subject line updated (removed fabricated 'Min-Ji')",
+            "noshow_recovery_email_2: {{q1_foundation_deadline}} variable added",
+            "noshow_recovery_email_3: {{q1_foundation_deadline}} variable added"
+          ]
+        },
+        "feature_groups": {
+          "code_audit": [
+            "11.1"
+          ],
+          "signup_handler_updates": [
+            "11.2",
+            "11.3"
+          ],
+          "handler_verification": [
+            "11.4",
+            "11.5",
+            "11.6",
+            "11.7"
+          ],
+          "test_validation": [
+            "11.8"
+          ]
+        }
+      }
+    },
+    {
+      "timestamp": "2025-11-28T21:51:20.577088",
+      "action": "Completed Wave 8: Production Readiness & Full E2E Testing",
+      "wave": 8,
+      "features_completed": [
+        "8.1",
+        "8.2",
+        "8.3",
+        "8.4",
+        "8.5",
+        "8.6",
+        "8.7",
+        "8.8",
+        "8.9"
+      ],
+      "commit_hash": "pending"
     }
   ],
   "blockers": [

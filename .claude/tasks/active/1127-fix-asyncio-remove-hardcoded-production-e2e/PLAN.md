@@ -1020,6 +1020,166 @@ User discovered:
 ---
 
 **Plan Created**: 2025-11-27
-**Updated**: 2025-11-28 (Wave 10 added with 8 features via /add-tasks-coding)
-**Total Features**: 99 (91 previous + 8 new)
+**Updated**: 2025-11-28 (Wave 11 added with 8 features via /add-tasks-coding)
+**Total Features**: 107 (99 previous + 8 new)
 **Awaiting**: User approval to proceed to /execute-coding
+
+---
+
+## Wave 11: Template Naming Alignment with Notion (NEW - Added 2025-11-28)
+**Objective**: Align all Python code with verified Notion templates: update references from archived lead_nurture_email_* to active 5-Day E* naming, verify all handler flows use correct template names, and add validation tests
+**Status**: Pending
+**Priority**: HIGH
+**Added via**: /add-tasks-coding
+
+### Context
+
+From the businessX verification report:
+- **14 Active Templates in Notion**:
+  - 5-Day E1, 5-Day E2, 5-Day E3, 5-Day E4, 5-Day E5 (main signup sequence)
+  - noshow_recovery_email_1, noshow_recovery_email_2, noshow_recovery_email_3
+  - postcall_maybe_email_1, postcall_maybe_email_2, postcall_maybe_email_3
+  - onboarding_phase1_email_1, onboarding_phase1_email_2, onboarding_phase1_email_3
+
+- **7 Archived Templates** (should NOT be referenced):
+  - lead_nurture_email_1
+  - lead_nurture_email_2a_critical
+  - lead_nurture_email_2b_urgent
+  - lead_nurture_email_2c_optimize
+  - lead_nurture_email_3
+  - lead_nurture_email_4
+  - lead_nurture_email_5
+
+- **Fixes Applied in Notion**:
+  - 5-Day E4: Subject line updated (removed fabricated "Sarah")
+  - 5-Day E5: Subject line updated (removed fabricated "Min-Ji")
+  - noshow_recovery_email_2: {{q1_foundation_deadline}} variable instead of "November 15"
+  - noshow_recovery_email_3: {{q1_foundation_deadline}} variable instead of "November 15"
+
+### Phase 1: Code Audit (Feature 11.1)
+
+- [ ] 11.1: Audit template references in all Python files
+  - Search campaigns/christmas_campaign/flows/*.py
+  - Search campaigns/christmas_campaign/tasks/*.py
+  - Search campaigns/businessx_canada_lead_nurture/flows/*.py
+  - Search campaigns/businessx_canada_lead_nurture/tasks/*.py
+  - Create mapping: file -> template names referenced
+  - Identify any archived lead_nurture_email_* references
+  - **Estimate**: 0.5 hours
+
+### Phase 2: Signup Handler Updates (Features 11.2-11.3)
+
+- [ ] 11.2: Update signup_handler to use 5-Day E* naming
+  - Replace christmas_email_1-5 with 5-Day E1-E5
+  - **File**: `campaigns/christmas_campaign/flows/signup_handler.py`
+  - **Test scenarios**:
+    - Verify signup_handler uses '5-Day E1' for first email
+    - Verify email sequence schedules '5-Day E2' through '5-Day E5'
+    - Test with mock Notion fetch to confirm template names
+  - **Estimate**: 0.5 hours
+
+- [ ] 11.3: Update send_email flow template fetching
+  - Ensure send_email_flow.py correctly fetches templates using 5-Day E* naming
+  - **File**: `campaigns/christmas_campaign/flows/send_email_flow.py`
+  - **Test scenarios**:
+    - Mock Notion query and verify correct template ID requested
+    - Test error handling when template not found
+    - Verify template subject/body correctly extracted
+  - **Estimate**: 0.5 hours
+
+### Phase 3: Handler Verification (Features 11.4-11.7)
+
+- [ ] 11.4: Remove archived template references
+  - Delete/update any code referencing lead_nurture_email_*
+  - **Archived templates to remove**:
+    - lead_nurture_email_1
+    - lead_nurture_email_2a_critical
+    - lead_nurture_email_2b_urgent
+    - lead_nurture_email_2c_optimize
+    - lead_nurture_email_3
+    - lead_nurture_email_4
+    - lead_nurture_email_5
+  - **Test scenarios**:
+    - Grep codebase for lead_nurture_email_ - should return 0 results
+    - Verify no test files reference archived templates
+    - Confirm config/email_templates.py updated if needed
+  - **Estimate**: 0.5 hours
+
+- [ ] 11.5: Verify noshow_recovery uses correct template names
+  - Confirm handler references: noshow_recovery_email_1/2/3
+  - Add {{q1_foundation_deadline}} variable support
+  - **File**: `campaigns/christmas_campaign/flows/noshow_recovery_handler.py`
+  - **Test scenarios**:
+    - Verify handler references noshow_recovery_email_1/2/3
+    - Verify q1_foundation_deadline variable is provided to templates
+    - Test template fetch with correct names
+  - **Estimate**: 0.5 hours
+
+- [ ] 11.6: Verify postcall_maybe uses correct template names
+  - Confirm handler references: postcall_maybe_email_1/2/3
+  - **File**: `campaigns/christmas_campaign/flows/postcall_maybe_handler.py`
+  - **Test scenarios**:
+    - Verify handler references postcall_maybe_email_1/2/3
+    - Test template fetch with correct names
+    - Verify sequence timing (1hr, Day 3, Day 7)
+  - **Estimate**: 0.5 hours
+
+- [ ] 11.7: Verify onboarding_handler uses correct template names
+  - Confirm handler references: onboarding_phase1_email_1/2/3
+  - **File**: `campaigns/christmas_campaign/flows/onboarding_handler.py`
+  - **Test scenarios**:
+    - Verify handler references onboarding_phase1_email_1/2/3
+    - Test template fetch with correct names
+    - Verify sequence timing (1hr, Day 1, Day 3)
+  - **Estimate**: 0.5 hours
+
+### Phase 4: Test Validation (Feature 11.8)
+
+- [ ] 11.8: Add tests for template name validation
+  - Create comprehensive test file for template name validation
+  - **File**: `campaigns/christmas_campaign/tests/test_template_names.py`
+  - **Active templates to validate**:
+    - 5-Day sequence: 5-Day E1, 5-Day E2, 5-Day E3, 5-Day E4, 5-Day E5
+    - No-Show Recovery: noshow_recovery_email_1/2/3
+    - Post-Call Maybe: postcall_maybe_email_1/2/3
+    - Onboarding Phase 1: onboarding_phase1_email_1/2/3
+  - **Test scenarios**:
+    - Test that VALID_TEMPLATES constant matches Notion active templates
+    - Test signup_handler uses only valid template names
+    - Test noshow_recovery_handler uses only valid template names
+    - Test postcall_maybe_handler uses only valid template names
+    - Test onboarding_handler uses only valid template names
+    - Test that no code references archived lead_nurture_email_* templates
+    - Test template name validation helper function
+  - **Estimate**: 1 hour
+
+### Wave 11 Success Criteria
+
+- [ ] All Python files audited for template references
+- [ ] signup_handler.py uses 5-Day E* template names
+- [ ] send_email_flow.py fetches templates with correct naming
+- [ ] No code references archived lead_nurture_email_* templates
+- [ ] noshow_recovery_handler.py verified with correct templates + q1_foundation_deadline variable
+- [ ] postcall_maybe_handler.py verified with correct templates
+- [ ] onboarding_handler.py verified with correct templates
+- [ ] test_template_names.py created with comprehensive validation tests
+
+---
+
+## Updated Estimated Timeline
+
+| Wave | Duration | Dependencies | Status |
+|------|----------|--------------|--------|
+| Wave 0 | 30 min | None | Complete |
+| Wave 1 | 30 min | Server access | Skipped |
+| Wave 2 | 30 min | None | Complete |
+| Wave 3 | 15 min | Waves 0-2 complete | Complete |
+| Wave 4 | 15 min | Wave 3 complete | Complete |
+| Wave 5 | 120 min | Waves 0-4 complete | Complete |
+| Wave 6 | 180 min | Wave 5 complete | Complete |
+| Wave 7 | 240 min | Wave 6 in progress | **Pending** (CRITICAL) |
+| Wave 8 | 720 min (12h) | Wave 7 complete | **Pending** |
+| Wave 9 | 270 min (4.5h) | Wave 8 complete | **Pending** (CRITICAL) |
+| Wave 10 | 195 min (3.25h) | Wave 9 complete | Complete |
+| Wave 11 | 270 min (4.5h) | Wave 10 complete | **Pending** |
+| **Total** | **~44.5 hours** | | |

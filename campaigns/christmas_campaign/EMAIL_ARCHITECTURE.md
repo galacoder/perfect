@@ -216,6 +216,30 @@ christmas-postcall-maybe-handler:  ed929cd9-34b3-4655-b128-1a1e08a59cbd
 christmas-onboarding-handler:      db47b919-1e55-4de2-b52c-6e2b0b2a2285
 ```
 
+### Deployment Naming Convention
+
+**Format**: `{campaign}-{flow-type}-{variant}`
+
+**Rationale**:
+- **Campaign prefix** (`christmas`) prevents name collisions with other campaigns
+- **Flow type** (`signup`, `noshow-recovery`, `postcall-maybe`, `onboarding`) describes purpose
+- **Variant** (`handler`, `send-email`) indicates specific implementation
+
+**Multi-Campaign Strategy**:
+- Future campaigns use different prefixes: `businessx-signup-handler`, `summer2026-signup-handler`
+- Annual campaigns add year suffix: `christmas2025-signup-handler`, `christmas2026-signup-handler`
+- A/B testing adds descriptive suffix: `christmas-signup-handler-fast`, `christmas-signup-handler-v2`
+
+**Implementation Rules**:
+1. Flow `name` parameter must match deployment name
+2. Deployment name format: `{flow_name}/{deployment_name}`
+3. Use lowercase with hyphens (no underscores, no camelCase)
+4. Check for collisions before deploying
+
+**References**:
+- Full convention: `campaigns/christmas_campaign/docs/DEPLOYMENT_NAMING_CONVENTION.md`
+- Migration guide: N/A (current naming is correct)
+
 ---
 
 ## Website Integration
