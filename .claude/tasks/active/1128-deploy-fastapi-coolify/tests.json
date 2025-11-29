@@ -1,0 +1,105 @@
+{
+  "task_id": "1128-deploy-fastapi-coolify",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 6,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 6
+  },
+  "verification_tests": [
+    {
+      "id": "V1",
+      "name": "Docker Build Test",
+      "description": "Verify Dockerfile.webhook builds successfully",
+      "type": "infrastructure",
+      "command": "docker build -f Dockerfile.webhook -t perfect-webhook:test .",
+      "expected_result": "Image builds without errors",
+      "status": "not_run"
+    },
+    {
+      "id": "V2",
+      "name": "Health Endpoint Test",
+      "description": "Verify /health endpoint returns 200 OK",
+      "type": "integration",
+      "command": "curl -s https://${DOMAIN}/health",
+      "expected_result": "JSON response with status: healthy",
+      "status": "not_run"
+    },
+    {
+      "id": "V3",
+      "name": "SSL Certificate Test",
+      "description": "Verify SSL certificate is valid and trusted",
+      "type": "infrastructure",
+      "command": "curl -vI https://${DOMAIN}/health 2>&1 | grep 'SSL certificate verify ok'",
+      "expected_result": "SSL certificate verify ok",
+      "status": "not_run"
+    },
+    {
+      "id": "V4",
+      "name": "Webhook Endpoint Test",
+      "description": "Verify /webhook/christmas-signup accepts POST requests",
+      "type": "integration",
+      "command": "curl -X POST https://${DOMAIN}/webhook/christmas-signup -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"first_name\":\"Test\",\"assessment_score\":52}'",
+      "expected_result": "202 Accepted with status: accepted",
+      "status": "not_run"
+    },
+    {
+      "id": "V5",
+      "name": "Prefect Flow Trigger Test",
+      "description": "Verify webhook triggers Prefect flow run",
+      "type": "e2e",
+      "command": "Check Prefect dashboard for new flow run",
+      "expected_result": "Flow run visible in https://prefect.galatek.dev",
+      "status": "not_run"
+    },
+    {
+      "id": "V6",
+      "name": "Container Health Check Test",
+      "description": "Verify Docker health check passes in Coolify",
+      "type": "infrastructure",
+      "command": "Check container status in Coolify dashboard",
+      "expected_result": "Container shows healthy status",
+      "status": "not_run"
+    }
+  ],
+  "smoke_tests": [
+    {
+      "endpoint": "GET /health",
+      "expected_status": 200,
+      "expected_body": {
+        "status": "healthy"
+      }
+    },
+    {
+      "endpoint": "POST /webhook/christmas-signup",
+      "expected_status": 202,
+      "expected_body": {
+        "status": "accepted"
+      }
+    },
+    {
+      "endpoint": "POST /webhook/calendly-noshow",
+      "expected_status": 202,
+      "expected_body": {
+        "status": "accepted"
+      }
+    },
+    {
+      "endpoint": "POST /webhook/postcall-maybe",
+      "expected_status": 202,
+      "expected_body": {
+        "status": "accepted"
+      }
+    },
+    {
+      "endpoint": "POST /webhook/onboarding-start",
+      "expected_status": 202,
+      "expected_body": {
+        "status": "accepted"
+      }
+    }
+  ],
+  "history": []
+}

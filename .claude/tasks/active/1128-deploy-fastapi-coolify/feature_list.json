@@ -1,0 +1,276 @@
+{
+  "task_id": "1128-deploy-fastapi-coolify",
+  "domain": "coding",
+  "status": "awaiting_approval",
+  "current_phase": "PLAN",
+  "current_wave": null,
+  "current_feature_id": null,
+  "created_at": "2025-11-28T22:30:00Z",
+  "updated_at": "2025-11-28T22:30:00Z",
+  "meta": {
+    "title": "Deploy FastAPI Webhook Server via Coolify",
+    "description": "Deploy the existing FastAPI webhook server (server.py) to Coolify PaaS platform. The server handles webhooks from the website and triggers Prefect flows for email sequences. Docker configuration already exists; main work is Coolify deployment and DNS/SSL configuration.",
+    "estimated_hours": 3,
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    },
+    "infrastructure_type": "deployment",
+    "tdd_required": false
+  },
+  "waves": [
+    {
+      "id": 1,
+      "name": "Docker Cleanup",
+      "objective": "Create .dockerignore and verify Docker configuration",
+      "status": "pending",
+      "estimated_minutes": 30
+    },
+    {
+      "id": 2,
+      "name": "Coolify Deployment",
+      "objective": "Deploy webhook server to Coolify using docker-compose.coolify.yml",
+      "status": "pending",
+      "estimated_minutes": 60
+    },
+    {
+      "id": 3,
+      "name": "DNS and SSL Configuration",
+      "objective": "Configure domain and verify SSL certificate",
+      "status": "pending",
+      "estimated_minutes": 30
+    },
+    {
+      "id": 4,
+      "name": "Testing and Verification",
+      "objective": "Test health endpoint, webhook endpoints, and Prefect flow triggers",
+      "status": "pending",
+      "estimated_minutes": 60
+    }
+  ],
+  "features": [
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Create .dockerignore file",
+      "description": "Create .dockerignore to exclude .git, __pycache__, .env, .venv, tests, .claude directories from Docker image",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "file_path": ".dockerignore"
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Verify Dockerfile.webhook configuration",
+      "description": "Review and confirm Dockerfile.webhook settings are optimal for production",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "file_path": "Dockerfile.webhook"
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Verify docker-compose.coolify.yml",
+      "description": "Confirm docker-compose.coolify.yml has correct service configuration, networking, and Coolify magic variables",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "file_path": "docker-compose.coolify.yml"
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Push latest code to GitHub",
+      "description": "Ensure all Docker configuration files are committed and pushed to galacoder/perfect repository",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Create Coolify project for perfect-webhook",
+      "description": "Use coolify-integration skill to create new project in Coolify dashboard",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "skill_required": "coolify-integration"
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Configure Coolify Docker Compose deployment",
+      "description": "Add Docker Compose resource pointing to galacoder/perfect repository with docker-compose.coolify.yml",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "skill_required": "coolify-integration"
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Configure environment variables in Coolify",
+      "description": "Set PREFECT_API_URL, TESTING_MODE, and any other required env vars in Coolify UI",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "env_vars": [
+        "PREFECT_API_URL=https://prefect.galatek.dev/api",
+        "TESTING_MODE=false"
+      ]
+    },
+    {
+      "id": "2.5",
+      "wave": 2,
+      "name": "Deploy to Coolify",
+      "description": "Trigger deployment and monitor build logs for successful container startup",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "skill_required": "coolify-integration"
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Configure domain in Coolify",
+      "description": "Set domain (e.g., api.sangletech.com or webhooks.galatek.dev) in Coolify service settings",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "suggested_domains": [
+        "api.sangletech.com",
+        "webhooks.galatek.dev",
+        "perfect-webhook.galatek.dev"
+      ]
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Configure DNS A/CNAME record",
+      "description": "Add DNS record pointing domain to Coolify server IP",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Verify SSL certificate",
+      "description": "Confirm Let's Encrypt SSL certificate is automatically provisioned by Coolify/Traefik",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Test health endpoint",
+      "description": "Verify GET /health returns 200 OK with correct status JSON",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_command": "curl -s https://DOMAIN/health | jq"
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Test christmas-signup webhook",
+      "description": "Send test POST to /webhook/christmas-signup and verify 202 Accepted response",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_email": "lengobaosang@gmail.com"
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Verify Prefect flow triggered",
+      "description": "Check Prefect dashboard (prefect.galatek.dev) to confirm flow run was created",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "prefect_dashboard": "https://prefect.galatek.dev"
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "Update STATUS.md with webhook deployment info",
+      "description": "Document the deployed webhook URL in campaigns/christmas_campaign/STATUS.md",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "file_path": "campaigns/christmas_campaign/STATUS.md"
+    },
+    {
+      "id": "4.5",
+      "wave": 4,
+      "name": "Update WEBSITE_INTEGRATION.md with production URL",
+      "description": "Update webhook documentation with the production API endpoint",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "file_path": "campaigns/christmas_campaign/WEBSITE_INTEGRATION.md"
+    }
+  ],
+  "progress": {
+    "total_features": 15,
+    "completed_features": 0,
+    "total_waves": 4,
+    "completed_waves": 0,
+    "percentage": 0
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-28T22:30:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-28T22:30:00Z",
+      "action": "EXPLORE phase complete - Docker infrastructure already exists"
+    },
+    {
+      "timestamp": "2025-11-28T22:30:00Z",
+      "action": "PLAN phase complete - awaiting approval"
+    }
+  ],
+  "dependencies": {
+    "external_services": [
+      {
+        "name": "Coolify",
+        "url": "https://coolify.galatek.dev",
+        "purpose": "PaaS deployment platform"
+      },
+      {
+        "name": "Prefect",
+        "url": "https://prefect.galatek.dev/api",
+        "purpose": "Workflow orchestration"
+      },
+      {
+        "name": "GitHub",
+        "url": "https://github.com/galacoder/perfect",
+        "purpose": "Source code repository"
+      }
+    ],
+    "skills_required": [
+      "coolify-integration"
+    ]
+  },
+  "existing_infrastructure": {
+    "docker_files": [
+      "Dockerfile.webhook",
+      "Dockerfile.prefect",
+      "docker-compose.coolify.yml"
+    ],
+    "prefect_deployments": [
+      "christmas-signup-handler",
+      "christmas-send-email",
+      "christmas-noshow-recovery-handler",
+      "christmas-postcall-maybe-handler",
+      "christmas-onboarding-handler"
+    ],
+    "secret_blocks": 7
+  }
+}

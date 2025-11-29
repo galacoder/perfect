@@ -248,7 +248,7 @@
       "id": 11,
       "name": "Template Naming Alignment with Notion",
       "objective": "Align all Python code with verified Notion templates: update references from archived lead_nurture_email_* to active 5-Day E* naming, verify all handler flows use correct template names, and add validation tests",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "added_at": "2025-11-28T10:00:00Z",
       "added_via": "/add-tasks-coding",
@@ -314,7 +314,8 @@
             "11.8"
           ]
         }
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z"
     }
   ],
   "features": [
@@ -2394,7 +2395,7 @@
       "id": "11.1",
       "wave": 11,
       "name": "Audit template references in all Python files",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": false,
       "description": "Search all Python files for template name references and create a comprehensive mapping. Identify: (1) All hardcoded template names, (2) Which files reference which templates, (3) Any references to archived lead_nurture_email_* templates that need updating.",
@@ -2407,13 +2408,16 @@
         "campaigns/businessx_canada_lead_nurture/tasks/*.py"
       ],
       "output": "Template reference audit report with file:line mappings",
-      "test_scenarios": []
+      "test_scenarios": [],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.2",
       "wave": 11,
       "name": "Update signup_handler to use 5-Day E* naming",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Update signup_handler.py to use correct 5-Day E* template names instead of any lead_nurture_email_* references. The active templates are: 5-Day E1, 5-Day E2, 5-Day E3, 5-Day E4, 5-Day E5.",
@@ -2440,13 +2444,16 @@
         "Verify signup_handler uses '5-Day E1' for first email",
         "Verify email sequence schedules '5-Day E2' through '5-Day E5'",
         "Test with mock Notion fetch to confirm template names"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.3",
       "wave": 11,
       "name": "Update send_email flow template fetching",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Ensure send_email_flow.py correctly fetches templates using the new 5-Day E* naming convention. Verify the Notion query uses exact template IDs.",
@@ -2457,13 +2464,16 @@
         "Mock Notion query and verify correct template ID requested",
         "Test error handling when template not found",
         "Verify template subject/body correctly extracted"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.4",
       "wave": 11,
       "name": "Remove archived template references",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Delete or update any code referencing archived lead_nurture_email_* templates. These 7 templates are archived in Notion and should NOT be referenced: lead_nurture_email_1, lead_nurture_email_2a_critical, lead_nurture_email_2b_urgent, lead_nurture_email_2c_optimize, lead_nurture_email_3, lead_nurture_email_4, lead_nurture_email_5.",
@@ -2482,13 +2492,16 @@
         "Grep codebase for lead_nurture_email_ - should return 0 results",
         "Verify no test files reference archived templates",
         "Confirm config/email_templates.py updated if needed"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.5",
       "wave": 11,
       "name": "Verify noshow_recovery uses correct template names",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify noshow_recovery_handler.py uses exactly: noshow_recovery_email_1, noshow_recovery_email_2, noshow_recovery_email_3. Also verify the new {{q1_foundation_deadline}} variable is handled correctly.",
@@ -2505,13 +2518,16 @@
         "Verify handler references noshow_recovery_email_1/2/3",
         "Verify q1_foundation_deadline variable is provided to templates",
         "Test template fetch with correct names"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.6",
       "wave": 11,
       "name": "Verify postcall_maybe uses correct template names",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify postcall_maybe_handler.py uses exactly: postcall_maybe_email_1, postcall_maybe_email_2, postcall_maybe_email_3.",
@@ -2527,13 +2543,16 @@
         "Verify handler references postcall_maybe_email_1/2/3",
         "Test template fetch with correct names",
         "Verify sequence timing (1hr, Day 3, Day 7)"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.7",
       "wave": 11,
       "name": "Verify onboarding_handler uses correct template names",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Verify onboarding_handler.py uses exactly: onboarding_phase1_email_1, onboarding_phase1_email_2, onboarding_phase1_email_3.",
@@ -2549,13 +2568,16 @@
         "Verify handler references onboarding_phase1_email_1/2/3",
         "Test template fetch with correct names",
         "Verify sequence timing (1hr, Day 1, Day 3)"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     },
     {
       "id": "11.8",
       "wave": 11,
       "name": "Add tests for template name validation",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Create unit tests that validate all template names used in code match the active templates in Notion. These tests should fail if anyone accidentally references archived templates.",
@@ -2594,16 +2616,19 @@
         "Test onboarding_handler uses only valid template names",
         "Test that no code references archived lead_nurture_email_* templates",
         "Test template name validation helper function"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:00:00Z",
+      "tests_passing": true,
+      "commit_hash": "f1f46e5"
     }
   ],
   "progress": {
     "total_features": 107,
-    "completed_features": 70,
+    "completed_features": 78,
     "pending_features": 59,
     "total_waves": 12,
-    "completed_waves": 9,
-    "percentage": 65.42,
+    "completed_waves": 10,
+    "percentage": 72.9,
     "wave_5_features_added": 8,
     "wave_6_features_added": 13,
     "wave_7_features_added": 10,
@@ -3133,6 +3158,39 @@
         "8.9"
       ],
       "commit_hash": "fb17095"
+    },
+    {
+      "timestamp": "2025-11-28T22:00:00Z",
+      "action": "Completed Wave 11: Template Naming Alignment with Notion",
+      "wave": 11,
+      "features_completed": [
+        "11.1",
+        "11.2",
+        "11.3",
+        "11.4",
+        "11.5",
+        "11.6",
+        "11.7",
+        "11.8"
+      ],
+      "commit_hash": "f1f46e5",
+      "critical_fix": "Updated routing.py from LONG template names to SHORT format matching Notion",
+      "files_changed": [
+        "campaigns/christmas_campaign/tasks/routing.py",
+        "campaigns/christmas_campaign/tests/test_routing.py",
+        "campaigns/christmas_campaign/tests/test_notion_operations.py",
+        "campaigns/christmas_campaign/tests/test_template_names.py (new)"
+      ],
+      "tests_added": 21,
+      "tests_passing": 60,
+      "impact": "CRITICAL - Fixes template fetch failures. Code now uses exact Notion template names: '5-Day E1' not '5-Day E1: Your Assessment...'",
+      "verified_handlers": [
+        "signup_handler (uses routing.py - now fixed)",
+        "send_email_flow (uses routing.py - now fixed)",
+        "noshow_recovery_handler (correct)",
+        "postcall_maybe_handler (correct)",
+        "onboarding_handler (correct)"
+      ]
     }
   ],
   "blockers": [
