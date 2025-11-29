@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Surge Playbook - BusinessX</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0A0A0A;
+            color: #FFFFFF;
+            line-height: 1.6;
+            padding: 60px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* BusinessX Gold Theme */
+        :root {
+            --gold: #D2A164;
+            --gold-light: #E5C196;
+            --gold-dark: #B8894C;
+            --bg-dark: #0A0A0A;
+            --bg-card: #1A1A1A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            border-bottom: 3px solid var(--gold);
+            padding-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Stats Box */
+        .stats-box {
+            background: linear-gradient(135deg, var(--bg-card) 0%, #252525 100%);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Revenue Windows */
+        .revenue-windows {
+            margin: 50px 0;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .window-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .window-card {
+            background: var(--bg-card);
+            border-left: 4px solid var(--gold);
+            padding: 30px;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .window-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 30px rgba(210, 161, 100, 0.2);
+        }
+
+        .window-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .window-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .window-revenue {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--gold);
+            margin: 15px 0;
+        }
+
+        .window-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .window-dates {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold-light);
+            margin-top: 10px;
+        }
+
+        .window-tactics {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #2A2A2A;
+        }
+
+        .window-tactics h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .window-tactics ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .window-tactics li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .window-tactics li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* Total Section */
+        .total-section {
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            color: var(--bg-dark);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .total-section h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .total-revenue {
+            font-size: 80px;
+            font-weight: 900;
+            line-height: 1;
+            margin: 20px 0;
+        }
+
+        .total-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--bg-card);
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 50px;
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .cta-section h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--bg-dark);
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(210, 161, 100, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 2px solid #2A2A2A;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .footer-credentials {
+            margin: 15px 0;
+            font-size: 12px;
+        }
+
+        .footer-legal {
+            margin-top: 20px;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .window-card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">BusinessX</div>
+        <div class="tagline">8-System Business Operating System</div>
+    </div>
+
+    <!-- Title Section -->
+    <div class="title-section">
+        <h1>Christmas Surge Playbook</h1>
+        <p class="subtitle">5 Holiday Revenue Windows Worth $21K-$44K Each</p>
+    </div>
+
+    <!-- Total Opportunity -->
+    <div class="stats-box">
+        <div class="stat-number">$76K-$220K</div>
+        <div class="stat-label">Total Christmas Surge Opportunity</div>
+    </div>
+
+    <!-- Revenue Windows -->
+    <div class="revenue-windows">
+        <h2 class="section-title">The 5 Holiday Revenue Windows</h2>
+
+        <div class="window-grid">
+            <!-- Window 1: Black Friday/Cyber Monday -->
+            <div class="window-card">
+                <div class="window-number">Window #1</div>
+                <h3 class="window-title">Black Friday/Cyber Monday</h3>
+                <div class="window-revenue">$21K-$44K</div>
+                <p class="window-description">
+                    The shopping frenzy creates unprecedented demand for services that help businesses capitalize on consumer spending.
+                    Position yourself as the partner who ensures they don't leave money on the table.
+                </p>
+                <div class="window-dates">📅 November 29 - December 2, 2025</div>
+                <div class="window-tactics">
+                    <h4>Winning Tactics:</h4>
+                    <ul>
+                        <li>Offer "Black Friday Business Audit" to diagnose capacity issues</li>
+                        <li>Position yourself as the solution to their busiest season pain</li>
+                        <li>Bundle services for maximum value perception</li>
+                        <li>Create urgency with "Holiday Rush Readiness" packages</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Window 2: Gift Giving Season -->
+            <div class="window-card">
+                <div class="window-number">Window #2</div>
+                <h3 class="window-title">Gift Giving Season</h3>
+                <div class="window-revenue">$15K-$30K</div>
+                <p class="window-description">
+                    Businesses are flush with cash and looking to invest in growth before year-end.
+                    Decision-makers are motivated to "finish strong" and start the new year prepared.
+                </p>
+                <div class="window-dates">📅 December 10-24, 2025</div>
+                <div class="window-tactics">
+                    <h4>Winning Tactics:</h4>
+                    <ul>
+                        <li>Position as "business gift to yourself" (year-end investment)</li>
+                        <li>Leverage tax deduction urgency for B2B services</li>
+                        <li>Offer "New Year Kickstart" packages with December onboarding</li>
+                        <li>Target businesses celebrating successful Q4 with growth investment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Window 3: Year-End Rush -->
+            <div class="window-card">
+                <div class="window-number">Window #3</div>
+                <h3 class="window-title">Year-End Rush</h3>
+                <div class="window-revenue">$12K-$25K</div>
+                <p class="window-description">
+                    The final push to close out the year strong. Businesses are reconciling budgets,
+                    spending remaining funds, and making last-minute improvements before year-end reporting.
+                </p>
+                <div class="window-dates">📅 December 26-31, 2025</div>
+                <div class="window-tactics">
+                    <h4>Winning Tactics:</h4>
+                    <ul>
+                        <li>Target "use it or lose it" budget scenarios</li>
+                        <li>Offer expedited onboarding for December 31 deadline</li>
+                        <li>Position as Q4 expense for tax optimization</li>
+                        <li>Focus on "start January ready" messaging</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Window 4: New Year Prep -->
+            <div class="window-card">
+                <div class="window-number">Window #4</div>
+                <h3 class="window-title">New Year Prep</h3>
+                <div class="window-revenue">$18K-$35K</div>
+                <p class="window-description">
+                    The "fresh start" mentality creates massive buying intent. Businesses are setting goals,
+                    allocating budgets, and investing in solutions that promise transformation.
+                </p>
+                <div class="window-dates">📅 January 1-15, 2026</div>
+                <div class="window-tactics">
+                    <h4>Winning Tactics:</h4>
+                    <ul>
+                        <li>Leverage "New Year, New Business" psychology</li>
+                        <li>Offer Q1 goal-setting + implementation packages</li>
+                        <li>Position as the partner for their biggest year yet</li>
+                        <li>Create early-bird incentives for January commitments</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Window 5: January Reset -->
+            <div class="window-card">
+                <div class="window-number">Window #5</div>
+                <h3 class="window-title">January Reset</h3>
+                <div class="window-revenue">$10K-$22K</div>
+                <p class="window-description">
+                    After the chaos of the holidays, businesses reassess and optimize.
+                    They're looking for solutions to problems that became painfully obvious during the rush.
+                </p>
+                <div class="window-dates">📅 January 16-31, 2026</div>
+                <div class="window-tactics">
+                    <h4>Winning Tactics:</h4>
+                    <ul>
+                        <li>Target businesses recovering from holiday overload</li>
+                        <li>Position as the "fix" for systems that broke during peak season</li>
+                        <li>Offer diagnostic services revealing December pain points</li>
+                        <li>Focus on preventing next year's chaos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Opportunity -->
+    <div class="total-section">
+        <h2>Total Opportunity</h2>
+        <div class="total-revenue">$76K-$220K</div>
+        <p class="total-subtitle">Combined revenue potential across all 5 windows</p>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <h2>Ready to Capture Your Share?</h2>
+        <p>
+            These windows happen ONCE per year. Miss them, and you wait 12 months for another shot.<br>
+            Book your free diagnostic call to build your customized Christmas Surge strategy.
+        </p>
+        <a href="https://cal.com/sangletech/discovery-call" class="cta-button">
+            Book Free Diagnostic Call →
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-logo">BusinessX</div>
+        <div class="footer-credentials">
+            <strong>Sang Le</strong> · Fractional COO · BusOS Architect<br>
+            MBA · 15+ Years Scaling Service Businesses
+        </div>
+        <div class="footer-legal">
+            © 2025 Sang Le Scaling Labs. All rights reserved.<br>
+            Revenue projections based on average client results. Individual results may vary.
+        </div>
+    </div>
+</body>
+</html>
