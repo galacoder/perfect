@@ -142,7 +142,8 @@
           ]
         }
       ],
-      "completed_at": "2025-11-28T21:51:20.577088"
+      "completed_at": "2025-11-28T21:51:20.577088",
+      "commit_hash": "fb17095"
     },
     {
       "id": 9,
@@ -1273,7 +1274,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": true,
-      "notes": "signup_handler.py has NO hardcoded templates - only schedules email sequences via Prefect"
+      "notes": "signup_handler.py has NO hardcoded templates - only schedules email sequences via Prefect",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.2",
@@ -1299,7 +1301,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": true,
-      "notes": "noshow_recovery_handler.py uses correct template names: noshow_recovery_email_1-3"
+      "notes": "noshow_recovery_handler.py uses correct template names: noshow_recovery_email_1-3",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.3",
@@ -1325,7 +1328,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": true,
-      "notes": "postcall_maybe_handler.py uses correct template names: postcall_maybe_email_1-3"
+      "notes": "postcall_maybe_handler.py uses correct template names: postcall_maybe_email_1-3",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.4",
@@ -1351,7 +1355,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": true,
-      "notes": "onboarding_handler.py uses correct template names: onboarding_phase1_email_1-3"
+      "notes": "onboarding_handler.py uses correct template names: onboarding_phase1_email_1-3",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.5",
@@ -1372,7 +1377,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": true,
-      "notes": "send_email_flow.py raises ValueError if template not found - NO fallback logic"
+      "notes": "send_email_flow.py raises ValueError if template not found - NO fallback logic",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.6",
@@ -1398,7 +1404,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": false,
-      "notes": "Created comprehensive template variables documentation (30+ variables documented)"
+      "notes": "Created comprehensive template variables documentation (30+ variables documented)",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.7",
@@ -1424,7 +1431,8 @@
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": false,
       "output_file": "campaigns/christmas_campaign/docs/DEPLOYMENT_NAMING_CONVENTION.md",
-      "notes": "Designed naming convention: {campaign}-{flow-type}-{variant}. Current naming is correct."
+      "notes": "Designed naming convention: {campaign}-{flow-type}-{variant}. Current naming is correct.",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.8",
@@ -1450,7 +1458,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": false,
-      "notes": "Decision: NO renaming needed. Current deployments follow convention correctly."
+      "notes": "Decision: NO renaming needed. Current deployments follow convention correctly.",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.9",
@@ -1470,7 +1479,8 @@
       ],
       "completed_at": "2025-11-28T21:51:20.577088",
       "tests_passing": false,
-      "notes": "Added Deployment Naming Convention section to EMAIL_ARCHITECTURE.md"
+      "notes": "Added Deployment Naming Convention section to EMAIL_ARCHITECTURE.md",
+      "commit_hash": "fb17095"
     },
     {
       "id": "8.10",
@@ -1826,7 +1836,7 @@
       "id": "9.7",
       "wave": 9,
       "name": "Add missing template variables to get_email_variables()",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Add new template variables required by updated website email templates: pdf_download_link, spots_remaining, bookings_count, weakest_system. These are used in the 5-Day email sequence (E1-E5).",
@@ -1845,7 +1855,9 @@
         "Verify bookings_count variable available with default value",
         "Verify weakest_system is alias for weakest_system_1",
         "Run unit tests for get_email_variables()"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:09:03.515508",
+      "started_at": "2025-11-28T22:09:03.515508"
     },
     {
       "id": "9.8",
@@ -1913,7 +1925,7 @@
       "id": "9.10",
       "wave": 9,
       "name": "Document complete variable mapping for website team",
-      "status": "pending",
+      "status": "complete",
       "priority": "medium",
       "tests_required": false,
       "description": "Create comprehensive documentation of all template variables, their sources, and default values. This helps the website team understand what data is available for email personalization.",
@@ -1928,13 +1940,15 @@
         "Booking Variables (booking_link, calendar_link)",
         "Variable Source Mapping (which variables come from form vs calculated)"
       ],
-      "test_scenarios": []
+      "test_scenarios": [],
+      "completed_at": "2025-11-28T22:09:03.515508",
+      "started_at": "2025-11-28T22:09:03.515508"
     },
     {
       "id": "9.11",
       "wave": 9,
       "name": "Create Christmas Surge Playbook PDF with BusinessX styling",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": false,
       "description": "Create a professional PDF playbook with BusinessX gold theme (#D2A164) styling. Include the 5 holiday revenue windows ($21K-$44K potential), formatted like the assessment page. Host on Cloudinary or sangletech.com and provide URL for pdf_download_link variable.",
@@ -1971,13 +1985,15 @@
         "Professional footer with logo and credentials",
         "PDF hosted and accessible via public URL",
         "pdf_download_link variable returns working URL"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:09:03.515508",
+      "started_at": "2025-11-28T22:09:03.515508"
     },
     {
       "id": "9.12",
       "wave": 9,
       "name": "Document complete email sequence architecture in ARCHITECTURE.md",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": false,
       "description": "Add comprehensive email sequence documentation to ARCHITECTURE.md including: ASCII funnel flow diagram, all 5 sequence types with triggers and timing, all 21 active templates in Notion, and reference for website team.",
@@ -2038,13 +2054,15 @@
         "All 5 sequence types documented with triggers and timing",
         "All 21 template IDs listed in reference table",
         "Website team can use as integration reference"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:09:03.515508",
+      "started_at": "2025-11-28T22:09:03.515508"
     },
     {
       "id": "9.13",
       "wave": 9,
       "name": "Verify all Prefect flows match documented email sequences",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "description": "Cross-reference all Prefect handler flows with documented email sequences. Verify template names, timing intervals, and triggers match the architecture documentation.",
@@ -2103,7 +2121,9 @@
         "postcall_maybe_handler.py timing matches (1hr, Day 3, Day 7)",
         "onboarding_handler.py timing matches (1hr, Day 1, Day 3)",
         "All template names match Notion database entries"
-      ]
+      ],
+      "completed_at": "2025-11-28T22:09:03.515508",
+      "started_at": "2025-11-28T22:09:03.515508"
     },
     {
       "id": "10.1",
@@ -2553,11 +2573,11 @@
   ],
   "progress": {
     "total_features": 107,
-    "completed_features": 57,
+    "completed_features": 62,
     "pending_features": 59,
     "total_waves": 12,
     "completed_waves": 8,
-    "percentage": 53.27,
+    "percentage": 57.94,
     "wave_5_features_added": 8,
     "wave_6_features_added": 13,
     "wave_7_features_added": 10,
@@ -3086,7 +3106,7 @@
         "8.8",
         "8.9"
       ],
-      "commit_hash": "pending"
+      "commit_hash": "fb17095"
     }
   ],
   "blockers": [
