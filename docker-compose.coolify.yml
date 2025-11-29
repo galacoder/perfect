@@ -41,11 +41,9 @@ services:
       # Prefect API for triggering deployments
       - PREFECT_API_URL=${PREFECT_API_URL:-https://prefect.galatek.dev/api}
       # Testing mode (1min waits instead of days)
-      - TESTING_MODE=${TESTING_MODE:-true}
+      - TESTING_MODE=${TESTING_MODE:-false}
       # Coolify magic variable for FQDN
       - SERVICE_FQDN_PERFECT_WEBHOOK_8000
-    ports:
-      - "8000:8000"
     networks:
       - perfect-network
     healthcheck:
