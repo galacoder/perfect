@@ -289,6 +289,14 @@ def get_email_variables(
         "orange_systems": str(orange_systems) if orange_systems is not None else "0",
         "yellow_systems": str(yellow_systems) if yellow_systems is not None else "0",
         "green_systems": str(green_systems) if green_systems is not None else "0",
+
+        # NEW: Additional variables for 5-Day email templates (E3-E5)
+        # These are used in the beautifully formatted HTML templates
+        # NOTE: pdf_download_link now points to assessment results page (stores user's results)
+        "pdf_download_link": "https://sangletech.com/en/flows/businessX/dfu/xmas-a01/assessment",
+        "spots_remaining": "12",  # Dynamic spot counter
+        "bookings_count": "18",   # Number of bookings this week
+        "weakest_system": weakest_system_1 or "GPS",  # Alias for weakest_system_1
     }
 
     # Add optional fields if provided

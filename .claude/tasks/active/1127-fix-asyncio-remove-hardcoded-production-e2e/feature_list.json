@@ -117,6 +117,80 @@
           "features": ["8.15", "8.16", "8.17", "8.18", "8.19", "8.20"]
         }
       ]
+    },
+    {
+      "id": 9,
+      "name": "Email Delivery Debugging + Email Architecture Documentation",
+      "objective": "CRITICAL: Debug email delivery issues, update template variables, create Christmas Surge Playbook PDF, document complete email sequence architecture (5 sequence types, 21 templates), and verify Prefect flows match documented sequences.",
+      "status": "pending",
+      "priority": "critical",
+      "added_at": "2025-11-28T16:00:00Z",
+      "added_via": "/add-tasks-coding",
+      "feature_groups": [
+        {
+          "name": "Resend API Investigation",
+          "features": ["9.1", "9.2", "9.3", "9.4"]
+        },
+        {
+          "name": "Notion Sequence Verification",
+          "features": ["9.5"]
+        },
+        {
+          "name": "Fix and Resend",
+          "features": ["9.6"]
+        },
+        {
+          "name": "Template Variable Updates",
+          "features": ["9.7", "9.8", "9.9", "9.10"]
+        },
+        {
+          "name": "Email Architecture & Documentation",
+          "features": ["9.11", "9.12", "9.13"]
+        }
+      ],
+      "critical_issue": "User completed production funnel but received ZERO emails",
+      "email_sequence_architecture": {
+        "total_sequence_types": 5,
+        "total_active_templates": 21,
+        "sequences": [
+          {
+            "name": "Lead Nurture",
+            "prefix": "lead_nurture_email_*",
+            "email_count": 5,
+            "trigger": "Initial opt-in",
+            "timing": ["Immediately", "Day 1", "Day 2", "Day 3", "Day 4"]
+          },
+          {
+            "name": "5-Day Sequence",
+            "prefix": "5-Day E1-E5",
+            "email_count": 5,
+            "trigger": "After assessment completion",
+            "timing": ["Day 0", "Day 1", "Day 2", "Day 3", "Day 4"],
+            "templates": ["christmas_email_1", "christmas_email_2", "christmas_email_3", "christmas_email_4", "christmas_email_5"]
+          },
+          {
+            "name": "No-Show Recovery",
+            "prefix": "noshow_recovery_email_*",
+            "email_count": 3,
+            "trigger": "After missed Calendly call",
+            "timing": ["5 min after no-show", "24 hours", "48 hours"]
+          },
+          {
+            "name": "Post-Call Maybe",
+            "prefix": "postcall_maybe_email_*",
+            "email_count": 3,
+            "trigger": "After 'need to think' calls",
+            "timing": ["1 hour after call", "Day 3", "Day 7"]
+          },
+          {
+            "name": "Onboarding Phase 1",
+            "prefix": "onboarding_phase1_email_*",
+            "email_count": 3,
+            "trigger": "After payment/DocuSign",
+            "timing": ["1 hour after DocuSign", "Day 1", "Day 3"]
+          }
+        ]
+      }
     }
   ],
   "features": [
@@ -1434,19 +1508,396 @@
         "Test coverage >= 85%",
         "STATUS.md updated with final status"
       ]
+    },
+    {
+      "id": "9.1",
+      "wave": 9,
+      "name": "Check Resend API dashboard for delivery status",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Access Resend dashboard to verify if any emails were actually sent to lengobaosang@gmail.com. Check delivery status (sent, delivered, bounced, blocked).",
+      "added_at": "2025-11-28T16:00:00Z",
+      "estimate_hours": 0.5,
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Login to Resend dashboard or use API",
+        "Search for emails to lengobaosang@gmail.com",
+        "Check email status for each sent email",
+        "Document any delivery failures or errors"
+      ]
+    },
+    {
+      "id": "9.2",
+      "wave": 9,
+      "name": "Verify Resend API key is valid in Prefect Secret blocks",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Check that the resend-api-key Secret block in Prefect contains a valid, active API key. Test the key with a simple API call.",
+      "added_at": "2025-11-28T16:00:00Z",
+      "estimate_hours": 0.5,
+      "prefect_url": "https://prefect.galatek.dev",
+      "secret_block_name": "resend-api-key",
+      "test_scenarios": [
+        "Load resend-api-key from Prefect Secret block",
+        "Make test API call to Resend to verify key is valid",
+        "Check key permissions and sending domain",
+        "Verify from_email is authorized"
+      ]
+    },
+    {
+      "id": "9.3",
+      "wave": 9,
+      "name": "Test direct Resend API call to send test email",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Send a direct test email via Resend API to lengobaosang@gmail.com to verify the API key works and emails can be delivered.",
+      "added_at": "2025-11-28T16:00:00Z",
+      "estimate_hours": 0.5,
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Use Resend API directly (curl or Python)",
+        "Send simple test email to lengobaosang@gmail.com",
+        "Verify email delivered to inbox",
+        "Check Resend dashboard for delivery confirmation"
+      ]
+    },
+    {
+      "id": "9.4",
+      "wave": 9,
+      "name": "Check if website Email 1 (5-Day E1) was actually sent",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Investigate whether the first email in the sequence (christmas_email_1) was actually sent via Resend when user completed the funnel. Check Prefect flow run logs for send_email calls.",
+      "added_at": "2025-11-28T16:00:00Z",
+      "estimate_hours": 0.5,
+      "template_name": "christmas_email_1",
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Find flow run for user's signup",
+        "Check flow run logs for send_email task",
+        "Verify Resend API was called",
+        "Check for any errors in email sending"
+      ]
+    },
+    {
+      "id": "9.5",
+      "wave": 9,
+      "name": "Check if Prefect scheduled Emails 2-5 in Notion Email Sequence DB",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Query Notion Email Sequence database to verify if emails 2-5 (christmas_email_2 through christmas_email_5) were scheduled for lengobaosang@gmail.com.",
+      "added_at": "2025-11-28T16:00:00Z",
+      "estimate_hours": 0.5,
+      "test_email": "lengobaosang@gmail.com",
+      "templates_to_check": [
+        "christmas_email_2",
+        "christmas_email_3",
+        "christmas_email_4",
+        "christmas_email_5"
+      ],
+      "test_scenarios": [
+        "Query Notion Email Sequence database",
+        "Filter by email = lengobaosang@gmail.com",
+        "Check for scheduled email entries",
+        "Verify scheduled times are in the future"
+      ]
+    },
+    {
+      "id": "9.6",
+      "wave": 9,
+      "name": "Fix any issues found and re-send all test emails",
+      "status": "pending",
+      "priority": "critical",
+      "tests_required": true,
+      "description": "Based on findings from 9.1-9.5, implement fixes for any issues found. Re-trigger the email sequence to ensure user receives all emails.",
+      "added_at": "2025-11-28T16:00:00Z",
+      "estimate_hours": 1,
+      "test_email": "lengobaosang@gmail.com",
+      "test_scenarios": [
+        "Implement fix based on root cause",
+        "Re-trigger signup flow for lengobaosang@gmail.com",
+        "Verify Email 1 sent immediately",
+        "Verify Emails 2-5 scheduled in Notion",
+        "Confirm user receives Email 1 in inbox"
+      ]
+    },
+    {
+      "id": "9.7",
+      "wave": 9,
+      "name": "Add missing template variables to get_email_variables()",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Add new template variables required by updated website email templates: pdf_download_link, spots_remaining, bookings_count, weakest_system. These are used in the 5-Day email sequence (E1-E5).",
+      "added_at": "2025-11-28T17:00:00Z",
+      "estimate_hours": 0.5,
+      "file": "campaigns/christmas_campaign/tasks/resend_operations.py",
+      "variables_to_add": {
+        "pdf_download_link": "URL to Christmas Surge Playbook PDF (used in E3)",
+        "spots_remaining": "Dynamic spot counter, default '12' (used in E3, E4, E5)",
+        "bookings_count": "Number of bookings, default '18' (used in E5)",
+        "weakest_system": "Alias for weakest_system_1 (E2 uses this instead of weakest_system_1)"
+      },
+      "test_scenarios": [
+        "Verify pdf_download_link variable available in template context",
+        "Verify spots_remaining variable available with default value",
+        "Verify bookings_count variable available with default value",
+        "Verify weakest_system is alias for weakest_system_1",
+        "Run unit tests for get_email_variables()"
+      ]
+    },
+    {
+      "id": "9.8",
+      "wave": 9,
+      "name": "Verify 5-Day template variable mappings match Notion templates",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Cross-reference all template variables in Notion (E1-E5) with variables provided by get_email_variables(). Ensure every {{variable}} in templates has a corresponding value in the context.",
+      "added_at": "2025-11-28T17:00:00Z",
+      "estimate_hours": 0.5,
+      "templates_to_verify": [
+        "christmas_email_1 (E1)",
+        "christmas_email_2 (E2)",
+        "christmas_email_3 (E3)",
+        "christmas_email_4 (E4)",
+        "christmas_email_5 (E5)"
+      ],
+      "test_scenarios": [
+        "Fetch E1 template from Notion, extract all {{variables}}",
+        "Fetch E2 template from Notion, extract all {{variables}}",
+        "Fetch E3 template from Notion, extract all {{variables}}",
+        "Fetch E4 template from Notion, extract all {{variables}}",
+        "Fetch E5 template from Notion, extract all {{variables}}",
+        "Compare extracted variables with get_email_variables() output",
+        "Document any missing or mismatched variables"
+      ]
+    },
+    {
+      "id": "9.9",
+      "wave": 9,
+      "name": "Send test emails for ALL 5 templates (E1-E5) to verify formatting",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Send one test email for each of the 5-Day templates (E1-E5) to lengobaosang@gmail.com. Verify beautiful HTML formatting, BusinessX gold theme, professional footer, and all variables substituted correctly.",
+      "added_at": "2025-11-28T17:00:00Z",
+      "estimate_hours": 1,
+      "test_email": "lengobaosang@gmail.com",
+      "templates_to_test": [
+        "christmas_email_1",
+        "christmas_email_2",
+        "christmas_email_3",
+        "christmas_email_4",
+        "christmas_email_5"
+      ],
+      "verification_checklist": [
+        "BusinessX gold theme (#D2A164) renders correctly",
+        "Professional footer with logo, credentials, legal links",
+        "Alex Hormozi-style formatting preserved",
+        "All {{variables}} substituted (no raw placeholders visible)",
+        "Email renders correctly in Gmail inbox",
+        "No broken images or layout issues"
+      ],
+      "test_scenarios": [
+        "Send E1 test email and verify in inbox",
+        "Send E2 test email and verify in inbox",
+        "Send E3 test email and verify in inbox",
+        "Send E4 test email and verify in inbox",
+        "Send E5 test email and verify in inbox",
+        "Screenshot each email for documentation"
+      ]
+    },
+    {
+      "id": "9.10",
+      "wave": 9,
+      "name": "Document complete variable mapping for website team",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Create comprehensive documentation of all template variables, their sources, and default values. This helps the website team understand what data is available for email personalization.",
+      "added_at": "2025-11-28T17:00:00Z",
+      "estimate_hours": 0.5,
+      "output_file": "campaigns/christmas_campaign/docs/TEMPLATE_VARIABLES.md",
+      "sections": [
+        "Core Variables (first_name, last_name, email, business_name)",
+        "Assessment Variables (red_systems, orange_systems, green_systems, segment)",
+        "Ranking Variables (weakest_system, weakest_system_1, weakest_system_2, weakest_system_3)",
+        "Dynamic Variables (pdf_download_link, spots_remaining, bookings_count)",
+        "Booking Variables (booking_link, calendar_link)",
+        "Variable Source Mapping (which variables come from form vs calculated)"
+      ],
+      "test_scenarios": []
+    },
+    {
+      "id": "9.11",
+      "wave": 9,
+      "name": "Create Christmas Surge Playbook PDF with BusinessX styling",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Create a professional PDF playbook with BusinessX gold theme (#D2A164) styling. Include the 5 holiday revenue windows ($21K-$44K potential), formatted like the assessment page. Host on Cloudinary or sangletech.com and provide URL for pdf_download_link variable.",
+      "added_at": "2025-11-28T22:00:00Z",
+      "estimate_hours": 2,
+      "output_files": [
+        "campaigns/christmas_campaign/assets/christmas-surge-playbook.pdf",
+        "campaigns/christmas_campaign/assets/christmas-surge-playbook.html"
+      ],
+      "styling": {
+        "theme_color": "#D2A164",
+        "theme_name": "BusinessX Gold",
+        "layout": "Professional PDF with logo, branding",
+        "reference": "Assessment page styling at sangletech.com/en/flows/businessX/dfu/xmas-a01"
+      },
+      "content": {
+        "title": "Christmas Surge Playbook",
+        "revenue_windows": [
+          "Black Friday/Cyber Monday ($21K-$44K)",
+          "Gift Giving Season ($15K-$30K)",
+          "Year-End Rush ($12K-$25K)",
+          "New Year Prep ($18K-$35K)",
+          "January Reset ($10K-$22K)"
+        ]
+      },
+      "hosting_options": ["Cloudinary CDN", "sangletech.com/assets/"],
+      "variable_name": "pdf_download_link",
+      "test_scenarios": [
+        "PDF renders correctly with BusinessX gold theme",
+        "All 5 revenue windows displayed clearly",
+        "Professional footer with logo and credentials",
+        "PDF hosted and accessible via public URL",
+        "pdf_download_link variable returns working URL"
+      ]
+    },
+    {
+      "id": "9.12",
+      "wave": 9,
+      "name": "Document complete email sequence architecture in ARCHITECTURE.md",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Add comprehensive email sequence documentation to ARCHITECTURE.md including: ASCII funnel flow diagram, all 5 sequence types with triggers and timing, all 21 active templates in Notion, and reference for website team.",
+      "added_at": "2025-11-28T22:00:00Z",
+      "estimate_hours": 1.5,
+      "output_file": "campaigns/christmas_campaign/ARCHITECTURE.md",
+      "sections_to_add": [
+        "Email Funnel Flow Diagram (ASCII art)",
+        "5 Email Sequence Types Overview",
+        "Lead Nurture Sequence (5 emails)",
+        "5-Day Assessment Sequence (E1-E5)",
+        "No-Show Recovery Sequence (3 emails)",
+        "Post-Call Maybe Sequence (3 emails)",
+        "Onboarding Phase 1 Sequence (3 emails)",
+        "Template ID Reference Table (21 templates)",
+        "Trigger-to-Flow Mapping"
+      ],
+      "ascii_diagram": "User-provided funnel flow diagram showing Opt-in -> Assessment -> Lead Nurture -> 5-Day -> Conversion paths",
+      "sequence_types": [
+        {
+          "name": "Lead Nurture",
+          "prefix": "lead_nurture_email_*",
+          "count": 5,
+          "trigger": "Initial opt-in",
+          "description": "Confirmation + Assessment Link sequence"
+        },
+        {
+          "name": "5-Day Sequence",
+          "prefix": "christmas_email_*",
+          "count": 5,
+          "trigger": "After assessment completion",
+          "description": "Main campaign with Results, BusOS Framework, Case Study, Value Stack, Final Call"
+        },
+        {
+          "name": "No-Show Recovery",
+          "prefix": "noshow_recovery_email_*",
+          "count": 3,
+          "trigger": "After missed Calendly call",
+          "timing": "5 min, 24hr, 48hr"
+        },
+        {
+          "name": "Post-Call Maybe",
+          "prefix": "postcall_maybe_email_*",
+          "count": 3,
+          "trigger": "After 'need to think' calls",
+          "timing": "1hr, Day 3, Day 7"
+        },
+        {
+          "name": "Onboarding Phase 1",
+          "prefix": "onboarding_phase1_email_*",
+          "count": 3,
+          "trigger": "After payment/DocuSign",
+          "timing": "1hr, Day 1, Day 3"
+        }
+      ],
+      "test_scenarios": [
+        "ARCHITECTURE.md updated with email funnel diagram",
+        "All 5 sequence types documented with triggers and timing",
+        "All 21 template IDs listed in reference table",
+        "Website team can use as integration reference"
+      ]
+    },
+    {
+      "id": "9.13",
+      "wave": 9,
+      "name": "Verify all Prefect flows match documented email sequences",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "description": "Cross-reference all Prefect handler flows with documented email sequences. Verify template names, timing intervals, and triggers match the architecture documentation.",
+      "added_at": "2025-11-28T22:00:00Z",
+      "estimate_hours": 1,
+      "flows_to_verify": [
+        {
+          "flow": "signup_handler.py",
+          "sequences": ["lead_nurture (5)", "5-Day E1"],
+          "check": "Handles both lead_nurture + immediate E1 email"
+        },
+        {
+          "flow": "noshow_recovery_handler.py",
+          "sequences": ["No-Show Recovery (3)"],
+          "timing": "5 min, 24hr, 48hr after no-show",
+          "templates": ["noshow_recovery_email_1", "noshow_recovery_email_2", "noshow_recovery_email_3"]
+        },
+        {
+          "flow": "postcall_maybe_handler.py",
+          "sequences": ["Post-Call Maybe (3)"],
+          "timing": "1hr, Day 3, Day 7 after call",
+          "templates": ["postcall_maybe_email_1", "postcall_maybe_email_2", "postcall_maybe_email_3"]
+        },
+        {
+          "flow": "onboarding_handler.py",
+          "sequences": ["Onboarding Phase 1 (3)"],
+          "timing": "1hr, Day 1, Day 3 after DocuSign",
+          "templates": ["onboarding_phase1_email_1", "onboarding_phase1_email_2", "onboarding_phase1_email_3"]
+        }
+      ],
+      "test_scenarios": [
+        "signup_handler.py uses correct lead_nurture_email_* templates",
+        "signup_handler.py sends christmas_email_1 (E1) immediately",
+        "noshow_recovery_handler.py timing matches (5min, 24hr, 48hr)",
+        "postcall_maybe_handler.py timing matches (1hr, Day 3, Day 7)",
+        "onboarding_handler.py timing matches (1hr, Day 1, Day 3)",
+        "All template names match Notion database entries"
+      ]
     }
   ],
   "progress": {
-    "total_features": 78,
+    "total_features": 91,
     "completed_features": 35,
-    "pending_features": 43,
-    "total_waves": 9,
+    "pending_features": 56,
+    "total_waves": 10,
     "completed_waves": 5,
-    "percentage": 44.87,
+    "percentage": 38.46,
     "wave_5_features_added": 8,
     "wave_6_features_added": 13,
     "wave_7_features_added": 10,
-    "wave_8_features_added": 20
+    "wave_8_features_added": 20,
+    "wave_9_features_added": 13
   },
   "session_log": [
     {
@@ -1604,6 +2055,85 @@
         "prefect_api_url": "https://prefect.galatek.dev/api",
         "skills_required": ["prefect-marketing-automation"]
       }
+    },
+    {
+      "timestamp": "2025-11-28T16:00:00Z",
+      "action": "Added Wave 9 with 6 features via /add-tasks-coding",
+      "details": {
+        "features_added": ["9.1", "9.2", "9.3", "9.4", "9.5", "9.6"],
+        "wave_added": 9,
+        "wave_name": "Email Delivery Debugging",
+        "reason": "CRITICAL: User did NOT receive any emails at lengobaosang@gmail.com after completing the funnel. Need to debug Resend API, verify Email 1 was sent, check Notion Email Sequence for Emails 2-5.",
+        "impact_hours": 3.5,
+        "mandatory_email": "lengobaosang@gmail.com",
+        "critical_issue": "User completed production funnel but received ZERO emails",
+        "feature_groups": {
+          "group_1": {
+            "name": "Resend API Investigation",
+            "features": ["9.1", "9.2", "9.3", "9.4"],
+            "description": "Check Resend dashboard, verify API key, test direct email, check Email 1 status"
+          },
+          "group_2": {
+            "name": "Notion Sequence Verification",
+            "features": ["9.5"],
+            "description": "Check if Emails 2-5 were scheduled in Notion Email Sequence DB"
+          },
+          "group_3": {
+            "name": "Fix and Resend",
+            "features": ["9.6"],
+            "description": "Fix any issues found and re-send all test emails"
+          }
+        }
+      }
+    },
+    {
+      "timestamp": "2025-11-28T17:00:00Z",
+      "action": "Added 4 features (9.7-9.10) to Wave 9 via /add-tasks-coding",
+      "details": {
+        "features_added": ["9.7", "9.8", "9.9", "9.10"],
+        "wave_updated": 9,
+        "reason": "Website email templates updated with new variables (pdf_download_link, spots_remaining, bookings_count, weakest_system). Prefect flows need to provide these variables.",
+        "impact_hours": 2.5,
+        "mandatory_email": "lengobaosang@gmail.com",
+        "feature_group_added": {
+          "name": "Template Variable Updates",
+          "features": ["9.7", "9.8", "9.9", "9.10"],
+          "description": "Add missing template variables, verify variable mappings, test all 5 templates, document for website team"
+        },
+        "new_variables": {
+          "pdf_download_link": "Christmas Surge Playbook PDF URL (used in E3)",
+          "spots_remaining": "Dynamic spot counter (used in E3, E4, E5)",
+          "bookings_count": "Number of bookings (used in E5)",
+          "weakest_system": "Alias for weakest_system_1 (used in E2)"
+        },
+        "context": "User updated website email templates with beautiful HTML, BusinessX gold theme, and Alex Hormozi-style formatting"
+      }
+    },
+    {
+      "timestamp": "2025-11-28T22:00:00Z",
+      "action": "Added 3 features (9.11-9.13) to Wave 9 via /add-tasks-coding",
+      "details": {
+        "features_added": ["9.11", "9.12", "9.13"],
+        "wave_updated": 9,
+        "reason": "User provided comprehensive email sequence architecture documentation. Need to: (1) Create Christmas Surge Playbook PDF with BusinessX styling, (2) Document all 5 sequence types in ARCHITECTURE.md, (3) Verify Prefect flows match documented sequences.",
+        "impact_hours": 4.5,
+        "context": {
+          "email_sequence_types": 5,
+          "total_active_templates": 21,
+          "sequences": [
+            "Lead Nurture (5 emails) - Initial opt-in",
+            "5-Day Sequence (5 emails) - After assessment",
+            "No-Show Recovery (3 emails) - After missed call",
+            "Post-Call Maybe (3 emails) - After 'need to think' calls",
+            "Onboarding Phase 1 (3 emails) - After payment"
+          ]
+        },
+        "new_features": {
+          "9.11": "Create Christmas Surge Playbook PDF with BusinessX gold theme (#D2A164)",
+          "9.12": "Document complete email sequence architecture in ARCHITECTURE.md",
+          "9.13": "Verify all Prefect flows match documented email sequences"
+        }
+      }
     }
   ],
   "blockers": [
@@ -1643,6 +2173,14 @@
       "status": "pending",
       "solution": "Wave 7 features 7.6-7.10 will remove Python 3.12 workers and create Python 3.11 workers via Coolify",
       "added_at": "2025-11-28T02:30:00Z"
+    },
+    {
+      "id": "B6",
+      "severity": "critical",
+      "description": "User did NOT receive ANY emails at lengobaosang@gmail.com after completing production funnel",
+      "status": "pending",
+      "solution": "Wave 9 features 9.1-9.6 will investigate Resend API, verify Email 1 delivery, check Notion sequence, and fix issues",
+      "added_at": "2025-11-28T16:00:00Z"
     }
   ],
   "dependencies": {

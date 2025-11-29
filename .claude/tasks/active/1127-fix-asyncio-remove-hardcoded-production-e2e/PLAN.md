@@ -693,10 +693,213 @@ User discovered:
 | B3 | High | Test coverage at 46% (target: 85%) | Pending | Wave 6 features 6.3-6.13 |
 | B4 | **Critical** | Production funnel signup did not trigger email delivery | **Pending** | Wave 7 features 7.1-7.5 |
 | B5 | High | Python 3.12 workers on production crash | **Pending** | Wave 7 features 7.6-7.10 |
+| B6 | **Critical** | User did NOT receive ANY emails at lengobaosang@gmail.com | **Pending** | Wave 9 features 9.1-9.6 |
+
+---
+
+## Wave 9: Email Delivery Debugging + Template Variable Updates (NEW - Added 2025-11-28)
+**Objective**: Debug why user received ZERO emails after completing funnel, AND update template variables for new website email templates
+**Status**: Pending
+**Priority**: CRITICAL
+**Added via**: /add-tasks-coding
+
+### Feature Group 1: Resend API Investigation (Features 9.1-9.4)
+
+- [ ] 9.1: Check Resend API dashboard for delivery status
+  - Search for emails to lengobaosang@gmail.com
+  - Check status (sent, delivered, bounced, blocked)
+  - **Estimate**: 0.5 hours
+
+- [ ] 9.2: Verify Resend API key is valid in Prefect Secret blocks
+  - Load resend-api-key from Prefect Secret block
+  - Test key validity with API call
+  - **Estimate**: 0.5 hours
+
+- [ ] 9.3: Test direct Resend API call to send test email
+  - Send simple test email to lengobaosang@gmail.com
+  - Verify delivery in inbox
+  - **Estimate**: 0.5 hours
+
+- [ ] 9.4: Check if website Email 1 (5-Day E1) was actually sent
+  - Find flow run for user's signup
+  - Check logs for send_email task
+  - **Estimate**: 0.5 hours
+
+### Feature Group 2: Notion Sequence Verification (Feature 9.5)
+
+- [ ] 9.5: Check if Prefect scheduled Emails 2-5 in Notion Email Sequence DB
+  - Query Notion Email Sequence database
+  - Filter by email = lengobaosang@gmail.com
+  - Verify scheduled email entries exist
+  - **Estimate**: 0.5 hours
+
+### Feature Group 3: Fix and Resend (Feature 9.6)
+
+- [ ] 9.6: Fix any issues found and re-send all test emails
+  - Implement fix based on root cause
+  - Re-trigger signup flow
+  - Verify Email 1 sent and Emails 2-5 scheduled
+  - **Estimate**: 1 hour
+
+### Feature Group 4: Template Variable Updates (Features 9.7-9.10)
+
+**Context**: Website email templates were updated with:
+- Beautiful HTML templates with BusinessX gold theme (#D2A164)
+- Professional footer with logo, credentials, legal links
+- Alex Hormozi-style formatting
+- **New template variables** that Prefect flows need to provide
+
+- [ ] 9.7: Add missing template variables to get_email_variables()
+  - Add `pdf_download_link` (Christmas Surge Playbook PDF URL)
+  - Add `spots_remaining` (default: "12")
+  - Add `bookings_count` (default: "18")
+  - Add `weakest_system` (alias for weakest_system_1)
+  - **File**: `campaigns/christmas_campaign/tasks/resend_operations.py`
+  - **Estimate**: 0.5 hours
+
+- [ ] 9.8: Verify 5-Day template variable mappings match Notion templates
+  - Fetch E1-E5 templates from Notion
+  - Extract all {{variables}} from each
+  - Compare with get_email_variables() output
+  - Document any missing/mismatched variables
+  - **Estimate**: 0.5 hours
+
+- [ ] 9.9: Send test emails for ALL 5 templates (E1-E5) to verify formatting
+  - Send E1-E5 test emails to lengobaosang@gmail.com
+  - Verify BusinessX gold theme (#D2A164)
+  - Verify professional footer renders correctly
+  - Verify all {{variables}} substituted
+  - Screenshot each email for documentation
+  - **Estimate**: 1 hour
+
+- [ ] 9.10: Document complete variable mapping for website team
+  - Core Variables: first_name, last_name, email, business_name
+  - Assessment Variables: red_systems, orange_systems, green_systems, segment
+  - Ranking Variables: weakest_system, weakest_system_1/2/3
+  - Dynamic Variables: pdf_download_link, spots_remaining, bookings_count
+  - Booking Variables: booking_link, calendar_link
+  - **Output**: `campaigns/christmas_campaign/docs/TEMPLATE_VARIABLES.md`
+  - **Estimate**: 0.5 hours
+
+### Feature Group 5: Email Architecture & Documentation (Features 9.11-9.13) - NEW
+
+**Context**: User provided comprehensive documentation of the complete email automation system with 5 sequence types and 21 active templates in Notion.
+
+- [ ] 9.11: Create Christmas Surge Playbook PDF with BusinessX styling
+  - Create professional PDF with BusinessX gold theme (#D2A164)
+  - Include the 5 holiday revenue windows ($21K-$44K potential):
+    - Black Friday/Cyber Monday ($21K-$44K)
+    - Gift Giving Season ($15K-$30K)
+    - Year-End Rush ($12K-$25K)
+    - New Year Prep ($18K-$35K)
+    - January Reset ($10K-$22K)
+  - Format like the assessment page styling
+  - Professional layout with logo, branding
+  - Host on Cloudinary or sangletech.com
+  - Provide URL for `pdf_download_link` variable
+  - **Output**: `campaigns/christmas_campaign/assets/christmas-surge-playbook.pdf`
+  - **Estimate**: 2 hours
+
+- [ ] 9.12: Document complete email sequence architecture in ARCHITECTURE.md
+  - Add ASCII funnel flow diagram (user-provided)
+  - Document all 5 sequence types with triggers and timing:
+    - **Lead Nurture** (5 emails): Initial opt-in -> Confirmation + Assessment Link
+    - **5-Day Sequence** (5 emails): After assessment -> E1-E5 with CTAs
+    - **No-Show Recovery** (3 emails): After missed call -> 5min, 24hr, 48hr
+    - **Post-Call Maybe** (3 emails): After "need to think" -> 1hr, Day 3, Day 7
+    - **Onboarding Phase 1** (3 emails): After payment -> 1hr, Day 1, Day 3
+  - Create reference table for all 21 active templates in Notion
+  - Add trigger-to-flow mapping for website team
+  - **Output**: `campaigns/christmas_campaign/ARCHITECTURE.md`
+  - **Estimate**: 1.5 hours
+
+- [ ] 9.13: Verify all Prefect flows match documented email sequences
+  - **signup_handler.py**: Verify handles lead_nurture (5) + immediate E1
+  - **noshow_recovery_handler.py**: Verify timing (5min, 24hr, 48hr) matches docs
+  - **postcall_maybe_handler.py**: Verify timing (1hr, Day 3, Day 7) matches docs
+  - **onboarding_handler.py**: Verify timing (1hr, Day 1, Day 3) matches docs
+  - Cross-reference all template names with Notion database entries
+  - **Estimate**: 1 hour
+
+### Email Sequence Architecture Reference (for Features 9.11-9.13)
+
+```
+                           ┌─────────────────────────────────────┐
+                           │           OPT-IN FORM               │
+                           │  (sangletech.com/flows/businessX)   │
+                           └─────────────────┬───────────────────┘
+                                             │
+                                             ▼
+                           ┌─────────────────────────────────────┐
+                           │       LEAD NURTURE SEQUENCE         │
+                           │    (lead_nurture_email_1 to 5)      │
+                           │  E1: Confirmation + Assessment Link │
+                           │  E2a/b/c: Segmented (Day 1)         │
+                           │  E3-E5: BusOS Intro + CTAs          │
+                           └─────────────────┬───────────────────┘
+                                             │
+                                             ▼
+                           ┌─────────────────────────────────────┐
+                           │        ASSESSMENT COMPLETED         │
+                           │   (Triggers 5-Day Email Sequence)   │
+                           └─────────────────┬───────────────────┘
+                                             │
+                                             ▼
+      ┌────────────────────────────────────────────────────────────────────────┐
+      │                     5-DAY EMAIL SEQUENCE (E1-E5)                       │
+      ├────────────────────────────────────────────────────────────────────────┤
+      │ Day 0: E1 - Assessment Results + Dec 5 Deadline                        │
+      │ Day 1: E2 - $500K Mistake + BusOS Framework                            │
+      │ Day 2: E3 - Van Tiny Case Study + SOFT ASK                             │
+      │ Day 3: E4 - Value Stack + MEDIUM ASK                                   │
+      │ Day 4: E5 - Final Call - HARD ASK                                      │
+      └─────────────────────┬──────────────────────────────────────────────────┘
+                            │
+           ┌────────────────┼────────────────┐
+           │                │                │
+           ▼                ▼                ▼
+   ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
+   │   SCHEDULED   │ │   NO-SHOW     │ │    MAYBE      │
+   │     CALL      │ │   (Missed)    │ │   (Need to    │
+   │               │ │               │ │    think)     │
+   └───────┬───────┘ └───────┬───────┘ └───────┬───────┘
+           │                 │                 │
+           ▼                 ▼                 ▼
+   ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
+   │  CALL BOOKED  │ │   NO-SHOW     │ │  POST-CALL    │
+   │  (Success)    │ │   RECOVERY    │ │    MAYBE      │
+   │               │ │  (3 emails)   │ │  (3 emails)   │
+   └───────┬───────┘ │ 5min, 24h,48h │ │ 1hr, D3, D7   │
+           │         └───────────────┘ └───────────────┘
+           ▼
+   ┌───────────────┐
+   │   CONVERTED   │
+   │   (Payment)   │
+   └───────┬───────┘
+           │
+           ▼
+   ┌───────────────┐
+   │  ONBOARDING   │
+   │  PHASE 1      │
+   │  (3 emails)   │
+   │ 1hr, D1, D3   │
+   └───────────────┘
+```
+
+### Wave 9 Success Criteria
+
+- [ ] Root cause of email delivery failure identified and fixed
+- [ ] User receives test email at lengobaosang@gmail.com
+- [ ] All 4 new template variables added to get_email_variables()
+- [ ] All 5 templates (E1-E5) tested and verified
+- [ ] Template variable documentation complete for website team
+- [ ] Christmas Surge Playbook PDF created with BusinessX styling
+- [ ] ARCHITECTURE.md updated with complete email sequence documentation
+- [ ] All Prefect flows verified to match documented sequences
 
 ---
 
 **Plan Created**: 2025-11-27
-**Updated**: 2025-11-28 (Wave 8 added via /add-tasks-coding)
-**Total Features**: 78 (58 previous + 20 new)
+**Updated**: 2025-11-28 (Wave 9 expanded with features 9.7-9.13 via /add-tasks-coding)
+**Total Features**: 91 (88 previous + 3 new)
 **Awaiting**: User approval to proceed to /execute-coding
