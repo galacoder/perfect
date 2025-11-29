@@ -61,11 +61,12 @@
 | 7 | Debug Email Delivery & Replace Python 3.12 Workers | 10 | Pending |
 | 8 | Production Readiness & Full E2E Testing | 20 | Pending |
 | 9 | **Email Delivery Debugging + Architecture Docs (CRITICAL)** | 13 | **Pending** |
+| 10 | **Full E2E Test of ALL 21 Templates via Prefect Flows** | 8 | **Pending** |
 
-**Total Features**: 91 (88 previous + 3 new)
+**Total Features**: 99 (91 previous + 8 new)
 **Completed Features**: 35
-**Pending Features**: 56 (Wave 6: 11, Wave 7: 10, Wave 8: 20, Wave 9: 13, plus 2 complete in Wave 6)
-**Estimated Duration**: ~36.5 hours (32 previous + 4.5 hours for Wave 9 additions)
+**Pending Features**: 64 (Wave 6: 11, Wave 7: 10, Wave 8: 20, Wave 9: 13, Wave 10: 8, plus 2 complete in Wave 6)
+**Estimated Duration**: ~39.75 hours (36.5 previous + 3.25 hours for Wave 10)
 
 ## Wave 6: Test Coverage Improvement (NEW)
 
@@ -347,12 +348,66 @@ User discovered:
 |----|----------|-------------|
 | B6 | **Critical** | User did NOT receive ANY emails at lengobaosang@gmail.com after completing production funnel |
 
+## Wave 10: Full E2E Test of ALL 21 Templates via Prefect Flows (NEW)
+
+### Objective
+
+Test ALL 21 email templates through actual Prefect flow execution (not just direct Resend API).
+
+### Context
+
+- Wave 9 completed: Email delivery debugging, sent E1-E5 successfully
+- Now need to test ALL templates through their respective Prefect flows
+- TESTING_MODE=true means 1-minute delays between emails (all within 10 min)
+- After testing, switch to TESTING_MODE=false for production (day-by-day timing)
+
+### Deployment IDs
+
+| Deployment | ID | Emails |
+|------------|-----|--------|
+| christmas-signup-handler | 1ae3a3b3-e076-49c5-9b08-9c176aa47aa0 | 5 |
+| christmas-noshow-recovery-handler | 3400e152-1cbe-4d8f-9f8a-0dd73569afa1 | 3 |
+| christmas-postcall-maybe-handler | ed929cd9-34b3-4655-b128-1a1e08a59cbd | 3 |
+| christmas-onboarding-handler | db47b919-1e55-4de2-b52c-6e2b0b2a2285 | 3 |
+
+### Wave 10 Features
+
+| ID | Name | Priority | Estimate |
+|----|------|----------|----------|
+| 10.1 | Verify TESTING_MODE=true in Prefect Secret block | Critical | 0.25h |
+| 10.2 | Trigger christmas-signup-handler (E1-E5) | Critical | 0.5h |
+| 10.3 | Trigger christmas-noshow-recovery-handler (3 emails) | Critical | 0.5h |
+| 10.4 | Trigger christmas-postcall-maybe-handler (3 emails) | Critical | 0.5h |
+| 10.5 | Trigger christmas-onboarding-handler (3 emails) | Critical | 0.5h |
+| 10.6 | Wait 10 min and verify ALL emails received | Critical | 0.5h |
+| 10.7 | Update TESTING_MODE=false for production | High | 0.25h |
+| 10.8 | Verify production day-by-day scheduling | High | 0.25h |
+
+### Expected Email Count
+
+| Flow | Templates | Count |
+|------|-----------|-------|
+| Signup (5-Day) | christmas_email_1 to 5 | 5 |
+| No-Show Recovery | noshow_recovery_email_1 to 3 | 3 |
+| Post-Call Maybe | postcall_maybe_email_1 to 3 | 3 |
+| Onboarding Phase 1 | onboarding_phase1_email_1 to 3 | 3 |
+| **Total** | | **14** |
+
+### Success Criteria
+
+- [ ] TESTING_MODE verified as 'true' before testing
+- [ ] All 4 flows triggered via Prefect API
+- [ ] All 14 emails delivered to lengobaosang@gmail.com
+- [ ] TESTING_MODE updated to 'false' for production
+- [ ] Production timing verified (day-by-day scheduling)
+
 ## Next Steps
 
 1. **Wave 9 is CRITICAL**: Email delivery debugging needs immediate attention
-2. **Review Plan**: Check PLAN.md for Wave 6-9 implementation details
-3. **Approve**: If plan looks good, run `/execute-coding`
-4. **Monitor**: Watch for Wave 9 progress updates
+2. **Wave 10 follows**: Full E2E test of ALL 21 templates after Wave 9 complete
+3. **Review Plan**: Check PLAN.md for Wave 6-10 implementation details
+4. **Approve**: If plan looks good, run `/execute-coding`
+5. **Monitor**: Watch for Wave 9-10 progress updates
 
 ## Critical Notes
 
@@ -364,4 +419,4 @@ User discovered:
 
 ---
 
-**Last Updated**: 2025-11-28T16:00:00Z
+**Last Updated**: 2025-11-28T23:00:00Z

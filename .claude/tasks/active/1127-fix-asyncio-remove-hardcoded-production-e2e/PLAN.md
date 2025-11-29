@@ -899,7 +899,127 @@ User discovered:
 
 ---
 
+## Wave 10: Full E2E Test of ALL 21 Templates via Prefect Flows (NEW - Added 2025-11-28)
+**Objective**: Test ALL 21 email templates through actual Prefect flow execution. Verify TESTING_MODE=true for 1-minute timing, trigger all 4 flows, wait 10 minutes for all emails, then switch to TESTING_MODE=false for production timing.
+**Status**: Pending
+**Priority**: CRITICAL
+**Added via**: /add-tasks-coding
+
+### Context
+
+- Wave 9 completed: Email delivery debugging, sent E1-E5 successfully via direct Resend API
+- Now need to test ALL templates through their respective Prefect flows (proper integration test)
+- TESTING_MODE=true means 1-minute delays between emails (all within 10 min)
+- After testing, switch to TESTING_MODE=false for production (day-by-day timing)
+
+### Deployment IDs
+
+| Deployment Name | Deployment ID | Emails |
+|-----------------|---------------|--------|
+| christmas-signup-handler | 1ae3a3b3-e076-49c5-9b08-9c176aa47aa0 | 5 |
+| christmas-noshow-recovery-handler | 3400e152-1cbe-4d8f-9f8a-0dd73569afa1 | 3 |
+| christmas-postcall-maybe-handler | ed929cd9-34b3-4655-b128-1a1e08a59cbd | 3 |
+| christmas-onboarding-handler | db47b919-1e55-4de2-b52c-6e2b0b2a2285 | 3 |
+
+### Phase 1: TESTING_MODE Verification (Feature 10.1)
+
+- [ ] 10.1: Verify TESTING_MODE=true in Prefect Secret block for fast 1-minute timing
+  - Load testing-mode Secret block from Prefect
+  - Verify value is 'true' (not 'false')
+  - If false, update to true before proceeding
+  - Document current state for rollback
+  - **Estimate**: 0.25 hours
+
+### Phase 2: Trigger All 4 Flows (Features 10.2-10.5)
+
+- [ ] 10.2: Trigger christmas-signup-handler flow to test 5-Day sequence (E1-E5)
+  - POST to Prefect API to create flow run
+  - Test email: lengobaosang@gmail.com
+  - Templates: christmas_email_1 through christmas_email_5
+  - Monitor flow run status until COMPLETED
+  - **Deployment ID**: 1ae3a3b3-e076-49c5-9b08-9c176aa47aa0
+  - **Estimate**: 0.5 hours
+
+- [ ] 10.3: Trigger christmas-noshow-recovery-handler flow to test No-Show Recovery emails 1-3
+  - POST to Prefect API with mock Calendly no-show data
+  - Templates: noshow_recovery_email_1 through noshow_recovery_email_3
+  - **Deployment ID**: 3400e152-1cbe-4d8f-9f8a-0dd73569afa1
+  - **Estimate**: 0.5 hours
+
+- [ ] 10.4: Trigger christmas-postcall-maybe-handler flow to test Post-Call Maybe emails 1-3
+  - POST to Prefect API with 'need to think' call data
+  - Templates: postcall_maybe_email_1 through postcall_maybe_email_3
+  - **Deployment ID**: ed929cd9-34b3-4655-b128-1a1e08a59cbd
+  - **Estimate**: 0.5 hours
+
+- [ ] 10.5: Trigger christmas-onboarding-handler flow to test Onboarding Phase 1 emails 1-3
+  - POST to Prefect API with payment/DocuSign data
+  - Templates: onboarding_phase1_email_1 through onboarding_phase1_email_3
+  - **Deployment ID**: db47b919-1e55-4de2-b52c-6e2b0b2a2285
+  - **Estimate**: 0.5 hours
+
+### Phase 3: Verify Email Delivery (Feature 10.6)
+
+- [ ] 10.6: Wait 10 minutes and verify ALL emails received at lengobaosang@gmail.com
+  - Wait for all email sequences to complete
+  - Check Resend dashboard for total sent emails
+  - Verify email count matches expected (14+ emails)
+  - Check inbox at lengobaosang@gmail.com for actual delivery
+  - Document any missing or failed emails
+  - **Expected email count**: 5 + 3 + 3 + 3 = 14 minimum
+  - **Estimate**: 0.5 hours
+
+### Phase 4: Switch to Production Mode (Features 10.7-10.8)
+
+- [ ] 10.7: After testing complete, update TESTING_MODE=false in Prefect Secret block
+  - Update testing-mode Secret block from 'true' to 'false'
+  - Verify Secret block updated successfully
+  - Document production timing configuration
+  - **Estimate**: 0.25 hours
+
+- [ ] 10.8: Verify all deployments use production day-by-day scheduling
+  - Review email_sequence_orchestrator.py for TESTING_MODE handling
+  - Verify day-based timing when TESTING_MODE=false
+  - Production timing:
+    - Signup (5-Day): Day 0, Day 1, Day 2, Day 3, Day 4
+    - No-Show Recovery: 5 min, 24 hours, 48 hours
+    - Post-Call Maybe: 1 hour, Day 3, Day 7
+    - Onboarding Phase 1: 1 hour, Day 1, Day 3
+  - Document production scheduling for STATUS.md
+  - Mark task as PRODUCTION READY
+  - **Estimate**: 0.25 hours
+
+### Success Criteria
+
+- [ ] TESTING_MODE verified as 'true' before testing
+- [ ] All 4 flows triggered via Prefect API
+- [ ] All 14 emails delivered to lengobaosang@gmail.com within 10 minutes
+- [ ] TESTING_MODE updated to 'false' for production
+- [ ] Production timing verified (day-by-day scheduling)
+- [ ] Task marked as PRODUCTION READY
+
+---
+
+## Updated Estimated Timeline
+
+| Wave | Duration | Dependencies | Status |
+|------|----------|--------------|--------|
+| Wave 0 | 30 min | None | Complete |
+| Wave 1 | 30 min | Server access | Skipped |
+| Wave 2 | 30 min | None | Complete |
+| Wave 3 | 15 min | Waves 0-2 complete | Complete |
+| Wave 4 | 15 min | Wave 3 complete | Complete |
+| Wave 5 | 120 min | Waves 0-4 complete | Complete |
+| Wave 6 | 180 min | Wave 5 complete | **Pending** |
+| Wave 7 | 240 min | Wave 6 in progress | **Pending** (CRITICAL) |
+| Wave 8 | 720 min (12h) | Wave 7 complete | **Pending** |
+| Wave 9 | 270 min (4.5h) | Wave 8 complete | **Pending** (CRITICAL) |
+| Wave 10 | 195 min (3.25h) | Wave 9 complete | **Pending** |
+| **Total** | **~40 hours** | | |
+
+---
+
 **Plan Created**: 2025-11-27
-**Updated**: 2025-11-28 (Wave 9 expanded with features 9.7-9.13 via /add-tasks-coding)
-**Total Features**: 91 (88 previous + 3 new)
+**Updated**: 2025-11-28 (Wave 10 added with 8 features via /add-tasks-coding)
+**Total Features**: 99 (91 previous + 8 new)
 **Awaiting**: User approval to proceed to /execute-coding
