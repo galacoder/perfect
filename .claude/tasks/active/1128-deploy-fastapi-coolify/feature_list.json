@@ -1,12 +1,13 @@
 {
   "task_id": "1128-deploy-fastapi-coolify",
   "domain": "coding",
-  "status": "executing",
+  "status": "blocked",
   "current_phase": "CODE",
   "current_wave": 2,
-  "current_feature_id": "2.1",
+  "current_feature_id": "2.2",
   "created_at": "2025-11-28T22:30:00Z",
-  "updated_at": "2025-11-28T22:50:00Z",
+  "updated_at": "2025-11-28T23:50:00Z",
+  "blocked_reason": "Coolify API /applications/dockercompose endpoint rejecting base64-encoded docker-compose.yml. UI access requires login credentials.",
   "meta": {
     "title": "Deploy FastAPI Webhook Server via Coolify",
     "description": "Deploy the existing FastAPI webhook server (server.py) to Coolify PaaS platform. The server handles webhooks from the website and triggers Prefect flows for email sequences. Docker configuration already exists; main work is Coolify deployment and DNS/SSL configuration.",
@@ -87,29 +88,39 @@
       "wave": 2,
       "name": "Push latest code to GitHub",
       "description": "Ensure all Docker configuration files are committed and pushed to galacoder/perfect repository",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
-      "tests_required": false
+      "tests_required": false,
+      "completed_at": "2025-11-28T23:45:00Z",
+      "commit_hash": "d46547a"
     },
     {
       "id": "2.2",
       "wave": 2,
       "name": "Create Coolify project for perfect-webhook",
       "description": "Use coolify-integration skill to create new project in Coolify dashboard",
-      "status": "pending",
+      "status": "blocked",
       "priority": "high",
       "tests_required": false,
-      "skill_required": "coolify-integration"
+      "skill_required": "coolify-integration",
+      "blocked_reason": "Coolify API endpoint /applications/dockercompose returns 422 validation error claiming docker_compose_raw should be base64 encoded, even when properly encoded. UI access requires login credentials.",
+      "attempted_solutions": [
+        "Base64 encoding with Node.js Buffer",
+        "Base64 encoding with bash base64 command (with/without line breaks)",
+        "Multiple request body variations",
+        "Direct curl requests"
+      ]
     },
     {
       "id": "2.3",
       "wave": 2,
       "name": "Configure Coolify Docker Compose deployment",
       "description": "Add Docker Compose resource pointing to galacoder/perfect repository with docker-compose.coolify.yml",
-      "status": "pending",
+      "status": "blocked",
       "priority": "high",
       "tests_required": false,
-      "skill_required": "coolify-integration"
+      "skill_required": "coolify-integration",
+      "blocked_reason": "Depends on 2.2 completion"
     },
     {
       "id": "2.4",
@@ -219,10 +230,10 @@
   ],
   "progress": {
     "total_features": 15,
-    "completed_features": 0,
+    "completed_features": 1,
     "total_waves": 4,
     "completed_waves": 0,
-    "percentage": 0
+    "percentage": 6.67
   },
   "session_log": [
     {
@@ -236,6 +247,15 @@
     {
       "timestamp": "2025-11-28T22:30:00Z",
       "action": "PLAN phase complete - awaiting approval"
+    },
+    {
+      "timestamp": "2025-11-28T23:45:00Z",
+      "action": "Completed feature 2.1: Push latest code to GitHub",
+      "commit_hash": "d46547a"
+    },
+    {
+      "timestamp": "2025-11-28T23:50:00Z",
+      "action": "BLOCKED: Coolify API endpoint /applications/dockercompose rejecting base64-encoded docker-compose.yml with validation error. Attempted multiple encoding methods. UI access requires credentials. Awaiting user guidance."
     }
   ],
   "dependencies": {
@@ -274,5 +294,19 @@
       "christmas-onboarding-handler"
     ],
     "secret_blocks": 7
+  },
+  "coolify_discovered": {
+    "server": {
+      "uuid": "bgsc48kc08ksk4k0k440o4cc",
+      "name": "homelab",
+      "ip": "homelab-m2n.myddns.me",
+      "is_reachable": true,
+      "is_usable": true
+    },
+    "project": {
+      "uuid": "c4o40k8wskkkow8g0k8k0s4s",
+      "name": "My first project"
+    },
+    "api_base_url": "http://homelab-m2n.myddns.me:8000/api/v1"
   }
 }
