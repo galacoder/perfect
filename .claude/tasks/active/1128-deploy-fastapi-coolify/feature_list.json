@@ -1,12 +1,12 @@
 {
   "task_id": "1128-deploy-fastapi-coolify",
   "domain": "coding",
-  "status": "awaiting_approval",
-  "current_phase": "PLAN",
-  "current_wave": null,
-  "current_feature_id": null,
+  "status": "executing",
+  "current_phase": "CODE",
+  "current_wave": 2,
+  "current_feature_id": "2.1",
   "created_at": "2025-11-28T22:30:00Z",
-  "updated_at": "2025-11-28T22:30:00Z",
+  "updated_at": "2025-11-28T22:50:00Z",
   "meta": {
     "title": "Deploy FastAPI Webhook Server via Coolify",
     "description": "Deploy the existing FastAPI webhook server (server.py) to Coolify PaaS platform. The server handles webhooks from the website and triggers Prefect flows for email sequences. Docker configuration already exists; main work is Coolify deployment and DNS/SSL configuration.",
