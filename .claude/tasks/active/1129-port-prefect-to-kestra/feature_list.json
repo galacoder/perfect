@@ -577,8 +577,8 @@
       "tests_required": true,
       "test_file": "tests/kestra/e2e/test_puppeteer_assessment_funnel.py",
       "description": "Automated browser testing for complete assessment funnel with website/Kestra email split. CRITICAL: Verify website sends Email #1, then Kestra sends Emails #2-5.",
-      "modified_at": "2025-11-29T12:00:00Z",
-      "modification_reason": "Updated to test website/Kestra email split, renamed from signup to assessment",
+      "modified_at": "2025-11-30T22:30:00Z",
+      "modification_reason": "Updated after assessment completion - root cause is missing webhook integration",
       "test_requirements": [
         "Navigate to funnel URL (localhost:3005 or sangletech.com)",
         "Fill assessment form with test data (lengobaosang@gmail.com)",
@@ -592,20 +592,41 @@
         "Verify Email #2 delivered to Resend"
       ],
       "started_at": "2025-11-30T22:00:00Z",
-      "blocked_at": "2025-11-30T21:41:23.143935+00:00",
-      "blocked_reason": "Puppeteer cannot simulate complex React form interactions - final question click not triggering navigation",
+      "blocked_at": "2025-11-30T22:30:00Z",
+      "blocked_reason": "CRITICAL: Website frontend does NOT call Kestra webhook after assessment completion. Frontend is purely client-side - displays results but sends NO backend API calls.",
       "tests_passing": false,
       "progress": {
         "completed": [
-          "TC-4.7.1 Navigate",
-          "TC-4.7.2 Fill form",
-          "TC-4.7.3 Submit signup"
+          "TC-4.7.1 Navigate to funnel URL",
+          "TC-4.7.2 Fill signup form",
+          "TC-4.7.3 Submit signup (leadId received)",
+          "TC-4.7.4 Navigate to assessment page",
+          "TC-4.7.5 Complete all 16 assessment questions",
+          "TC-4.7.6 Submit assessment",
+          "TC-4.7.7 Results page displayed with scores"
         ],
-        "blocked_on": "TC-4.7.4-10 Assessment completion",
-        "questions_answered": "15/16",
-        "blocker_details": "Assessment form uses React/complex JS that does not respond to programmatic clicks. Need alternative API-based testing approach."
+        "blocked_on": "TC-4.7.8-10 Backend webhook integration",
+        "questions_answered": "16/16 (COMPLETE)",
+        "assessment_results": {
+          "segment": "URGENT - Christmas At Risk",
+          "overall_score": "0/800 (0%)",
+          "red_systems": 8,
+          "orange_systems": 0,
+          "yellow_systems": 0,
+          "green_systems": 0,
+          "revenue_loss": "$44,000/month"
+        },
+        "blocker_details": "Assessment completion is PURELY FRONTEND. No backend API call detected. No Kestra webhook triggered. No Notion contact created. No emails sent. The message 'A personalized copy of your results has been emailed to you' appears to be misleading - no email was actually sent.",
+        "root_cause": "Frontend missing webhook integration to /webhook/christmas-assessment",
+        "required_fix": "Frontend needs to POST assessment data to Kestra webhook after form submission"
       },
-      "alternative_approach": "Use direct webhook API calls instead of browser automation (see Feature 4.11)"
+      "verification_performed": {
+        "kestra_executions": "NONE - No assessment-handler executions found",
+        "notion_contact": "NOT FOUND - lengobaosang@gmail.com does NOT exist in Contacts database",
+        "resend_emails": "NONE - No emails sent",
+        "frontend_network_calls": "Only TikTok analytics - NO webhook calls to backend"
+      },
+      "alternative_approach": "Use direct webhook API calls instead of browser automation (see Feature 4.11). Frontend integration work required on sangletech-tailwindcss repository."
     },
     {
       "id": "4.8",
@@ -1200,6 +1221,33 @@
         "attempted_solutions": 4,
         "screenshots_captured": 15,
         "alternative": "Direct API webhook testing (Feature 4.11)"
+      }
+    },
+    {
+      "timestamp": "2025-11-30T22:30:00Z",
+      "action": "Feature 4.7 CRITICAL FINDING - Assessment completion works but NO webhook integration",
+      "feature_id": "4.7",
+      "details": {
+        "assessment_completed": true,
+        "questions_answered": "16/16",
+        "results_displayed": "URGENT segment, 0/800 score, 8 red systems",
+        "critical_issue": "Frontend does NOT call backend webhook after assessment",
+        "verification_results": {
+          "kestra_executions": "NONE found for assessment-handler",
+          "notion_contact": "NOT created (lengobaosang@gmail.com missing)",
+          "resend_emails": "NONE sent",
+          "frontend_api_calls": "Only TikTok analytics, NO webhook calls"
+        },
+        "root_cause": "Assessment results page is purely frontend - calculates scores in JavaScript but sends NO data to backend",
+        "misleading_ui": "Page shows 'A personalized copy of your results has been emailed to you' but NO email was sent",
+        "required_fix": "Frontend repo (sangletech-tailwindcss) needs webhook integration to POST assessment data to Kestra",
+        "blocker_type": "Frontend integration missing",
+        "next_steps": [
+          "Document webhook payload requirements for frontend team",
+          "Create webhook endpoint documentation",
+          "Test webhook manually with curl (Feature 4.11)",
+          "Coordinate with frontend team to add webhook call after assessment submission"
+        ]
       }
     }
   ]
