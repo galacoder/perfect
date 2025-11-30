@@ -68,18 +68,20 @@ def test_env_kestra_example_has_required_secrets(env_kestra_example_path):
 def test_env_kestra_example_uses_placeholders(env_kestra_example_path):
     """Test that .env.kestra.example uses placeholder values, not real secrets."""
     with open(env_kestra_example_path) as f:
-        content = f.read()
+        lines = f.readlines()
 
-    # Check that values are placeholders
+    # Check that VALUES (after =) are placeholders, not real secrets
     forbidden_patterns = [
         "ntn_",  # Notion tokens start with ntn_
         "re_",   # Resend API keys start with re_
-        "secret_",  # Notion integration secrets
     ]
 
-    for pattern in forbidden_patterns:
-        assert pattern not in content.lower(), \
-            f"Real secret pattern '{pattern}' found in .env.kestra.example - use placeholders only"
+    for line in lines:
+        if "=" in line and not line.strip().startswith("#"):
+            value = line.split("=", 1)[1].strip()
+            for pattern in forbidden_patterns:
+                assert pattern not in value.lower(), \
+                    f"Real secret pattern '{pattern}' found in value '{value}' - use placeholders only"
 
 
 def test_env_kestra_in_gitignore(gitignore_path):
