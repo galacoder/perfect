@@ -1,0 +1,35 @@
+{
+  "task_id": "1130-deploy-kestra-dokploy-e2e-tests",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 0,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 65
+  },
+  "estimated_tests": {
+    "wave_1": {
+      "test_dokploy_compose.py": 8,
+      "test_deployment_health.py": 12,
+      "test_webhook_accessibility.py": 10
+    },
+    "wave_2": {
+      "test_kestra_helpers.py": 8,
+      "test_notion_helpers.py": 6
+    },
+    "wave_3": {
+      "test_assessment_e2e.py": 8,
+      "test_all_handlers_e2e.py": 9,
+      "test_email_split_verification.py": 4
+    },
+    "wave_4": {
+      "test_puppeteer_assessment_funnel.py": 10,
+      "test_puppeteer_signup_funnel.py": 8,
+      "test_puppeteer_secondary_funnels.py": 12
+    }
+  },
+  "suites": [],
+  "failures": [],
+  "history": []
+}
