@@ -1,0 +1,482 @@
+{
+  "task_id": "1129-port-prefect-to-kestra",
+  "last_run": null,
+  "summary": {
+    "status": "not_run",
+    "total": 0,
+    "passing": 0,
+    "failing": 0,
+    "not_started": 30
+  },
+  "test_strategy": {
+    "framework": "pytest",
+    "coverage_target": 80,
+    "tdd_approach": "tests-first",
+    "test_types": ["unit", "integration", "e2e"]
+  },
+  "suites": [
+    {
+      "name": "Wave 1: Foundation",
+      "tests": [
+        {
+          "file": "tests/kestra/test_docker_compose.py",
+          "feature_id": "1.1",
+          "status": "not_started",
+          "cases": [
+            "test_docker_compose_valid_yaml",
+            "test_postgres_service_exists",
+            "test_kestra_service_exists",
+            "test_network_configuration",
+            "test_volume_mounts"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_secrets.py",
+          "feature_id": "1.2",
+          "status": "not_started",
+          "cases": [
+            "test_secrets_env_file_exists",
+            "test_secrets_base64_encoded",
+            "test_secret_function_resolves",
+            "test_all_required_secrets_present"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_health_flow.py",
+          "feature_id": "1.3",
+          "status": "not_started",
+          "cases": [
+            "test_health_flow_valid_yaml",
+            "test_health_flow_executes",
+            "test_health_flow_returns_success"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wave 2: Core Flow Migration",
+      "tests": [
+        {
+          "file": "tests/kestra/test_routing.py",
+          "feature_id": "2.1",
+          "status": "not_started",
+          "cases": [
+            "test_classify_segment_critical",
+            "test_classify_segment_urgent",
+            "test_classify_segment_optimize",
+            "test_get_email_template_id",
+            "test_get_sequence_template_id"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_notion_tasks.py",
+          "feature_id": "2.2",
+          "status": "not_started",
+          "modified_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_notion_search_contact_task_valid",
+            "test_notion_create_sequence_task_valid",
+            "test_notion_update_sequence_task_valid",
+            "test_notion_fetch_template_task_valid",
+            "test_notion_api_auth_header",
+            "test_notion_update_sequence_tracker_per_email_payload",
+            "test_notion_update_sequence_tracker_email_number_field",
+            "test_notion_update_sequence_tracker_sent_timestamp",
+            "test_notion_update_sequence_tracker_sent_by_kestra",
+            "test_notion_update_sequence_tracker_resend_id"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_resend_tasks.py",
+          "feature_id": "2.3",
+          "status": "not_started",
+          "cases": [
+            "test_resend_send_email_task_valid",
+            "test_resend_template_substitution",
+            "test_resend_api_auth_header",
+            "test_resend_email_format"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_send_email_flow.py",
+          "feature_id": "2.4",
+          "status": "not_started",
+          "modified_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_send_email_flow_valid_yaml",
+            "test_send_email_flow_idempotency_check",
+            "test_send_email_flow_template_fetch",
+            "test_send_email_flow_variable_substitution",
+            "test_send_email_flow_resend_api_call",
+            "test_send_email_flow_notion_sequence_tracker_update_called",
+            "test_send_email_flow_notion_update_email_number_correct",
+            "test_send_email_flow_notion_update_sent_timestamp",
+            "test_send_email_flow_notion_update_sent_by_kestra",
+            "test_send_email_flow_notion_update_resend_id_captured",
+            "test_send_email_flow_notion_update_status_success",
+            "test_send_email_flow_notion_update_failure_does_not_block_email",
+            "test_send_email_flow_contact_last_email_sent_updated"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_email_scheduling.py",
+          "feature_id": "2.5",
+          "status": "not_started",
+          "modified_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_subflow_schedule_date_format",
+            "test_scheduling_starts_from_email_2_not_email_1",
+            "test_email_2_delay_from_email_1_sent_at",
+            "test_production_delays_from_email_1_sent_at",
+            "test_testing_mode_delays_from_email_1_sent_at",
+            "test_missing_email_1_sent_at_defaults_to_webhook_time"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_notion_templates.py",
+          "feature_id": "2.6",
+          "status": "not_started",
+          "added_at": "2025-11-29T11:00:00Z",
+          "cases": [
+            "test_fetch_template_from_notion_success",
+            "test_fetch_template_notion_api_failure_fallback",
+            "test_template_variable_substitution_first_name",
+            "test_template_variable_substitution_business_name",
+            "test_template_variable_substitution_segment",
+            "test_5day_nurture_sequence_templates",
+            "test_noshow_recovery_sequence_templates",
+            "test_postcall_maybe_sequence_templates",
+            "test_onboarding_sequence_templates",
+            "test_empty_template_handling",
+            "test_template_id_lookup_by_sequence_type"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_webhook_payload_validator.py",
+          "feature_id": "2.7",
+          "status": "not_started",
+          "added_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_valid_payload_with_email_1_sent_at_iso8601",
+            "test_valid_payload_with_email_1_status_sent",
+            "test_missing_email_1_sent_at_defaults_with_warning",
+            "test_invalid_timestamp_format_rejected",
+            "test_payload_schema_validation_red_orange_systems",
+            "test_email_1_sent_at_used_for_email_2_schedule"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_notion_sequence_tracker.py",
+          "feature_id": "2.8",
+          "status": "not_started",
+          "added_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_sequence_tracker_update_payload_structure",
+            "test_sequence_tracker_email_number_field_correct",
+            "test_sequence_tracker_sent_at_iso8601_format",
+            "test_sequence_tracker_status_sent_on_success",
+            "test_sequence_tracker_status_failed_on_error",
+            "test_sequence_tracker_resend_id_captured",
+            "test_sequence_tracker_sent_by_kestra",
+            "test_sequence_tracker_sent_by_website_for_email_1",
+            "test_sequence_tracker_sequence_type_5day",
+            "test_sequence_tracker_sequence_type_noshow",
+            "test_sequence_tracker_sequence_type_postcall",
+            "test_sequence_tracker_sequence_type_onboarding",
+            "test_sequence_tracker_api_failure_returns_success",
+            "test_sequence_tracker_api_failure_logs_error",
+            "test_sequence_tracker_idempotent_on_duplicate_update",
+            "test_sequence_tracker_contact_last_email_sent_updated"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wave 3: Handler Flows Migration",
+      "tests": [
+        {
+          "file": "tests/kestra/test_signup_handler_flow.py",
+          "feature_id": "3.1",
+          "status": "not_started",
+          "modified_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_signup_handler_flow_valid_yaml",
+            "test_signup_handler_webhook_trigger_parses_payload",
+            "test_signup_handler_contact_created_updated_notion",
+            "test_signup_handler_no_emails_sent_or_scheduled",
+            "test_signup_handler_signup_event_logged",
+            "test_signup_handler_idempotency_duplicates_handled"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_noshow_handler_flow.py",
+          "feature_id": "3.2",
+          "status": "not_started",
+          "modified_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_noshow_handler_flow_valid_yaml",
+            "test_noshow_handler_webhook_trigger",
+            "test_noshow_handler_3_email_sequence_all_from_kestra",
+            "test_noshow_handler_email_1_notion_tracker_updated",
+            "test_noshow_handler_email_2_notion_tracker_updated",
+            "test_noshow_handler_email_3_notion_tracker_updated",
+            "test_noshow_handler_notion_update_failure_does_not_block_email"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_postcall_handler_flow.py",
+          "feature_id": "3.3",
+          "status": "not_started",
+          "modified_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_postcall_handler_flow_valid_yaml",
+            "test_postcall_handler_webhook_trigger",
+            "test_postcall_handler_3_email_sequence_all_from_kestra",
+            "test_postcall_handler_email_1_notion_tracker_updated",
+            "test_postcall_handler_email_2_notion_tracker_updated",
+            "test_postcall_handler_email_3_notion_tracker_updated",
+            "test_postcall_handler_notion_update_failure_does_not_block_email"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_onboarding_handler_flow.py",
+          "feature_id": "3.4",
+          "status": "not_started",
+          "modified_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_onboarding_handler_flow_valid_yaml",
+            "test_onboarding_handler_webhook_trigger",
+            "test_onboarding_handler_payment_validation",
+            "test_onboarding_handler_3_email_sequence_all_from_kestra",
+            "test_onboarding_handler_email_1_notion_tracker_updated",
+            "test_onboarding_handler_email_2_notion_tracker_updated",
+            "test_onboarding_handler_email_3_notion_tracker_updated",
+            "test_onboarding_handler_notion_update_failure_does_not_block_email"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_assessment_handler_flow.py",
+          "feature_id": "3.5",
+          "status": "not_started",
+          "added_at": "2025-11-29T12:00:00Z",
+          "modified_at": "2025-11-29T14:00:00Z",
+          "cases": [
+            "test_assessment_handler_flow_valid_yaml",
+            "test_assessment_handler_parses_email_1_sent_at",
+            "test_assessment_handler_segment_classification",
+            "test_assessment_handler_notion_email_1_sent_by_website",
+            "test_assessment_handler_only_schedules_emails_2_to_5",
+            "test_assessment_handler_email_2_at_24h_from_email_1_production",
+            "test_assessment_handler_email_2_at_1min_from_email_1_testing",
+            "test_assessment_handler_missing_timestamp_logs_warning",
+            "test_assessment_handler_idempotency",
+            "test_assessment_handler_email_2_notion_tracker_updated",
+            "test_assessment_handler_email_3_notion_tracker_updated",
+            "test_assessment_handler_email_4_notion_tracker_updated",
+            "test_assessment_handler_email_5_notion_tracker_updated",
+            "test_assessment_handler_notion_tracker_email_number_correct",
+            "test_assessment_handler_notion_tracker_sent_by_kestra",
+            "test_assessment_handler_contact_last_email_sent_updated",
+            "test_assessment_handler_notion_update_failure_does_not_block_email"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_analytics_task.py",
+          "feature_id": "3.6",
+          "status": "not_started",
+          "modified_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_analytics_task_valid_yaml",
+            "test_analytics_notion_create",
+            "test_analytics_logging_format",
+            "test_analytics_sent_by_field_website_vs_kestra"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Wave 4: Integration & E2E",
+      "tests": [
+        {
+          "file": "tests/kestra/test_webhook_proxy.py",
+          "feature_id": "4.1",
+          "status": "not_started",
+          "cases": [
+            "test_webhook_proxy_routes",
+            "test_webhook_proxy_body_passthrough",
+            "test_webhook_proxy_error_handling"
+          ]
+        },
+        {
+          "file": "tests/kestra/test_production_compose.py",
+          "feature_id": "4.3",
+          "status": "not_started",
+          "cases": [
+            "test_production_compose_valid_yaml",
+            "test_production_postgres_persistent",
+            "test_production_secrets_configured",
+            "test_production_network_security"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_assessment_e2e.py",
+          "feature_id": "4.4",
+          "status": "not_started",
+          "modified_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_e2e_mock_website_sends_email_1",
+            "test_e2e_assessment_webhook_with_email_1_sent_at",
+            "test_e2e_notion_sequence_email_1_sent_by_website",
+            "test_e2e_only_4_emails_scheduled_by_kestra",
+            "test_e2e_email_2_timing_relative_to_email_1_sent_at",
+            "test_e2e_resend_delivery_email_2"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_all_handlers_e2e.py",
+          "feature_id": "4.5",
+          "status": "not_started",
+          "cases": [
+            "test_e2e_noshow_recovery_full_flow",
+            "test_e2e_postcall_maybe_full_flow",
+            "test_e2e_onboarding_full_flow"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_puppeteer_assessment_funnel.py",
+          "feature_id": "4.7",
+          "status": "not_started",
+          "modified_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_puppeteer_navigate_to_funnel_page",
+            "test_puppeteer_fill_assessment_form",
+            "test_puppeteer_submit_website_sends_email_1",
+            "test_puppeteer_webhook_includes_email_1_sent_at",
+            "test_puppeteer_kestra_flow_triggered",
+            "test_puppeteer_notion_email_1_sent_by_website",
+            "test_puppeteer_only_4_emails_scheduled_by_kestra",
+            "test_puppeteer_testing_mode_email_2_at_1min",
+            "test_puppeteer_production_mode_email_2_at_24h",
+            "test_puppeteer_email_2_delivered_to_resend"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_puppeteer_signup_funnel.py",
+          "feature_id": "4.8",
+          "status": "not_started",
+          "added_at": "2025-11-29T12:00:00Z",
+          "cases": [
+            "test_puppeteer_navigate_to_signup_page",
+            "test_puppeteer_fill_signup_form",
+            "test_puppeteer_submit_captures_webhook",
+            "test_puppeteer_kestra_flow_triggered",
+            "test_puppeteer_no_emails_scheduled_by_kestra",
+            "test_puppeteer_contact_created_in_notion",
+            "test_puppeteer_website_sends_signup_confirmation",
+            "test_puppeteer_signup_idempotency"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_puppeteer_secondary_funnels.py",
+          "feature_id": "4.9",
+          "status": "not_started",
+          "added_at": "2025-11-29T11:00:00Z",
+          "cases": [
+            "test_puppeteer_noshow_funnel_webhook_trigger",
+            "test_puppeteer_noshow_3_email_recovery_all_kestra",
+            "test_puppeteer_postcall_funnel_webhook_trigger",
+            "test_puppeteer_postcall_3_email_followup_all_kestra",
+            "test_puppeteer_onboarding_funnel_webhook_trigger",
+            "test_puppeteer_onboarding_3_email_welcome_all_kestra",
+            "test_puppeteer_notion_tracker_updates_all_funnels",
+            "test_puppeteer_idempotency_duplicate_submissions"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_puppeteer_complete_funnel.py",
+          "feature_id": "4.10",
+          "status": "not_started",
+          "added_at": "2025-11-30T20:00:00Z",
+          "test_email": "lengobaosang@gmail.com",
+          "puppeteer_mcp": true,
+          "cases": [
+            "test_complete_funnel_navigate_to_frontend",
+            "test_complete_funnel_signup_form_submission",
+            "test_complete_funnel_signup_triggers_kestra_flow",
+            "test_complete_funnel_contact_created_in_notion",
+            "test_complete_funnel_assessment_form_completion",
+            "test_complete_funnel_website_sends_email_1",
+            "test_complete_funnel_webhook_includes_email_1_sent_at",
+            "test_complete_funnel_kestra_assessment_handler_triggered",
+            "test_complete_funnel_segment_classification_correct",
+            "test_complete_funnel_notion_email_1_sent_by_website",
+            "test_complete_funnel_only_emails_2_to_5_scheduled",
+            "test_complete_funnel_email_2_scheduled_correct_delay",
+            "test_complete_funnel_notion_tracker_updated_for_scheduled",
+            "test_complete_funnel_email_2_delivery_testing_mode",
+            "test_complete_funnel_resend_api_delivery_verified",
+            "test_complete_funnel_notion_tracker_email_2_sent_by_kestra",
+            "test_complete_funnel_contact_last_email_sent_updated",
+            "test_complete_funnel_idempotency_duplicate_submissions",
+            "test_complete_funnel_error_handling_invalid_email",
+            "test_complete_funnel_screenshots_captured"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_webhook_kestra_integration.py",
+          "feature_id": "4.11",
+          "status": "not_started",
+          "added_at": "2025-11-30T20:00:00Z",
+          "test_email": "lengobaosang@gmail.com",
+          "cases": [
+            "test_webhook_signup_triggers_kestra_flow",
+            "test_webhook_signup_creates_notion_contact_no_emails",
+            "test_webhook_assessment_with_email_1_sent_at",
+            "test_webhook_assessment_schedules_emails_2_to_5_only",
+            "test_webhook_kestra_api_scheduled_subflows",
+            "test_webhook_notion_sequence_tracker_records",
+            "test_webhook_email_1_sent_by_website_in_notion",
+            "test_webhook_emails_2_to_5_pending_initially",
+            "test_webhook_email_2_execution_testing_mode",
+            "test_webhook_email_2_status_sent_with_resend_id",
+            "test_webhook_sent_by_kestra_for_kestra_emails",
+            "test_webhook_all_endpoints_signup",
+            "test_webhook_all_endpoints_assessment",
+            "test_webhook_all_endpoints_noshow",
+            "test_webhook_all_endpoints_postcall",
+            "test_webhook_all_endpoints_onboarding",
+            "test_webhook_contact_last_email_sent_updated",
+            "test_webhook_error_response_invalid_payload",
+            "test_webhook_authentication_authorization"
+          ]
+        },
+        {
+          "file": "tests/kestra/e2e/test_notion_sequence_tracker_e2e.py",
+          "feature_id": "4.12",
+          "status": "not_started",
+          "added_at": "2025-11-30T20:00:00Z",
+          "test_email": "lengobaosang@gmail.com",
+          "cases": [
+            "test_notion_tracker_query_test_email_contact",
+            "test_notion_tracker_sequence_created_after_assessment",
+            "test_notion_tracker_email_1_sent_by_website_status_sent",
+            "test_notion_tracker_emails_2_to_5_sent_by_kestra_scheduled",
+            "test_notion_tracker_email_2_delivery_status_updated",
+            "test_notion_tracker_resend_id_captured",
+            "test_notion_tracker_sent_at_timestamp_correct",
+            "test_notion_tracker_email_number_field_1_to_5",
+            "test_notion_tracker_sequence_type_5day",
+            "test_notion_tracker_noshow_sequence_tracking",
+            "test_notion_tracker_postcall_sequence_tracking",
+            "test_notion_tracker_onboarding_sequence_tracking",
+            "test_notion_tracker_contact_last_email_sent",
+            "test_notion_tracker_api_rate_limiting",
+            "test_notion_tracker_idempotency_duplicate_updates"
+          ]
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "history": []
+}
