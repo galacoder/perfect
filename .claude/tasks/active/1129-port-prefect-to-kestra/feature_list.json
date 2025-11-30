@@ -4,9 +4,9 @@
   "status": "executing",
   "current_phase": "CODE",
   "current_wave": 4,
-  "current_feature_id": "4.4",
+  "current_feature_id": "4.11",
   "created_at": "2025-11-29T10:00:00Z",
-  "updated_at": "2025-11-30T21:41:23.144056+00:00",
+  "updated_at": "2025-11-30T21:59:21.709680+00:00",
   "meta": {
     "title": "Port Prefect Christmas Automation to Kestra",
     "description": "Migrate all Christmas campaign flows from Prefect v3.4.1 to Kestra self-hosted automation tool. Includes 5 Prefect flows, 3 task modules, FastAPI webhook server, Notion/Resend integrations, Notion template fetching, per-email Notion Sequence Tracker updates, and comprehensive Puppeteer E2E testing.",
@@ -734,7 +734,7 @@
       "id": "4.11",
       "wave": 4,
       "name": "E2E Test: Webhook-to-Kestra Flow Integration Verification",
-      "status": "pending",
+      "status": "in_progress",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/e2e/test_webhook_kestra_integration.py",
@@ -768,7 +768,30 @@
         "/webhook/postcall-maybe",
         "/webhook/onboarding-start"
       ],
-      "test_email": "lengobaosang@gmail.com"
+      "test_email": "lengobaosang@gmail.com",
+      "started_at": "2025-11-30T21:59:21.709678+00:00"
+    },
+    {
+      "id": "4.13",
+      "wave": 4,
+      "name": "Find Traefik domain and update Kestra webhook configuration",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Identify Traefik domain for Kestra deployment and update webhook URLs in WEBHOOK_ENDPOINTS.md and frontend integration documentation. This enables external access to Kestra webhooks through Traefik reverse proxy.",
+      "added_at": "2025-11-30T21:59:21.709556+00:00",
+      "dependencies": [
+        "4.3"
+      ],
+      "action_items": [
+        "SSH to homelab server (galacoder@192.168.2.9)",
+        "Check Traefik routing configuration for Kestra",
+        "Identify domain (e.g., kestra.yourdomain.com)",
+        "Update WEBHOOK_ENDPOINTS.md with production URLs",
+        "Update WEBSITE_INTEGRATION_KESTRA.md with Traefik domain",
+        "Test external webhook accessibility",
+        "Document SSL/TLS certificate configuration if applicable"
+      ]
     },
     {
       "id": "4.12",
@@ -811,7 +834,7 @@
     }
   ],
   "progress": {
-    "total_features": 30,
+    "total_features": 31,
     "completed_features": 24,
     "total_waves": 4,
     "completed_waves": 3,
@@ -1249,6 +1272,22 @@
           "Coordinate with frontend team to add webhook call after assessment submission"
         ]
       }
+    },
+    {
+      "timestamp": "2025-11-30T21:59:21.709681+00:00",
+      "action": "Added Feature 4.13: Traefik domain configuration task",
+      "details": {
+        "reason": "User requested adding future task to find Traefik domain for webhook configuration",
+        "feature_id": "4.13",
+        "priority": "medium",
+        "can_be_done_later": true
+      }
+    },
+    {
+      "timestamp": "2025-11-30T21:59:21.709682+00:00",
+      "action": "Starting Feature 4.11: Webhook-to-Kestra integration testing",
+      "feature_id": "4.11",
+      "approach": "API-based testing (no browser) to avoid Puppeteer form interaction issues"
     }
   ]
 }
