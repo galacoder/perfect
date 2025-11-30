@@ -54,7 +54,7 @@ class TestNotionTaskTemplates:
 
         uri = task.get('uri')
         assert uri is not None
-        assert 'notion.so/v1/databases' in uri
+        assert 'api.notion.com/v1/databases' in uri
         assert 'query' in uri
 
     def test_notion_create_sequence_task_exists(self):
