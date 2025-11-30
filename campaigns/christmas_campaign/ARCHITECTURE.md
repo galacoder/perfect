@@ -1,21 +1,22 @@
 # Christmas Campaign 2025 - Technical Architecture
 
 **Campaign**: Christmas 2025
-**Last Updated**: 2025-11-28
-**Status**: Production (Active)
-**Tech Stack**: Prefect v3.4.1, Notion API, Resend API, FastAPI
+**Last Updated**: 2025-11-30
+**Status**: Production (Active) - Migrated to Kestra
+**Tech Stack**: Kestra (self-hosted), Notion API, Resend API, Next.js Website
 
 ---
 
 ## Table of Contents
 
 1. [System Overview](#system-overview)
-2. [Email Funnel Flow](#email-funnel-flow)
-3. [5 Email Sequence Types](#5-email-sequence-types)
-4. [Complete Template Reference](#complete-template-reference)
-5. [Webhook Integration](#webhook-integration)
-6. [Data Flow Architecture](#data-flow-architecture)
-7. [Deployment Registry](#deployment-registry)
+2. [Email Responsibility Matrix](#email-responsibility-matrix)
+3. [Email Funnel Flow](#email-funnel-flow)
+4. [5 Email Sequence Types](#5-email-sequence-types)
+5. [Complete Template Reference](#complete-template-reference)
+6. [Webhook Integration](#webhook-integration)
+7. [Data Flow Architecture](#data-flow-architecture)
+8. [Deployment Registry](#deployment-registry)
 
 ---
 
@@ -33,11 +34,89 @@ The Christmas Campaign is a multi-sequence email automation system built on Pref
 
 ### Core Components
 
-1. **Prefect Flows**: Orchestrate email sequences with dynamic timing
-2. **Notion Database**: Store email templates (dynamic content)
+1. **Kestra Flows**: Orchestrate email sequences with YAML-based workflows
+2. **Notion Database**: Store email templates (dynamic content) and sequence tracker
 3. **Resend API**: Deliver emails with tracking
-4. **FastAPI Server**: Webhook endpoints for website integration
-5. **Secret Blocks**: Secure credential management
+4. **Website (Next.js)**: Sends signup and Email #1, triggers Kestra webhooks
+5. **Secret Management**: Docker Compose environment variables
+
+---
+
+## Email Responsibility Matrix
+
+**CRITICAL ARCHITECTURAL DECISION** (November 2025): Email sending responsibility is split between Website and Kestra to prevent duplicates and ensure proper sequencing.
+
+### Who Sends Which Email?
+
+| Sequence | Email # | Sent By | Timing | Payload Requirement |
+|----------|---------|---------|--------|---------------------|
+| **Signup** | - | **Website** | Immediate (on form submit) | N/A |
+| **5-Day Assessment** | #1 | **Website** | Immediate (after assessment) | ✅ Must provide `email_1_sent_at` |
+| **5-Day Assessment** | #2 | **Kestra** | `email_1_sent_at` + 24h | ✅ Requires `email_1_sent_at` |
+| **5-Day Assessment** | #3 | **Kestra** | `email_1_sent_at` + 72h (3d) | ✅ Requires `email_1_sent_at` |
+| **5-Day Assessment** | #4 | **Kestra** | `email_1_sent_at` + 96h (4d) | ✅ Requires `email_1_sent_at` |
+| **5-Day Assessment** | #5 | **Kestra** | `email_1_sent_at` + 120h (5d) | ✅ Requires `email_1_sent_at` |
+| **No-Show Recovery** | All 3 | **Kestra** | 5min, 24h, 48h | ❌ No `email_1_sent_at` needed |
+| **Post-Call Maybe** | All 3 | **Kestra** | 1h, 3d, 7d | ❌ No `email_1_sent_at` needed |
+| **Onboarding** | All 3 | **Kestra** | 1h, 1d, 3d | ❌ No `email_1_sent_at` needed |
+
+### Why This Split?
+
+**Problem**: Original Prefect architecture sent ALL emails from backend, including Email #1 after assessment.
+
+**Issues**:
+1. **Race condition**: Website shows "Assessment complete!" but email not sent yet
+2. **Delay**: Email #1 could be delayed if Prefect worker is busy
+3. **User confusion**: "Where's my email?" if backend is slow
+
+**Solution**: Website sends Email #1 synchronously, then tells Kestra to handle follow-ups.
+
+**Benefits**:
+- ✅ Email #1 arrives instantly (user sees it while reading results)
+- ✅ No race conditions
+- ✅ Clear handoff: Website owns first touch, Kestra owns nurture
+- ✅ Prevents duplicate Email #1 sends
+
+### Critical Requirement: email_1_sent_at
+
+**For 5-Day Assessment Sequence**, website MUST:
+
+1. **Send Email #1** using own email service (Resend API from Next.js)
+2. **Record timestamp** when Email #1 was sent
+3. **Include `email_1_sent_at`** in webhook payload to Kestra (ISO 8601 format)
+4. **Include `email_1_status`** = "sent" to confirm delivery
+
+**Example Webhook Payload**:
+```json
+{
+  "email": "customer@example.com",
+  "first_name": "Sarah",
+  "business_name": "Sarah's Salon",
+  "red_systems": 2,
+  "orange_systems": 1,
+  "weakest_system_1": "GPS",
+  "revenue_leak_total": 14700,
+  "email_1_sent_at": "2025-12-01T10:30:00Z",    // CRITICAL!
+  "email_1_status": "sent"                        // CRITICAL!
+}
+```
+
+### What Kestra Does With email_1_sent_at
+
+1. **Validates** timestamp format (ISO 8601)
+2. **Records** Email #1 in Notion Sequence Tracker as `sent_by='website'`
+3. **Calculates delays** for Emails #2-5 relative to this timestamp:
+   - Email #2: `email_1_sent_at + 24 hours`
+   - Email #3: `email_1_sent_at + 72 hours`
+   - Email #4: `email_1_sent_at + 96 hours`
+   - Email #5: `email_1_sent_at + 120 hours`
+
+### Fallback Behavior
+
+If `email_1_sent_at` is **missing**:
+- Kestra logs **WARNING**
+- Uses **webhook trigger time** as fallback
+- Continues execution (doesn't fail)
 
 ---
 
