@@ -1,0 +1,664 @@
+{
+  "task_id": "1129-port-prefect-to-kestra",
+  "domain": "coding",
+  "status": "executing",
+  "current_phase": "CODE",
+  "current_wave": 1,
+  "current_feature_id": "1.4",
+  "created_at": "2025-11-29T10:00:00Z",
+  "updated_at": "2025-11-29T12:00:00Z",
+  "meta": {
+    "title": "Port Prefect Christmas Automation to Kestra",
+    "description": "Migrate all Christmas campaign flows from Prefect v3.4.1 to Kestra self-hosted automation tool. Includes 5 Prefect flows, 3 task modules, FastAPI webhook server, Notion/Resend integrations, Notion template fetching, per-email Notion Sequence Tracker updates, and comprehensive Puppeteer E2E testing.",
+    "estimated_hours": 36,
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    },
+    "architectural_decisions": {
+      "email_responsibility_split": {
+        "decided_at": "2025-11-29T12:00:00Z",
+        "summary": "Website sends signup email + Email #1 of 5-day sequence. Kestra handles Emails #2-5 and ALL emails for secondary sequences.",
+        "website_sends": ["signup confirmation", "5-day sequence Email #1"],
+        "kestra_sends": ["5-day sequence Emails #2-5", "noshow-recovery (all 3)", "postcall-maybe (all 3)", "onboarding (all 3)"]
+      }
+    }
+  },
+  "waves": [
+    {
+      "id": 1,
+      "name": "Foundation",
+      "objective": "Set up Kestra Docker Compose infrastructure, secrets management, and basic health checks",
+      "status": "complete",
+      "estimated_hours": 4,
+      "started_at": "2025-11-29T15:00:00Z",
+      "completed_at": "2025-11-29T16:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Core Flow Migration",
+      "objective": "Port send_email_flow, routing logic, and Email #1 skip logic to Kestra YAML",
+      "status": "pending",
+      "estimated_hours": 10
+    },
+    {
+      "id": 3,
+      "name": "Handler Flows Migration",
+      "objective": "Port all 4 handler flows (signup=tracking only, assessment=Emails #2-5, noshow, postcall, onboarding) to Kestra",
+      "status": "pending",
+      "estimated_hours": 10
+    },
+    {
+      "id": 4,
+      "name": "Website Integration & Deployment",
+      "objective": "Update webhook URLs, production deployment, E2E testing with website/Kestra email split",
+      "status": "pending",
+      "estimated_hours": 10
+    }
+  ],
+  "features": [
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Create Docker Compose for Kestra + PostgreSQL",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_docker_compose.py",
+      "description": "Set up docker-compose.yml with Kestra, PostgreSQL, and proper networking for local development",
+      "started_at": "2025-11-29T15:00:00Z",
+      "completed_at": "2025-11-29T15:15:00Z",
+      "tests_passing": true,
+      "commit_hash": "d212b1230dded7c807985563198f5cf58c512ed4"
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Configure Kestra secrets from Prefect Secret blocks",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_secrets.py",
+      "description": "Create .env file with base64-encoded secrets (NOTION_TOKEN, RESEND_API_KEY, DB IDs) and map to Kestra SECRET_ prefix",
+      "started_at": "2025-11-29T15:15:00Z",
+      "completed_at": "2025-11-29T15:30:00Z",
+      "tests_passing": true,
+      "commit_hash": "e38951dfdd4e7b807ef47c40a240cd9f621a46ce"
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Create Kestra health check flow",
+      "status": "complete",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_health_flow.py",
+      "description": "Create a simple flow to verify Kestra is running and can access secrets",
+      "started_at": "2025-11-29T15:30:00Z",
+      "completed_at": "2025-11-29T15:45:00Z",
+      "tests_passing": true,
+      "commit_hash": "36a921895cd34b502ac76ffcacfb0cd9b90b5798"
+    },
+    {
+      "id": "1.4",
+      "wave": 1,
+      "name": "Set up Kestra flow directory structure",
+      "status": "complete",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Create kestra/flows/christmas/ directory with proper namespace organization",
+      "started_at": "2025-11-29T15:45:00Z",
+      "completed_at": "2025-11-29T16:00:00Z",
+      "commit_hash": "471ed9176e883dcdd51d964477b0bcebd11f0846"
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Port routing.py logic to Kestra-compatible format",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_routing.py",
+      "description": "Convert classify_segment, get_email_template_id functions to Python script tasks or inline logic"
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Create Notion HTTP tasks (search, create, update, sequence tracker)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_notion_tasks.py",
+      "description": "Create reusable HTTP tasks for Notion API: search_contact, create_sequence, update_sequence, fetch_template, update_sequence_tracker_per_email. CRITICAL: update_sequence_tracker_per_email must be called AFTER each email send to record delivery status.",
+      "modified_at": "2025-11-29T14:00:00Z",
+      "modification_reason": "Added update_sequence_tracker_per_email function for per-email Notion updates",
+      "test_requirements": [
+        "test_notion_search_contact_task_valid",
+        "test_notion_create_sequence_task_valid",
+        "test_notion_update_sequence_task_valid",
+        "test_notion_fetch_template_task_valid",
+        "test_notion_api_auth_header",
+        "test_notion_update_sequence_tracker_per_email_payload",
+        "test_notion_update_sequence_tracker_email_number_field",
+        "test_notion_update_sequence_tracker_sent_timestamp",
+        "test_notion_update_sequence_tracker_sent_by_kestra",
+        "test_notion_update_sequence_tracker_resend_id"
+      ]
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Create Resend HTTP tasks (send email)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_resend_tasks.py",
+      "description": "Create HTTP task for Resend API email sending with template variable substitution"
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Port send_email_flow to Kestra YAML with Notion tracking",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_send_email_flow.py",
+      "description": "Create christmas-send-email.yml with idempotency check, template fetch, variable substitution, send, AND Notion sequence tracker update. CRITICAL: After EVERY successful email send, update Notion Sequence Tracker with email_number, sent_at, status, resend_id, sent_by='kestra'. Also update Contact database with last_email_sent timestamp.",
+      "modified_at": "2025-11-29T14:00:00Z",
+      "modification_reason": "Added mandatory Notion Sequence Tracker update after each email send",
+      "test_requirements": [
+        "test_send_email_flow_valid_yaml",
+        "test_send_email_flow_idempotency_check",
+        "test_send_email_flow_template_fetch",
+        "test_send_email_flow_variable_substitution",
+        "test_send_email_flow_resend_api_call",
+        "test_send_email_flow_notion_sequence_tracker_update_called",
+        "test_send_email_flow_notion_update_email_number_correct",
+        "test_send_email_flow_notion_update_sent_timestamp",
+        "test_send_email_flow_notion_update_sent_by_kestra",
+        "test_send_email_flow_notion_update_resend_id_captured",
+        "test_send_email_flow_notion_update_status_success",
+        "test_send_email_flow_notion_update_failure_does_not_block_email",
+        "test_send_email_flow_contact_last_email_sent_updated"
+      ]
+    },
+    {
+      "id": "2.5",
+      "wave": 2,
+      "name": "Create email scheduling subflow mechanism (Emails #2-5 only)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_email_scheduling.py",
+      "description": "Implement delayed email execution using Subflow with scheduleDate property. CRITICAL: For 5-day sequence, schedule only Emails #2-5 (Email #1 sent by website). Calculate delays relative to email_1_sent_at timestamp from webhook payload.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Updated to skip Email #1 (website responsibility) and use email_1_sent_at for timing",
+      "test_requirements": [
+        "Test scheduling starts from Email #2 (not Email #1)",
+        "Test Email #2 delay calculated from email_1_sent_at timestamp",
+        "Test production delays: Email #2 at +24h, #3 at +72h, #4 at +96h, #5 at +120h from email_1_sent_at",
+        "Test testing mode delays: #2 at +1min, #3 at +2min, #4 at +3min, #5 at +4min",
+        "Test missing email_1_sent_at defaults to webhook trigger time"
+      ]
+    },
+    {
+      "id": "2.6",
+      "wave": 2,
+      "name": "Implement Notion template fetching with fallback",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_notion_templates.py",
+      "description": "Fetch email templates dynamically from Notion Templates database. Support all sequences (5-day nurture, no-show recovery, post-call maybe, onboarding). Implement fallback to static templates if Notion fetch fails. Handle personalization variable substitution (first_name, business_name, etc.).",
+      "dependencies": ["2.2"],
+      "added_at": "2025-11-29T11:00:00Z",
+      "test_requirements": [
+        "Mock Notion template API responses",
+        "Test template rendering with personalization variables",
+        "Test fallback to static templates on API failure",
+        "Test all 4 sequence types (5-day, noshow, postcall, onboarding)",
+        "Test template variable substitution (first_name, business_name, segment)",
+        "Test empty template handling"
+      ]
+    },
+    {
+      "id": "2.7",
+      "wave": 2,
+      "name": "Create webhook payload validator with email_1_sent_at support",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_webhook_payload_validator.py",
+      "description": "Validate incoming webhook payloads for assessment handler. CRITICAL: Accept email_1_sent_at timestamp and email_1_status fields from website. Validate timestamp format (ISO 8601). Fall back to webhook trigger time if email_1_sent_at missing.",
+      "added_at": "2025-11-29T12:00:00Z",
+      "test_requirements": [
+        "Test valid payload with email_1_sent_at ISO 8601 timestamp",
+        "Test valid payload with email_1_status='sent'",
+        "Test missing email_1_sent_at defaults to current time with warning log",
+        "Test invalid timestamp format rejected with error",
+        "Test payload schema validation for assessment data (red_systems, orange_systems)",
+        "Test email_1_sent_at used to calculate Email #2 schedule time"
+      ]
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Port signup_handler_flow to Kestra YAML (TRACKING ONLY - NO EMAIL)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_signup_handler_flow.py",
+      "description": "Create christmas-signup-handler.yml with webhook trigger. CRITICAL CHANGE: This handler does NOT send any emails. Website handles signup confirmation email. Kestra only: (1) Parse webhook body, (2) Search/create contact in Notion, (3) Log signup event. NO email scheduling.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Removed email sending - website handles signup email directly",
+      "test_requirements": [
+        "Test webhook trigger parses payload correctly",
+        "Test contact created/updated in Notion",
+        "Test NO emails are sent or scheduled by this handler",
+        "Test signup event logged for analytics",
+        "Test idempotency (duplicate signups handled)"
+      ]
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Port noshow_recovery_handler_flow to Kestra YAML with Notion tracking",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_noshow_handler_flow.py",
+      "description": "Create noshow-recovery-handler.yml with webhook trigger and 3-email recovery sequence. Kestra handles ALL 3 emails for this sequence. CRITICAL: Each email MUST update Notion Sequence Tracker after successful send with email_number, sent_at, status, resend_id, sent_by='kestra'.",
+      "modified_at": "2025-11-29T14:00:00Z",
+      "modification_reason": "Added per-email Notion Sequence Tracker update requirement",
+      "test_requirements": [
+        "test_noshow_handler_flow_valid_yaml",
+        "test_noshow_handler_webhook_trigger",
+        "test_noshow_handler_3_email_sequence_all_from_kestra",
+        "test_noshow_handler_email_1_notion_tracker_updated",
+        "test_noshow_handler_email_2_notion_tracker_updated",
+        "test_noshow_handler_email_3_notion_tracker_updated",
+        "test_noshow_handler_notion_update_failure_does_not_block_email"
+      ]
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Port postcall_maybe_handler_flow to Kestra YAML with Notion tracking",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_postcall_handler_flow.py",
+      "description": "Create postcall-maybe-handler.yml with webhook trigger and 3-email follow-up sequence. Kestra handles ALL 3 emails for this sequence. CRITICAL: Each email MUST update Notion Sequence Tracker after successful send with email_number, sent_at, status, resend_id, sent_by='kestra'.",
+      "modified_at": "2025-11-29T14:00:00Z",
+      "modification_reason": "Added per-email Notion Sequence Tracker update requirement",
+      "test_requirements": [
+        "test_postcall_handler_flow_valid_yaml",
+        "test_postcall_handler_webhook_trigger",
+        "test_postcall_handler_3_email_sequence_all_from_kestra",
+        "test_postcall_handler_email_1_notion_tracker_updated",
+        "test_postcall_handler_email_2_notion_tracker_updated",
+        "test_postcall_handler_email_3_notion_tracker_updated",
+        "test_postcall_handler_notion_update_failure_does_not_block_email"
+      ]
+    },
+    {
+      "id": "3.4",
+      "wave": 3,
+      "name": "Port onboarding_handler_flow to Kestra YAML with Notion tracking",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_onboarding_handler_flow.py",
+      "description": "Create onboarding-handler.yml with webhook trigger and 3-email welcome sequence. Kestra handles ALL 3 emails for this sequence. CRITICAL: Each email MUST update Notion Sequence Tracker after successful send with email_number, sent_at, status, resend_id, sent_by='kestra'.",
+      "modified_at": "2025-11-29T14:00:00Z",
+      "modification_reason": "Added per-email Notion Sequence Tracker update requirement",
+      "test_requirements": [
+        "test_onboarding_handler_flow_valid_yaml",
+        "test_onboarding_handler_webhook_trigger",
+        "test_onboarding_handler_payment_validation",
+        "test_onboarding_handler_3_email_sequence_all_from_kestra",
+        "test_onboarding_handler_email_1_notion_tracker_updated",
+        "test_onboarding_handler_email_2_notion_tracker_updated",
+        "test_onboarding_handler_email_3_notion_tracker_updated",
+        "test_onboarding_handler_notion_update_failure_does_not_block_email"
+      ]
+    },
+    {
+      "id": "3.5",
+      "wave": 3,
+      "name": "Create assessment_handler_flow for 5-day sequence (Emails #2-5 only) with per-email Notion tracking",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_assessment_handler_flow.py",
+      "description": "Create christmas-assessment-handler.yml for 5-day nurture sequence. CRITICAL: Website sends Email #1 immediately after assessment. This handler receives assessment data WITH email_1_sent_at timestamp and schedules Emails #2-5 only. Steps: (1) Parse webhook with email_1_sent_at, (2) Validate Email #1 was sent, (3) Classify segment, (4) Update Notion sequence tracker (mark Email #1 as 'sent_by_website'), (5) Schedule Emails #2-5 with delays relative to email_1_sent_at. CRITICAL: Each of Emails #2-5 MUST update Notion Sequence Tracker after successful send with email_number, sent_at, status, resend_id, sent_by='kestra'.",
+      "added_at": "2025-11-29T12:00:00Z",
+      "modified_at": "2025-11-29T14:00:00Z",
+      "modification_reason": "Added per-email Notion Sequence Tracker update requirement for Emails #2-5",
+      "test_requirements": [
+        "Test webhook parses email_1_sent_at timestamp correctly",
+        "Test segment classification (CRITICAL/URGENT/OPTIMIZE)",
+        "Test Notion sequence tracker shows Email #1 as 'sent_by_website'",
+        "Test only Emails #2-5 are scheduled (NOT Email #1)",
+        "Test Email #2 scheduled at email_1_sent_at + 24h (production)",
+        "Test Email #2 scheduled at email_1_sent_at + 1min (testing mode)",
+        "Test missing email_1_sent_at logs warning and uses webhook time",
+        "Test idempotency (duplicate assessments handled)",
+        "Test Email #2 updates Notion Sequence Tracker after send",
+        "Test Email #3 updates Notion Sequence Tracker after send",
+        "Test Email #4 updates Notion Sequence Tracker after send",
+        "Test Email #5 updates Notion Sequence Tracker after send",
+        "Test Notion tracker shows correct email_number for each email",
+        "Test Notion tracker shows sent_by='kestra' for Emails #2-5",
+        "Test Contact database updated with last_email_sent after each email",
+        "Test Notion update failure does not block email sending"
+      ]
+    },
+    {
+      "id": "3.6",
+      "wave": 3,
+      "name": "Create email analytics logging task",
+      "status": "pending",
+      "priority": "low",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_analytics_task.py",
+      "description": "Create Notion HTTP task for logging email send events to Email Analytics database. Include sent_by field to distinguish website-sent vs Kestra-sent emails.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Added sent_by field to track website vs Kestra email sends"
+    },
+    {
+      "id": "2.8",
+      "wave": 2,
+      "name": "Create dedicated Notion Sequence Tracker update task",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_notion_sequence_tracker.py",
+      "description": "Create reusable Kestra task for updating Notion Sequence Tracker after EVERY email send. This task is called by send_email_flow and all handler flows. Payload includes: email_number (int), sent_at (ISO 8601 timestamp), status ('sent'/'failed'), resend_id (string from Resend API response), sent_by ('kestra' or 'website'), sequence_type ('5day'/'noshow'/'postcall'/'onboarding'). Task must handle Notion API failures gracefully - log error but return success to not block email flow.",
+      "added_at": "2025-11-29T14:00:00Z",
+      "dependencies": ["2.2"],
+      "test_requirements": [
+        "test_sequence_tracker_update_payload_structure",
+        "test_sequence_tracker_email_number_field_correct",
+        "test_sequence_tracker_sent_at_iso8601_format",
+        "test_sequence_tracker_status_sent_on_success",
+        "test_sequence_tracker_status_failed_on_error",
+        "test_sequence_tracker_resend_id_captured",
+        "test_sequence_tracker_sent_by_kestra",
+        "test_sequence_tracker_sent_by_website_for_email_1",
+        "test_sequence_tracker_sequence_type_5day",
+        "test_sequence_tracker_sequence_type_noshow",
+        "test_sequence_tracker_sequence_type_postcall",
+        "test_sequence_tracker_sequence_type_onboarding",
+        "test_sequence_tracker_api_failure_returns_success",
+        "test_sequence_tracker_api_failure_logs_error",
+        "test_sequence_tracker_idempotent_on_duplicate_update",
+        "test_sequence_tracker_contact_last_email_sent_updated"
+      ]
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Create FastAPI proxy for Kestra webhooks (optional)",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_webhook_proxy.py",
+      "description": "Update server.py to proxy requests to Kestra webhook endpoints OR document direct Kestra URLs"
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Update sangletech-tailwindcss webhook URLs",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Document webhook URL changes for frontend integration (Christmas funnel form submissions)"
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Create production docker-compose for homelab",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_production_compose.py",
+      "description": "Create docker-compose.prod.yml with production PostgreSQL, persistent storage, and proper secrets"
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "E2E test: Assessment to email delivery (Emails #2-5 only)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_assessment_e2e.py",
+      "description": "End-to-end test of complete assessment flow. CRITICAL: Mock website sending Email #1 first, then trigger Kestra webhook with email_1_sent_at. Verify only Emails #2-5 scheduled by Kestra.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Renamed from signup E2E to assessment E2E, added Email #1 mock",
+      "test_requirements": [
+        "Mock website sending Email #1",
+        "POST assessment webhook with email_1_sent_at timestamp",
+        "Verify Notion sequence shows Email #1 as 'sent_by_website'",
+        "Verify only 4 emails scheduled by Kestra (#2-5)",
+        "Verify Email #2 timing relative to email_1_sent_at",
+        "Verify Resend delivery for Email #2"
+      ]
+    },
+    {
+      "id": "4.5",
+      "wave": 4,
+      "name": "E2E test: All handler flows",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_all_handlers_e2e.py",
+      "description": "End-to-end tests for noshow, postcall, and onboarding handler flows"
+    },
+    {
+      "id": "4.6",
+      "wave": 4,
+      "name": "Documentation: Website/Kestra responsibility split + migration guide",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Create KESTRA_MIGRATION.md documenting the migration process, patterns, and maintenance. CRITICAL: Include clear documentation of email responsibility split between website and Kestra. Update ARCHITECTURE.md with responsibility matrix. Update WEBSITE_INTEGRATION.md with webhook payload requirements including email_1_sent_at.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Elevated priority, added responsibility split documentation requirement",
+      "documentation_requirements": [
+        "KESTRA_MIGRATION.md: Migration patterns, rollback plan",
+        "ARCHITECTURE.md: Email responsibility matrix (website vs Kestra)",
+        "WEBSITE_INTEGRATION.md: Webhook payload schema with email_1_sent_at",
+        "Sequence diagrams showing website->Kestra handoff",
+        "Clear list: which component sends which email"
+      ]
+    },
+    {
+      "id": "4.7",
+      "wave": 4,
+      "name": "Puppeteer E2E: Assessment sales funnel (website + Kestra split)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_assessment_funnel.py",
+      "description": "Automated browser testing for complete assessment funnel with website/Kestra email split. CRITICAL: Verify website sends Email #1, then Kestra sends Emails #2-5.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Updated to test website/Kestra email split, renamed from signup to assessment",
+      "test_requirements": [
+        "Navigate to funnel URL (localhost:3005 or sangletech.com)",
+        "Fill assessment form with test data (lengobaosang@gmail.com)",
+        "Submit form and verify website sends Email #1 immediately",
+        "Verify webhook to Kestra includes email_1_sent_at timestamp",
+        "Verify Kestra flow triggered via API",
+        "Verify Notion sequence shows Email #1 as 'sent_by_website'",
+        "Verify only 4 emails scheduled by Kestra (#2-5)",
+        "Test TESTING_MODE=true (Email #2 at +1min from Email #1)",
+        "Test TESTING_MODE=false (Email #2 at +24h from Email #1)",
+        "Verify Email #2 delivered to Resend"
+      ]
+    },
+    {
+      "id": "4.8",
+      "wave": 4,
+      "name": "Puppeteer E2E: Signup handler (tracking only, no emails)",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_signup_funnel.py",
+      "description": "Automated browser testing for signup handler. CRITICAL: Verify signup webhook does NOT trigger any emails from Kestra. Website handles signup email directly.",
+      "modified_at": "2025-11-29T12:00:00Z",
+      "modification_reason": "Separated from assessment testing, now tests tracking-only behavior",
+      "test_requirements": [
+        "Navigate to signup page",
+        "Fill signup form with test data (lengobaosang@gmail.com)",
+        "Submit form and capture webhook payload",
+        "Verify Kestra flow triggered",
+        "Verify NO emails scheduled by Kestra (zero)",
+        "Verify contact created/updated in Notion",
+        "Verify website sends signup confirmation (mock/verify)",
+        "Test idempotency (duplicate signups)"
+      ]
+    },
+    {
+      "id": "4.9",
+      "wave": 4,
+      "name": "Puppeteer E2E: All secondary funnels (noshow, postcall, onboarding)",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_secondary_funnels.py",
+      "description": "Automated browser testing for calendly-noshow, postcall-maybe, and onboarding-start webhook flows. Each funnel gets complete end-to-end validation. Kestra handles ALL emails for these sequences (no website involvement).",
+      "dependencies": ["4.7"],
+      "added_at": "2025-11-29T11:00:00Z",
+      "test_requirements": [
+        "Test calendly-noshow funnel (3-email recovery sequence - ALL from Kestra)",
+        "Test postcall-maybe funnel (3-email follow-up sequence - ALL from Kestra)",
+        "Test onboarding-start funnel (3-email welcome sequence - ALL from Kestra)",
+        "Verify each customer gets properly scheduled emails",
+        "Validate webhook payloads reach Kestra correctly",
+        "Check email scheduling timing matches expected delays",
+        "Verify Notion sequence tracker updates for all funnels",
+        "Test idempotency (duplicate submissions handled)"
+      ]
+    }
+  ],
+  "progress": {
+    "total_features": 27,
+    "completed_features": 4,
+    "total_waves": 4,
+    "completed_waves": 1,
+    "percentage": 14.81
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-29T10:00:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-29T10:15:00Z",
+      "action": "EXPLORE phase complete - analyzed 5 Prefect flows, 3 task modules, server.py"
+    },
+    {
+      "timestamp": "2025-11-29T10:30:00Z",
+      "action": "Kestra research complete - webhooks, secrets, subflows, Docker Compose documented"
+    },
+    {
+      "timestamp": "2025-11-29T10:45:00Z",
+      "action": "PLAN phase complete - 4 waves, 20 features, awaiting approval"
+    },
+    {
+      "timestamp": "2025-11-29T11:00:00Z",
+      "action": "Added 3 features via /add-tasks-coding",
+      "details": {
+        "features_added": ["2.6", "4.7", "4.8"],
+        "features_summary": [
+          "2.6: Notion template fetching with fallback (Wave 2)",
+          "4.7: Puppeteer E2E - Christmas signup sales funnel (Wave 4)",
+          "4.8: Puppeteer E2E - Secondary funnels (noshow, postcall, onboarding) (Wave 4)"
+        ],
+        "reason": "User requested Notion template fetching (not hardcoded) and comprehensive Puppeteer E2E testing",
+        "impact_hours": 6,
+        "test_suites_added": 3
+      }
+    },
+    {
+      "timestamp": "2025-11-29T12:00:00Z",
+      "action": "CRITICAL ARCHITECTURAL CHANGE via /add-tasks-coding: Website/Kestra email responsibility split",
+      "details": {
+        "architectural_decision": "Website sends signup email + Email #1 of 5-day sequence. Kestra handles Emails #2-5 and ALL secondary sequence emails.",
+        "features_modified": ["2.5", "3.1", "3.6", "4.4", "4.6", "4.7"],
+        "features_added": ["2.7", "3.5", "4.8", "4.9"],
+        "features_renumbered": {
+          "old_3.5": "now_3.6",
+          "old_4.7": "now_4.7_modified",
+          "old_4.8": "now_4.9"
+        },
+        "key_changes": [
+          "3.1: Signup handler now TRACKING ONLY (no email sending)",
+          "3.5 (NEW): Assessment handler schedules Emails #2-5 only",
+          "2.7 (NEW): Webhook payload validator with email_1_sent_at support",
+          "2.5: Email scheduling calculates delays from email_1_sent_at",
+          "4.7: Puppeteer E2E tests website/Kestra split",
+          "4.8 (NEW): Puppeteer E2E for signup (tracking only verification)",
+          "4.6: Documentation elevated to HIGH priority with responsibility matrix"
+        ],
+        "impact_hours": 4,
+        "reason": "User clarified that website handles signup email and Email #1 of 5-day sequence to prevent duplicate emails and ensure proper sequencing"
+      }
+    },
+    {
+      "timestamp": "2025-11-29T14:00:00Z",
+      "action": "CRITICAL REQUIREMENT via /add-tasks-coding: Notion Database Updates Per Email",
+      "details": {
+        "requirement": "For EVERY email sent by Kestra, system MUST update Notion Sequence Tracker database with delivery status",
+        "features_modified": ["2.2", "2.4", "3.2", "3.3", "3.4", "3.5"],
+        "features_added": ["2.8"],
+        "key_changes": [
+          "2.2: Added update_sequence_tracker_per_email function to Notion HTTP tasks",
+          "2.4: send_email_flow now includes Notion Sequence Tracker update after each send",
+          "2.8 (NEW): Dedicated Notion Sequence Tracker update task with comprehensive error handling",
+          "3.2: noshow_recovery_handler updated with per-email Notion tracking (3 emails)",
+          "3.3: postcall_maybe_handler updated with per-email Notion tracking (3 emails)",
+          "3.4: onboarding_handler updated with per-email Notion tracking (3 emails)",
+          "3.5: assessment_handler updated with per-email Notion tracking (Emails #2-5)"
+        ],
+        "notion_update_payload": {
+          "email_number": "int (2, 3, 4, 5 for 5-day; 1, 2, 3 for secondary sequences)",
+          "sent_at": "ISO 8601 timestamp",
+          "status": "sent or failed",
+          "resend_id": "string from Resend API response",
+          "sent_by": "kestra (or website for Email #1 of 5-day)"
+        },
+        "error_handling": "Notion update failures logged but do NOT block email sending - email delivery takes priority",
+        "databases_updated": [
+          "Notion Sequence Tracker - email delivery status per email",
+          "Notion Contact Database - last_email_sent timestamp"
+        ],
+        "test_requirements_added": 47,
+        "impact_hours": 2,
+        "reason": "User requires tracking of every email delivery in Notion for analytics and troubleshooting"
+      }
+    },
+    {
+      "timestamp": "2025-11-29T16:00:00Z",
+      "action": "Wave 1 (Foundation) complete - All features implemented",
+      "features_completed": ["1.1", "1.2", "1.3", "1.4"],
+      "commits": [
+        "d212b1230dded7c807985563198f5cf58c512ed4",
+        "e38951dfdd4e7b807ef47c40a240cd9f621a46ce",
+        "36a921895cd34b502ac76ffcacfb0cd9b90b5798",
+        "471ed9176e883dcdd51d964477b0bcebd11f0846"
+      ],
+      "deliverables": [
+        "docker-compose.kestra.yml with Kestra + PostgreSQL setup",
+        ".env.kestra.example with SECRET_ prefix for all secrets",
+        ".gitignore updated to exclude .env.kestra",
+        "kestra/flows/christmas/health-check.yml flow",
+        "kestra/flows/christmas/handlers/ directory structure",
+        "kestra/README.md with comprehensive documentation"
+      ],
+      "tests_passing": "23/23 tests passing (13 docker-compose + 10 secrets + 11 health flow - 11 tests, feature 1.4 has no tests)"
+    }
+  ]
+}
