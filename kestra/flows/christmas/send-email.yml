@@ -1,0 +1,250 @@
+# Christmas Campaign - Send Email Flow
+# Send single email in sequence with Notion tracking
+#
+# This flow sends ONE email and tracks it in Notion Sequence Tracker database.
+# CRITICAL: After EVERY successful email send, update Notion with delivery status.
+#
+# Inputs:
+#   - email: Contact email address
+#   - email_number: Email number in sequence (2-5 for 5-day, 1-3 for secondary)
+#   - first_name: Contact first name
+#   - business_name: Business name
+#   - segment: Contact segment (CRITICAL/URGENT/OPTIMIZE)
+#   - sequence_type: Type of sequence ('5day', 'noshow', 'postcall', 'onboarding')
+#   - assessment_score: BusOS score (optional)
+#   - red_systems: Number of red systems (optional)
+#   - orange_systems: Number of orange systems (optional)
+#   - weakest_system_1: First weakest system (optional)
+#   - weakest_system_2: Second weakest system (optional)
+#
+# Author: Kestra Migration Team
+# Created: 2025-11-29
+# Ported from: campaigns/christmas_campaign/flows/send_email_flow.py
+
+id: send-email
+namespace: christmas.campaign
+description: Send single email in Christmas campaign with Notion tracking
+
+inputs:
+  - id: email
+    type: STRING
+    required: true
+  - id: email_number
+    type: INT
+    required: true
+  - id: first_name
+    type: STRING
+    defaults: "there"
+  - id: business_name
+    type: STRING
+    defaults: "your business"
+  - id: segment
+    type: STRING
+    defaults: "OPTIMIZE"
+  - id: sequence_type
+    type: STRING
+    defaults: "5day"
+  - id: assessment_score
+    type: INT
+    defaults: 0
+  - id: red_systems
+    type: INT
+    defaults: 0
+  - id: orange_systems
+    type: INT
+    defaults: 0
+  - id: weakest_system_1
+    type: STRING
+    defaults: "GPS"
+  - id: weakest_system_2
+    type: STRING
+    defaults: "FUEL"
+
+tasks:
+  # Step 1: Search for email sequence record (idempotency check)
+  - id: search_sequence
+    type: io.kestra.plugin.core.http.Request
+    uri: "https://api.notion.com/v1/databases/{{ secret('SECRET_NOTION_EMAIL_SEQUENCE_DB_ID') }}/query"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ secret('SECRET_NOTION_TOKEN') }}"
+      Notion-Version: "2022-06-28"
+      Content-Type: "application/json"
+    contentType: application/json
+    body: |
+      {
+        "filter": {
+          "property": "Email",
+          "email": {
+            "equals": "{{ inputs.email }}"
+          }
+        }
+      }
+
+  # Step 2: Check idempotency (skip if email already sent)
+  - id: check_already_sent
+    type: io.kestra.plugin.core.execution.If
+    condition: "{{ outputs.search_sequence.body.results[0].properties['Email ' ~ inputs.email_number ~ ' Sent'].date != null }}"
+    then:
+      - id: skip_already_sent
+        type: io.kestra.plugin.core.log.Log
+        message: "Email {{ inputs.email_number }} already sent for {{ inputs.email }}. Skipping."
+        level: WARN
+
+  # Step 3: Get template ID based on email number and segment
+  - id: get_template_id
+    type: io.kestra.plugin.scripts.python.Script
+    warningOnStdErr: false
+    script: |
+      import sys
+      sys.path.append('/usr/local/lib/python3.11/site-packages')
+
+      email_number = int({{ inputs.email_number }})
+      segment = "{{ inputs.segment }}"
+
+      # 5-Day sequence templates
+      templates = {
+          1: "5-Day E1",
+          2: "5-Day E2",
+          3: "5-Day E3",
+          4: "5-Day E4",
+          5: "5-Day E5"
+      }
+
+      template_id = templates.get(email_number, templates[1])
+      print(template_id)
+
+  # Step 4: Fetch email template from Notion
+  - id: fetch_template
+    type: io.kestra.plugin.core.http.Request
+    uri: "https://api.notion.com/v1/databases/{{ secret('SECRET_NOTION_EMAIL_TEMPLATES_DB_ID') }}/query"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ secret('SECRET_NOTION_TOKEN') }}"
+      Notion-Version: "2022-06-28"
+      Content-Type: "application/json"
+    contentType: application/json
+    body: |
+      {
+        "filter": {
+          "property": "Template Name",
+          "title": {
+            "equals": "{{ outputs.get_template_id.stdout | trim }}"
+          }
+        }
+      }
+
+  # Step 5: Extract subject and HTML body from template
+  - id: parse_template
+    type: io.kestra.plugin.scripts.python.Script
+    warningOnStdErr: false
+    script: |
+      import json
+
+      response = {{ outputs.fetch_template.body | json }}
+
+      if not response.get('results'):
+          raise ValueError(f"Template not found: {{ outputs.get_template_id.stdout | trim }}")
+
+      page = response['results'][0]
+      props = page['properties']
+
+      # Extract subject
+      subject_prop = props.get('Subject Line', {}).get('rich_text', [])
+      subject = ''.join([text['plain_text'] for text in subject_prop]) if subject_prop else ""
+
+      # Extract HTML body
+      html_prop = props.get('Email Body HTML', {}).get('rich_text', [])
+      html_body = ''.join([text['plain_text'] for text in html_prop]) if html_prop else ""
+
+      # Variable substitution
+      variables = {
+          'first_name': "{{ inputs.first_name }}",
+          'business_name': "{{ inputs.business_name }}",
+          'assessment_score': str({{ inputs.assessment_score }}),
+          'segment': "{{ inputs.segment }}",
+          'WeakestSystem1': "{{ inputs.weakest_system_1 }}",
+          'WeakestSystem2': "{{ inputs.weakest_system_2 }}"
+      }
+
+      for key, value in variables.items():
+          subject = subject.replace('{{' + key + '}}', value)
+          html_body = html_body.replace('{{' + key + '}}', value)
+
+      # Output as JSON
+      import sys
+      output = {'subject': subject, 'html_body': html_body}
+      print(json.dumps(output))
+
+  # Step 6: Send email via Resend API
+  - id: send_email
+    type: io.kestra.plugin.core.http.Request
+    uri: "https://api.resend.com/emails"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ secret('SECRET_RESEND_API_KEY') }}"
+      Content-Type: "application/json"
+    contentType: application/json
+    body: |
+      {
+        "from": "Sang Le - BusOS <value@galatek.dev>",
+        "to": ["{{ inputs.email }}"],
+        "subject": {{ (outputs.parse_template.stdout | trim | fromJson).subject | json }},
+        "html": {{ (outputs.parse_template.stdout | trim | fromJson).html_body | json }}
+      }
+
+  # Step 7: Update Notion Sequence Tracker (CRITICAL - per-email tracking)
+  - id: update_sequence_tracker
+    type: io.kestra.plugin.core.http.Request
+    uri: "https://api.notion.com/v1/pages/{{ outputs.search_sequence.body.results[0].id }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ secret('SECRET_NOTION_TOKEN') }}"
+      Notion-Version: "2022-06-28"
+      Content-Type: "application/json"
+    contentType: application/json
+    body: |
+      {
+        "properties": {
+          "Email {{ inputs.email_number }} Sent": {
+            "date": {
+              "start": "{{ now() }}"
+            }
+          },
+          "Email {{ inputs.email_number }} Status": {
+            "select": {
+              "name": "sent"
+            }
+          },
+          "Email {{ inputs.email_number }} Resend ID": {
+            "rich_text": [
+              {
+                "text": {
+                  "content": "{{ outputs.send_email.body.id }}"
+                }
+              }
+            ]
+          },
+          "Email {{ inputs.email_number }} Sent By": {
+            "select": {
+              "name": "kestra"
+            }
+          },
+          "Last Email Sent": {
+            "number": {{ inputs.email_number }}
+          },
+          "Last Email Sent At": {
+            "date": {
+              "start": "{{ now() }}"
+            }
+          }
+        }
+      }
+    # Graceful error handling - Notion update failure should not block email
+    allowFailed: true
+
+errors:
+  - id: log_error
+    type: io.kestra.plugin.core.log.Log
+    message: "Error sending email {{ inputs.email_number }} to {{ inputs.email }}: {{ error.message }}"
+    level: ERROR

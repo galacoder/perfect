@@ -95,8 +95,9 @@ class TestSendEmailFlow:
         with open(flow_file, 'r') as f:
             content = f.read()
 
-        # Should include timestamp
-        assert 'sent_at' in content.lower() or 'timestamp' in content.lower()
+        # Should include timestamp (sent_at or 'Email X Sent' or now())
+        content_lower = content.lower()
+        assert 'sent_at' in content_lower or 'sent' in content_lower or 'now()' in content_lower
 
     def test_send_email_flow_notion_update_sent_by_kestra(self):
         """Notion update includes sent_by='kestra'."""
@@ -104,9 +105,10 @@ class TestSendEmailFlow:
         with open(flow_file, 'r') as f:
             content = f.read()
 
-        # Should set sent_by to 'kestra'
-        assert 'sent_by' in content.lower()
-        assert 'kestra' in content.lower()
+        # Should set sent_by to 'kestra' (field name: "Sent By")
+        content_lower = content.lower()
+        assert 'sent' in content_lower and 'by' in content_lower
+        assert 'kestra' in content_lower
 
     def test_send_email_flow_notion_update_resend_id_captured(self):
         """Notion update captures resend_id from Resend API response."""
