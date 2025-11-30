@@ -3,10 +3,10 @@
   "domain": "coding",
   "status": "executing",
   "current_phase": "CODE",
-  "current_wave": 1,
-  "current_feature_id": "2.5",
+  "current_wave": 2,
+  "current_feature_id": "3.1",
   "created_at": "2025-11-29T10:00:00Z",
-  "updated_at": "2025-11-29T23:44:24.507403Z",
+  "updated_at": "2025-11-30T00:15:00.000000Z",
   "meta": {
     "title": "Port Prefect Christmas Automation to Kestra",
     "description": "Migrate all Christmas campaign flows from Prefect v3.4.1 to Kestra self-hosted automation tool. Includes 5 Prefect flows, 3 task modules, FastAPI webhook server, Notion/Resend integrations, Notion template fetching, per-email Notion Sequence Tracker updates, and comprehensive Puppeteer E2E testing.",
@@ -47,8 +47,10 @@
       "id": 2,
       "name": "Core Flow Migration",
       "objective": "Port send_email_flow, routing logic, and Email #1 skip logic to Kestra YAML",
-      "status": "pending",
-      "estimated_hours": 10
+      "status": "complete",
+      "estimated_hours": 10,
+      "started_at": "2025-11-29T16:05:00Z",
+      "completed_at": "2025-11-30T00:15:00Z"
     },
     {
       "id": 3,
@@ -211,7 +213,7 @@
       "id": "2.5",
       "wave": 2,
       "name": "Create email scheduling subflow mechanism (Emails #2-5 only)",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_email_scheduling.py",
@@ -224,13 +226,17 @@
         "Test production delays: Email #2 at +24h, #3 at +72h, #4 at +96h, #5 at +120h from email_1_sent_at",
         "Test testing mode delays: #2 at +1min, #3 at +2min, #4 at +3min, #5 at +4min",
         "Test missing email_1_sent_at defaults to webhook trigger time"
-      ]
+      ],
+      "started_at": "2025-11-29T23:45:00Z",
+      "completed_at": "2025-11-29T23:50:00Z",
+      "tests_passing": true,
+      "commit_hash": "0940649"
     },
     {
       "id": "2.6",
       "wave": 2,
       "name": "Implement Notion template fetching with fallback",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_notion_templates.py",
@@ -246,13 +252,17 @@
         "Test all 4 sequence types (5-day, noshow, postcall, onboarding)",
         "Test template variable substitution (first_name, business_name, segment)",
         "Test empty template handling"
-      ]
+      ],
+      "started_at": "2025-11-29T23:50:00Z",
+      "completed_at": "2025-11-29T23:58:00Z",
+      "tests_passing": true,
+      "commit_hash": "a63fc13"
     },
     {
       "id": "2.7",
       "wave": 2,
       "name": "Create webhook payload validator with email_1_sent_at support",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_webhook_payload_validator.py",
@@ -265,7 +275,11 @@
         "Test invalid timestamp format rejected with error",
         "Test payload schema validation for assessment data (red_systems, orange_systems)",
         "Test email_1_sent_at used to calculate Email #2 schedule time"
-      ]
+      ],
+      "started_at": "2025-11-29T23:58:00Z",
+      "completed_at": "2025-11-30T00:05:00Z",
+      "tests_passing": true,
+      "commit_hash": "3d0bcdc"
     },
     {
       "id": "3.1",
@@ -397,7 +411,7 @@
       "id": "2.8",
       "wave": 2,
       "name": "Create dedicated Notion Sequence Tracker update task",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_notion_sequence_tracker.py",
@@ -423,7 +437,11 @@
         "test_sequence_tracker_api_failure_logs_error",
         "test_sequence_tracker_idempotent_on_duplicate_update",
         "test_sequence_tracker_contact_last_email_sent_updated"
-      ]
+      ],
+      "started_at": "2025-11-30T00:05:00Z",
+      "completed_at": "2025-11-30T00:12:00Z",
+      "tests_passing": true,
+      "commit_hash": "e766f7f"
     },
     {
       "id": "4.1",
@@ -575,10 +593,10 @@
   ],
   "progress": {
     "total_features": 27,
-    "completed_features": 8,
+    "completed_features": 12,
     "total_waves": 4,
-    "completed_waves": 1,
-    "percentage": 29.63
+    "completed_waves": 2,
+    "percentage": 44.44
   },
   "session_log": [
     {
@@ -748,6 +766,85 @@
       "tests_passing": 14,
       "commit_hash": "38713c3",
       "note": "Most complex feature - integrates routing, Notion tasks, Resend task, and per-email tracking"
+    },
+    {
+      "timestamp": "2025-11-29T23:50:00Z",
+      "action": "Feature 2.5 complete: Email scheduling subflow (Emails #2-5 only)",
+      "feature_id": "2.5",
+      "tests_passing": 5,
+      "commit_hash": "0940649",
+      "deliverables": [
+        "schedule-email-sequence.yml with subflow scheduling",
+        "Support for TESTING_MODE and production timing",
+        "Delays calculated from email_1_sent_at (NOT webhook trigger time)"
+      ]
+    },
+    {
+      "timestamp": "2025-11-29T23:58:00Z",
+      "action": "Feature 2.6 complete: Notion template fetching with fallback",
+      "feature_id": "2.6",
+      "tests_passing": 6,
+      "commit_hash": "a63fc13",
+      "deliverables": [
+        "fetch_template.py with async Notion API integration",
+        "Static fallbacks for all 4 sequence types",
+        "Variable substitution for personalization"
+      ]
+    },
+    {
+      "timestamp": "2025-11-30T00:05:00Z",
+      "action": "Feature 2.7 complete: Webhook payload validator with email_1_sent_at",
+      "feature_id": "2.7",
+      "tests_passing": 6,
+      "commit_hash": "3d0bcdc",
+      "deliverables": [
+        "validate_payload.py with assessment validation",
+        "ISO 8601 timestamp validation",
+        "Graceful fallback to current time if email_1_sent_at missing"
+      ]
+    },
+    {
+      "timestamp": "2025-11-30T00:12:00Z",
+      "action": "Feature 2.8 complete: Comprehensive Notion Sequence Tracker tests",
+      "feature_id": "2.8",
+      "tests_passing": 16,
+      "commit_hash": "e766f7f",
+      "note": "Task already existed from Feature 2.2, added comprehensive test coverage (16 scenarios)"
+    },
+    {
+      "timestamp": "2025-11-30T00:15:00Z",
+      "action": "Wave 2 (Core Flow Migration) COMPLETE - All 8 features implemented",
+      "features_completed": [
+        "2.1",
+        "2.2",
+        "2.3",
+        "2.4",
+        "2.5",
+        "2.6",
+        "2.7",
+        "2.8"
+      ],
+      "commits": [
+        "4067ac9",
+        "c64dcf6",
+        "d29225a",
+        "38713c3",
+        "0940649",
+        "a63fc13",
+        "3d0bcdc",
+        "e766f7f"
+      ],
+      "total_tests_passing": 137,
+      "deliverables": [
+        "kestra/flows/christmas/lib/routing.py - Segment classification logic",
+        "kestra/flows/christmas/tasks/notion_*.yml - 4 Notion HTTP tasks",
+        "kestra/flows/christmas/tasks/resend_send_email.yml - Resend API task",
+        "kestra/flows/christmas/send-email.yml - Main email flow with Notion tracking",
+        "kestra/flows/christmas/schedule-email-sequence.yml - Email scheduling flow",
+        "kestra/flows/christmas/lib/fetch_template.py - Template fetching with fallbacks",
+        "kestra/flows/christmas/lib/validate_payload.py - Webhook payload validator"
+      ],
+      "progress": "12/27 features complete (44.44%), 2/4 waves complete"
     }
   ]
 }
