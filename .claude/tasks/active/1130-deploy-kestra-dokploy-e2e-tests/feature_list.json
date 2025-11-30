@@ -1,0 +1,470 @@
+{
+  "task_id": "1130-deploy-kestra-dokploy-e2e-tests",
+  "domain": "coding",
+  "status": "executing",
+  "current_phase": "CODE",
+  "current_wave": 1,
+  "current_feature_id": "1.1",
+  "created_at": "2025-11-30T10:00:00Z",
+  "updated_at": "2025-11-30T10:00:00Z",
+  "meta": {
+    "title": "Extract Kestra Repository + Deploy with Dokploy + E2E Tests",
+    "description": "Extract Kestra to standalone repository with preserved git history. Deploy Kestra to kestra.galatek.dev using Dokploy with PostgreSQL, SSL, and secrets. Complete 5 pending E2E test features from task 1129: Assessment handler E2E, All handler flows E2E, and Puppeteer browser tests for complete sales funnel verification.",
+    "estimated_hours": 18,
+    "model_selection": {
+      "planning": "opus",
+      "execution": "sonnet",
+      "verification": "opus"
+    },
+    "prerequisites": {
+      "task_1129_status": "81.48% complete (22/27 features)",
+      "pending_features_from_1129": ["4.4", "4.5", "4.7", "4.8", "4.9"],
+      "existing_infrastructure": {
+        "kestra_flows": 13,
+        "unit_tests": 230,
+        "docker_compose": "docker-compose.kestra.prod.yml"
+      }
+    },
+    "email_responsibility_split": {
+      "website_sends": [
+        "signup confirmation email",
+        "5-day sequence Email #1"
+      ],
+      "kestra_sends": [
+        "5-day sequence Emails #2-5",
+        "noshow-recovery (all 3 emails)",
+        "postcall-maybe (all 3 emails)",
+        "onboarding (all 3 emails)"
+      ]
+    },
+    "test_email": "lengobaosang@gmail.com",
+    "target_domain": "kestra.galatek.dev"
+  },
+  "waves": [
+    {
+      "id": 0,
+      "name": "Repository Extraction",
+      "objective": "Extract Kestra to standalone repository with preserved git commit history",
+      "status": "complete",
+      "started_at": "2025-11-30T09:52:00Z",
+      "completed_at": "2025-11-30T10:05:00Z",
+      "estimated_hours": 2
+    },
+    {
+      "id": 1,
+      "name": "Dokploy Deployment",
+      "objective": "Deploy Kestra to kestra.galatek.dev with PostgreSQL, SSL, secrets, and health monitoring",
+      "status": "pending",
+      "estimated_hours": 5
+    },
+    {
+      "id": 2,
+      "name": "E2E Test Infrastructure",
+      "objective": "Set up Puppeteer test environment, fixtures, utilities, and test data for Kestra E2E testing",
+      "status": "pending",
+      "estimated_hours": 3
+    },
+    {
+      "id": 3,
+      "name": "Handler Flow E2E Tests",
+      "objective": "Implement E2E tests for assessment handler and all handler flows with email verification",
+      "status": "pending",
+      "estimated_hours": 4
+    },
+    {
+      "id": 4,
+      "name": "Puppeteer Sales Funnel Tests",
+      "objective": "Complete browser automation tests for assessment funnel, signup handler, and secondary funnels",
+      "status": "pending",
+      "estimated_hours": 4
+    }
+  ],
+  "features": [
+    {
+      "id": "0.1",
+      "wave": 0,
+      "name": "Analyze git commits for Kestra-related changes",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Use git log to identify all commits related to Kestra work (task 1129). Extract commit SHAs, messages, and file changes to understand the full commit history that needs to be preserved.",
+      "started_at": "2025-11-30T09:52:00Z",
+      "completed_at": "2025-11-30T09:53:00Z",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "notes": "Identified 17 commits related to Kestra work. Created analysis document with all file paths and extraction strategy."
+    },
+    {
+      "id": "0.2",
+      "wave": 0,
+      "name": "Create kestra-automation repository structure",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Create new directory at /Users/sangle/Dev/action/projects/kestra-automation/ with proper structure: flows/, tests/, docker-compose files, documentation, .gitignore, README.md",
+      "started_at": "2025-11-30T09:53:00Z",
+      "completed_at": "2025-11-30T09:54:00Z",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "notes": "Created directory structure with flows/, tests/, docs/. Added .gitignore and .env.example."
+    },
+    {
+      "id": "0.3",
+      "wave": 0,
+      "name": "Extract Kestra files using git filter-branch",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Use git filter-branch or git subtree split to extract kestra/, tests/kestra/, docker-compose.kestra*.yml with full commit history. Create new repository preserving all commits related to Kestra work.",
+      "started_at": "2025-11-30T09:54:00Z",
+      "completed_at": "2025-11-30T09:56:00Z",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "notes": "Used git subtree split to extract flows and tests with full history. Merged into standalone repository."
+    },
+    {
+      "id": "0.4",
+      "wave": 0,
+      "name": "Initialize new kestra-automation git repository",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Initialize git repository in kestra-automation/, set up remote (if applicable), verify commit history preserved correctly with git log showing all Kestra-related commits.",
+      "started_at": "2025-11-30T09:56:00Z",
+      "completed_at": "2025-11-30T09:58:00Z",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "notes": "Initialized git repo, added docker-compose files, documentation, and config files. History preserved with 17+ commits."
+    },
+    {
+      "id": "0.5",
+      "wave": 0,
+      "name": "Update documentation and paths in extracted repository",
+      "status": "complete",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Update all documentation in kestra-automation/ to reflect standalone repository structure. Fix any relative paths, update README with new structure, add deployment documentation.",
+      "started_at": "2025-11-30T09:58:00Z",
+      "completed_at": "2025-11-30T10:02:00Z",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "notes": "Updated README for standalone repo. Fixed broken path references in all flows and documentation."
+    },
+    {
+      "id": "0.6",
+      "wave": 0,
+      "name": "Verify extracted repository integrity",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "kestra-automation/verify_extraction.py",
+      "description": "Verify: All 13 Kestra flows present, all tests copied, docker-compose files valid, git history preserved (compare commit messages with original), no broken references",
+      "test_requirements": [
+        "All 13 YAML flows exist in flows/christmas/",
+        "All test files copied from tests/kestra/",
+        "Git log shows Kestra-related commits",
+        "Docker compose files valid YAML",
+        "No broken file references in flows"
+      ],
+      "started_at": "2025-11-30T10:02:00Z",
+      "completed_at": "2025-11-30T10:05:00Z",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "tests_passing": true,
+      "notes": "Created comprehensive verification test suite with 9 tests. All tests passing. TDD followed: wrote failing test, fixed code, verified green."
+    },
+    {
+      "id": "1.1",
+      "wave": 1,
+      "name": "Create Dokploy-compatible docker-compose.kestra.dokploy.yml",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_dokploy_compose.py",
+      "description": "Modify docker-compose.kestra.prod.yml for Dokploy compatibility: add dokploy-network (external), Traefik labels for kestra.galatek.dev, HTTP-to-HTTPS redirect, Let's Encrypt certresolver",
+      "test_requirements": [
+        "YAML syntax valid",
+        "dokploy-network configured as external",
+        "Traefik labels present for HTTP and HTTPS routers",
+        "Health check configured",
+        "Resource limits defined"
+      ]
+    },
+    {
+      "id": "1.2",
+      "wave": 1,
+      "name": "Configure Dokploy secrets for Kestra",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Document and configure all required secrets in Dokploy UI: POSTGRES_PASSWORD, SECRET_NOTION_TOKEN, SECRET_NOTION_CONTACTS_DB_ID, SECRET_NOTION_TEMPLATES_DB_ID, SECRET_RESEND_API_KEY, SECRET_TESTING_MODE, KESTRA_ENCRYPTION_SECRET_KEY"
+    },
+    {
+      "id": "1.3",
+      "wave": 1,
+      "name": "Deploy Kestra via Dokploy Docker Compose",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_deployment_health.py",
+      "description": "Use dokploy-integration skill to create Docker Compose service, upload compose file, configure environment, and deploy Kestra stack"
+    },
+    {
+      "id": "1.4",
+      "wave": 1,
+      "name": "Verify Kestra deployment health and SSL",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_deployment_health.py",
+      "description": "Verify: HTTPS accessible at https://kestra.galatek.dev, valid SSL certificate, Kestra UI loads, PostgreSQL connection healthy, all 13 flows deployed",
+      "test_requirements": [
+        "HTTPS returns 200",
+        "SSL certificate valid (Let's Encrypt)",
+        "Kestra health endpoint returns OK",
+        "PostgreSQL connection established",
+        "All 13 flows visible in Kestra UI"
+      ]
+    },
+    {
+      "id": "1.5",
+      "wave": 1,
+      "name": "Test webhook endpoints accessibility",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_webhook_accessibility.py",
+      "description": "Verify all 5 webhook endpoints are accessible: signup, assessment, noshow, postcall, onboarding. Test with curl and verify execution created",
+      "test_requirements": [
+        "All 5 webhook URLs respond",
+        "POST with valid payload creates execution",
+        "Execution visible in Kestra UI",
+        "Invalid payload returns 400 error"
+      ]
+    },
+    {
+      "id": "2.1",
+      "wave": 2,
+      "name": "Create Kestra E2E test directory and conftest",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Create tests/kestra/e2e/ directory with conftest.py containing: Kestra API client, webhook helpers, Notion verification utilities, test email fixtures, cleanup hooks"
+    },
+    {
+      "id": "2.2",
+      "wave": 2,
+      "name": "Implement Kestra API helper functions",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_kestra_helpers.py",
+      "description": "Create kestra_helpers.py with: trigger_webhook(), get_execution_status(), wait_for_execution_complete(), get_execution_logs(), list_scheduled_subflows()"
+    },
+    {
+      "id": "2.3",
+      "wave": 2,
+      "name": "Implement Notion verification helpers",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_notion_helpers.py",
+      "description": "Create notion_helpers.py with: verify_sequence_created(), verify_email_tracked(), get_sequence_by_email(), cleanup_test_sequences()"
+    },
+    {
+      "id": "2.4",
+      "wave": 2,
+      "name": "Create test data fixtures for E2E tests",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": false,
+      "description": "Create fixtures: assessment_payload_critical, assessment_payload_urgent, assessment_payload_optimize, noshow_payload, postcall_payload, onboarding_payload. Use lengobaosang@gmail.com for all tests"
+    },
+    {
+      "id": "3.1",
+      "wave": 3,
+      "name": "Feature 4.4: E2E test - Assessment handler (Emails #2-5)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_assessment_e2e.py",
+      "description": "Port feature 4.4 from task 1129: Mock website sending Email #1, trigger Kestra webhook with email_1_sent_at, verify only Emails #2-5 scheduled by Kestra",
+      "feature_from_1129": "4.4",
+      "test_requirements": [
+        "Mock website sending Email #1",
+        "POST assessment webhook with email_1_sent_at timestamp",
+        "Verify Notion sequence shows Email #1 as 'sent_by_website'",
+        "Verify only 4 emails scheduled by Kestra (#2-5)",
+        "Verify Email #2 timing relative to email_1_sent_at",
+        "Verify Resend delivery for Email #2 (TESTING_MODE)"
+      ]
+    },
+    {
+      "id": "3.2",
+      "wave": 3,
+      "name": "Feature 4.5: E2E test - All handler flows",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_all_handlers_e2e.py",
+      "description": "Port feature 4.5 from task 1129: E2E tests for noshow, postcall, and onboarding handler flows. Verify Kestra sends ALL emails for these sequences",
+      "feature_from_1129": "4.5",
+      "test_requirements": [
+        "Test noshow-recovery handler (3 emails from Kestra)",
+        "Test postcall-maybe handler (3 emails from Kestra)",
+        "Test onboarding handler (3 emails from Kestra)",
+        "Verify Notion Sequence Tracker updated for each email",
+        "Verify email timing matches expected delays"
+      ]
+    },
+    {
+      "id": "3.3",
+      "wave": 3,
+      "name": "Verify email responsibility split in E2E tests",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_email_split_verification.py",
+      "description": "Dedicated test to verify website/Kestra email split: signup webhook triggers NO emails, assessment webhook triggers Emails #2-5 only, secondary sequences trigger ALL emails from Kestra"
+    },
+    {
+      "id": "4.1",
+      "wave": 4,
+      "name": "Feature 4.7: Puppeteer E2E - Assessment funnel",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_assessment_funnel.py",
+      "description": "Port feature 4.7 from task 1129: Browser automation for complete assessment funnel with website/Kestra email split verification",
+      "feature_from_1129": "4.7",
+      "test_requirements": [
+        "Navigate to funnel URL (localhost:3005 or sangletech.com)",
+        "Fill assessment form with test data (lengobaosang@gmail.com)",
+        "Submit form and verify website sends Email #1 immediately",
+        "Verify webhook to Kestra includes email_1_sent_at timestamp",
+        "Verify Kestra flow triggered via API",
+        "Verify Notion sequence shows Email #1 as 'sent_by_website'",
+        "Verify only 4 emails scheduled by Kestra (#2-5)",
+        "Test TESTING_MODE=true (Email #2 at +1min from Email #1)",
+        "Verify Email #2 delivered via Resend"
+      ]
+    },
+    {
+      "id": "4.2",
+      "wave": 4,
+      "name": "Feature 4.8: Puppeteer E2E - Signup handler (tracking only)",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_signup_funnel.py",
+      "description": "Port feature 4.8 from task 1129: Verify signup webhook does NOT trigger any emails from Kestra. Website handles signup email directly",
+      "feature_from_1129": "4.8",
+      "test_requirements": [
+        "Navigate to signup page",
+        "Fill signup form with test data (lengobaosang@gmail.com)",
+        "Submit form and capture webhook payload",
+        "Verify Kestra flow triggered",
+        "Verify NO emails scheduled by Kestra (zero)",
+        "Verify contact created/updated in Notion",
+        "Test idempotency (duplicate signups)"
+      ]
+    },
+    {
+      "id": "4.3",
+      "wave": 4,
+      "name": "Feature 4.9: Puppeteer E2E - Secondary funnels",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_secondary_funnels.py",
+      "description": "Port feature 4.9 from task 1129: Browser automation for calendly-noshow, postcall-maybe, and onboarding-start webhook flows. Kestra handles ALL emails for these sequences",
+      "feature_from_1129": "4.9",
+      "test_requirements": [
+        "Test calendly-noshow funnel (3-email recovery sequence - ALL from Kestra)",
+        "Test postcall-maybe funnel (3-email follow-up sequence - ALL from Kestra)",
+        "Test onboarding-start funnel (3-email welcome sequence - ALL from Kestra)",
+        "Verify each customer gets properly scheduled emails",
+        "Validate webhook payloads reach Kestra correctly",
+        "Check email scheduling timing matches expected delays",
+        "Verify Notion sequence tracker updates for all funnels",
+        "Test idempotency (duplicate submissions handled)"
+      ]
+    },
+    {
+      "id": "4.4",
+      "wave": 4,
+      "name": "Create E2E test runner and CI integration",
+      "status": "pending",
+      "priority": "low",
+      "tests_required": false,
+      "description": "Create e2e_test_runner.py for running all Puppeteer E2E tests with proper setup/teardown, timeout handling, and result reporting"
+    }
+  ],
+  "progress": {
+    "total_features": 23,
+    "completed_features": 6,
+    "total_waves": 5,
+    "completed_waves": 1,
+    "percentage": 26.09
+  },
+  "session_log": [
+    {
+      "timestamp": "2025-11-30T10:00:00Z",
+      "action": "Task initialized via /start-coding"
+    },
+    {
+      "timestamp": "2025-11-30T10:15:00Z",
+      "action": "EXPLORE phase complete - analyzed Dokploy patterns, existing E2E tests, task 1129 status"
+    },
+    {
+      "timestamp": "2025-11-30T10:30:00Z",
+      "action": "PLAN phase complete - 4 waves, 17 features, awaiting approval"
+    },
+    {
+      "timestamp": "2025-11-30T11:00:00Z",
+      "action": "Added Wave 0 via /add-tasks-coding - Repository extraction with git history preservation (6 new features added, total: 23 features across 5 waves)"
+    },
+    {
+      "timestamp": "2025-11-30T09:52:00Z",
+      "action": "Started Wave 0 execution - Repository Extraction",
+      "feature_id": "0.1"
+    },
+    {
+      "timestamp": "2025-11-30T09:53:00Z",
+      "action": "Completed feature 0.1: Analyzed git commits (17 commits identified)",
+      "feature_id": "0.1",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e"
+    },
+    {
+      "timestamp": "2025-11-30T09:54:00Z",
+      "action": "Completed feature 0.2: Created kestra-automation repository structure",
+      "feature_id": "0.2",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e"
+    },
+    {
+      "timestamp": "2025-11-30T09:56:00Z",
+      "action": "Completed feature 0.3: Extracted Kestra files using git subtree split",
+      "feature_id": "0.3",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e"
+    },
+    {
+      "timestamp": "2025-11-30T09:58:00Z",
+      "action": "Completed feature 0.4: Initialized new kestra-automation git repository",
+      "feature_id": "0.4",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e"
+    },
+    {
+      "timestamp": "2025-11-30T10:02:00Z",
+      "action": "Completed feature 0.5: Updated documentation and paths",
+      "feature_id": "0.5",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e"
+    },
+    {
+      "timestamp": "2025-11-30T10:05:00Z",
+      "action": "Completed feature 0.6: Verification test suite (9 tests passing)",
+      "feature_id": "0.6",
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e",
+      "tests_passing": true
+    },
+    {
+      "timestamp": "2025-11-30T10:05:00Z",
+      "action": "Wave 0 complete: Repository Extraction (6/6 features, 26.09% overall progress)",
+      "wave_id": 0,
+      "commit_hash": "c735fbd9e20c49e420a6f52363b1f2ff5723b50e"
+    }
+  ]
+}
