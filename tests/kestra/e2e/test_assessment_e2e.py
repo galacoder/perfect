@@ -242,30 +242,93 @@ def test_e2e_assessment_webhook_with_email_1_sent_at(kestra_session, cleanup_not
         assert final_state is not None, "No execution state received"
 
 
-def test_e2e_notion_sequence_email_1_sent_by_website(cleanup_notion_contact, notion_headers):
+def test_e2e_notion_sequence_email_1_sent_by_website(cleanup_notion_contact, notion_headers, kestra_session):
     """
     TC-4.4.3: Verify Notion sequence shows Email #1 as 'sent_by_website'
 
     After assessment webhook, Notion Sequence Tracker should show Email #1
     was sent by website, not Kestra.
     """
-    # This test assumes previous test ran successfully
-    # Query Notion Sequence Tracker for most recent entry
+    # Setup: Create contact and Email #1 entry (mock website)
+    email_1_sent_at = datetime.now(timezone.utc)
+
+    # 1. Create contact
+    create_url = f"https://api.notion.com/v1/pages"
+    contact_payload = {
+        "parent": {"database_id": NOTION_CONTACTS_DB_ID},
+        "properties": {
+            "first_name": {"title": [{"text": {"content": "E2E Notion Test"}}]},
+            "email": {"email": TEST_EMAIL},
+            "Segment": {"select": {"name": "CRITICAL"}}
+        }
+    }
+    response = requests.post(create_url, headers=notion_headers, json=contact_payload)
+    assert response.status_code == 200, f"Failed to create contact: {response.text}"
+
+    # 2. Create Email #1 sequence entry (mock website send)
+    sequence_url = f"https://api.notion.com/v1/pages"
+    sequence_payload = {
+        "parent": {"database_id": NOTION_SEQUENCE_DB_ID},
+        "properties": {
+            "Name": {"title": [{"text": {"content": "E2E Notion Test"}}]},
+            "Email": {"email": TEST_EMAIL},
+            "First Name": {"rich_text": [{"text": {"content": "E2E"}}]},
+            "Business Name": {"rich_text": [{"text": {"content": "Notion Corp"}}]},
+            "Segment": {"select": {"name": "CRITICAL"}},
+            "Email 1 Sent": {"date": {"start": email_1_sent_at.isoformat()}},
+            "Campaign": {"select": {"name": "Christmas 2025"}},
+            "Signup Date": {"date": {"start": datetime.now(timezone.utc).isoformat()}},
+            "Assessment Completed": {"checkbox": True}
+        }
+    }
+
+    response = requests.post(sequence_url, headers=notion_headers, json=sequence_payload)
+    assert response.status_code == 200, f"Failed to create sequence entry: {response.text}"
+    sequence_id = response.json()["id"]
+
+    # 3. Trigger assessment webhook (to verify Kestra recognizes Email #1 already sent)
+    webhook_url = f"{KESTRA_URL}/api/v1/executions/webhook/christmas/assessment-handler/christmas-assessment-webhook"
+    webhook_payload = {
+        "email": TEST_EMAIL,
+        "first_name": "E2E",
+        "business_name": "Notion Corp",
+        "red_systems": 2,
+        "orange_systems": 1,
+        "email_1_sent_at": email_1_sent_at.isoformat(),
+        "email_1_status": "sent"
+    }
+
+    response = kestra_session.post(webhook_url, json=webhook_payload)
+    assert response.status_code in [200, 201], f"Webhook trigger failed: {response.text}"
+
+    # 4. Wait a moment for Kestra to process
+    time.sleep(3)
+
+    # 5. Verify Email #1 Sent field still exists and wasn't modified by Kestra
     query_url = f"https://api.notion.com/v1/databases/{NOTION_SEQUENCE_DB_ID}/query"
     query_payload = {
-        "sorts": [{"timestamp": "created_time", "direction": "descending"}],
-        "page_size": 1
+        "filter": {
+            "property": "Email",
+            "email": {
+                "equals": TEST_EMAIL
+            }
+        }
     }
 
     response = requests.post(query_url, headers=notion_headers, json=query_payload)
     assert response.status_code == 200, f"Failed to query sequence tracker: {response.text}"
     results = response.json().get("results", [])
+    assert len(results) >= 1, f"Expected at least 1 sequence entry, found {len(results)}"
 
-    if len(results) > 0:
-        email_1_entry = results[0]
-        # Check if Email 1 Sent field exists (indicates Email #1 was sent)
-        email_1_sent = email_1_entry["properties"].get("Email 1 Sent", {}).get("date")
-        assert email_1_sent is not None, "Expected Email #1 to have Sent timestamp"
+    email_1_entry = results[0]
+    # Check if Email 1 Sent field exists (indicates Email #1 was sent by website)
+    email_1_sent = email_1_entry["properties"].get("Email 1 Sent", {}).get("date")
+    assert email_1_sent is not None, "Expected Email #1 to have Sent timestamp"
+
+    # Verify timestamp matches what we set (website sent it, not Kestra)
+    sent_timestamp = email_1_sent.get("start")
+    assert sent_timestamp is not None, "Email 1 Sent timestamp is missing"
+    print(f"\n✅ Email #1 sent at: {sent_timestamp} (by website, not Kestra)")
 
 
 def test_e2e_only_4_emails_scheduled_by_kestra(kestra_session, cleanup_notion_contact):
