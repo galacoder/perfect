@@ -1,0 +1,244 @@
+# Christmas Campaign - Onboarding Handler Flow
+# 3-Email Welcome Sequence - ALL sent by Kestra
+#
+# This handler sends ALL 3 emails for onboarding (no website involvement).
+# Includes payment validation - only proceeds if payment_status == "paid".
+# Each email MUST update Notion Sequence Tracker after successful send.
+#
+# Email Sequence:
+#   Email #1: Sent immediately
+#   Email #2: Scheduled at +24h (production) or +1min (testing)
+#   Email #3: Scheduled at +48h (production) or +2min (testing)
+#
+# CRITICAL: Each email updates Notion Sequence Tracker via send-email flow.
+#
+# Author: Kestra Migration Team
+# Created: 2025-11-30
+
+id: onboarding-handler
+namespace: christmas.campaign
+description: Handle onboarding start - 3-email welcome sequence ALL from Kestra
+
+triggers:
+  - id: webhook_trigger
+    type: io.kestra.plugin.core.trigger.Webhook
+    key: onboarding-start-webhook
+
+inputs:
+  - id: email
+    type: STRING
+    description: Contact email address
+    required: true
+  - id: first_name
+    type: STRING
+    description: Contact first name
+    defaults: "there"
+  - id: business_name
+    type: STRING
+    description: Business name
+    defaults: "your business"
+  - id: payment_status
+    type: STRING
+    description: Payment status (must be "paid")
+    required: true
+  - id: package_type
+    type: STRING
+    description: Package type (optional)
+    required: false
+
+tasks:
+  # Step 1: Validate payment status
+  - id: validate_payment
+    type: io.kestra.plugin.core.execution.If
+    condition: "{{ inputs.payment_status == 'paid' }}"
+    then:
+      # Payment validated - proceed with onboarding
+
+      # Step 2: Search for contact in Notion
+      - id: search_contact
+        type: io.kestra.plugin.core.http.Request
+        uri: "https://api.notion.com/v1/databases/{{ secret('SECRET_NOTION_CONTACTS_DB_ID') }}/query"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ secret('SECRET_NOTION_TOKEN') }}"
+          Notion-Version: "2022-06-28"
+          Content-Type: "application/json"
+        contentType: application/json
+        body: |
+          {
+            "filter": {
+              "property": "Email",
+              "email": {
+                "equals": "{{ inputs.email }}"
+              }
+            }
+          }
+
+      # Step 3: Create email sequence record in Notion
+      - id: create_sequence
+        type: io.kestra.plugin.core.http.Request
+        uri: "https://api.notion.com/v1/pages"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ secret('SECRET_NOTION_TOKEN') }}"
+          Notion-Version: "2022-06-28"
+          Content-Type: "application/json"
+        contentType: application/json
+        body: |
+          {
+            "parent": {
+              "database_id": "{{ secret('SECRET_NOTION_EMAIL_SEQUENCE_DB_ID') }}"
+            },
+            "properties": {
+              "Email": {
+                "email": "{{ inputs.email }}"
+              },
+              "First Name": {
+                "rich_text": [
+                  {
+                    "text": {
+                      "content": "{{ inputs.first_name }}"
+                    }
+                  }
+                ]
+              },
+              "Business Name": {
+                "rich_text": [
+                  {
+                    "text": {
+                      "content": "{{ inputs.business_name }}"
+                    }
+                  }
+                ]
+              },
+              "Campaign": {
+                "select": {
+                  "name": "Christmas 2025"
+                }
+              },
+              "Sequence Type": {
+                "select": {
+                  "name": "onboarding"
+                }
+              },
+              "Segment": {
+                "select": {
+                  "name": "OPTIMIZE"
+                }
+              },
+              "Started At": {
+                "date": {
+                  "start": "{{ now() }}"
+                }
+              }
+            }
+          }
+
+      # Step 4: Calculate email schedule times
+      - id: calculate_delays
+        type: io.kestra.plugin.scripts.python.Script
+        description: Calculate scheduling times for Emails #2-3
+        script: |
+          from datetime import datetime, timedelta
+          import os
+          import json
+
+          # Check testing mode
+          testing_mode = os.getenv("TESTING_MODE", "false").lower() == "true"
+
+          base_time = datetime.utcnow()
+
+          if testing_mode:
+              # Testing mode: Fast delays in minutes
+              email_2_time = base_time + timedelta(minutes=1)
+              email_3_time = base_time + timedelta(minutes=2)
+              print("🧪 TESTING MODE: Onboarding using fast delays (minutes)")
+          else:
+              # Production mode: Standard delays in hours
+              email_2_time = base_time + timedelta(hours=24)
+              email_3_time = base_time + timedelta(hours=48)
+              print("🚀 PRODUCTION MODE: Onboarding using standard delays (hours)")
+
+          # Output timestamps in ISO 8601 format
+          output = {
+              "email_2_time": email_2_time.isoformat(),
+              "email_3_time": email_3_time.isoformat()
+          }
+
+          print(f"📅 Scheduled times:")
+          print(f"  Email #2: {email_2_time.isoformat()}")
+          print(f"  Email #3: {email_3_time.isoformat()}")
+
+          # Write output
+          print(json.dumps(output))
+
+      # Step 5: Send Email #1 immediately
+      - id: send_email_1
+        type: io.kestra.plugin.core.flow.Subflow
+        description: Send Email #1 (onboarding) immediately
+        flowId: send-email
+        namespace: christmas.campaign
+        inputs:
+          email: "{{ inputs.email }}"
+          email_number: 1
+          first_name: "{{ inputs.first_name }}"
+          business_name: "{{ inputs.business_name }}"
+          segment: "OPTIMIZE"
+          sequence_type: "onboarding"
+        wait: true
+
+      # Step 6: Schedule Email #2
+      - id: schedule_email_2
+        type: io.kestra.plugin.core.flow.Subflow
+        description: Schedule Email #2 (onboarding)
+        flowId: send-email
+        namespace: christmas.campaign
+        inputs:
+          email: "{{ inputs.email }}"
+          email_number: 2
+          first_name: "{{ inputs.first_name }}"
+          business_name: "{{ inputs.business_name }}"
+          segment: "OPTIMIZE"
+          sequence_type: "onboarding"
+        scheduleDate: "{{ (outputs.then[3].stdout | trim | fromJson).email_2_time }}"
+
+      # Step 7: Schedule Email #3
+      - id: schedule_email_3
+        type: io.kestra.plugin.core.flow.Subflow
+        description: Schedule Email #3 (onboarding)
+        flowId: send-email
+        namespace: christmas.campaign
+        inputs:
+          email: "{{ inputs.email }}"
+          email_number: 3
+          first_name: "{{ inputs.first_name }}"
+          business_name: "{{ inputs.business_name }}"
+          segment: "OPTIMIZE"
+          sequence_type: "onboarding"
+        scheduleDate: "{{ (outputs.then[3].stdout | trim | fromJson).email_3_time }}"
+
+      # Step 8: Log completion
+      - id: log_completion
+        type: io.kestra.plugin.core.log.Log
+        message: |
+          ✅ Onboarding sequence started for {{ inputs.email }}
+          - Payment Status: {{ inputs.payment_status }}
+          - Email #1: Sent immediately
+          - Email #2: Scheduled for {{ (outputs.then[3].stdout | trim | fromJson).email_2_time }}
+          - Email #3: Scheduled for {{ (outputs.then[3].stdout | trim | fromJson).email_3_time }}
+          - Sequence Type: onboarding
+          - All emails sent by Kestra (no website involvement)
+        level: INFO
+
+    else:
+      # Payment not validated - log and skip
+      - id: log_payment_failed
+        type: io.kestra.plugin.core.log.Log
+        message: "⚠️  Payment not verified for {{ inputs.email }} (status: {{ inputs.payment_status }}). Skipping onboarding sequence."
+        level: WARN
+
+errors:
+  - id: log_error
+    type: io.kestra.plugin.core.log.Log
+    message: "❌ Error processing onboarding for {{ inputs.email }}: {{ error.message }}"
+    level: ERROR
