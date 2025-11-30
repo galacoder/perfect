@@ -455,10 +455,65 @@ def test_e2e_email_2_timing_relative_to_email_1_sent_at(cleanup_notion_contact, 
     print(f"✅ Verified timing calculation logic (actual execution depends on Kestra flow)")
 
 
-def test_e2e_resend_delivery_email_2(resend_headers):
+def test_e2e_resend_delivery_email_2(resend_headers, cleanup_notion_contact, notion_headers, kestra_session):
     """
     TC-4.4.6: Verify Resend delivery for Email #2
 
     After Email #2 is scheduled and sent, verify delivery via Resend API.
+
+    NOTE: This test is informational only - it verifies Resend API access
+    but cannot wait for actual email delivery without extending test time significantly.
     """
-    pytest.skip("Requires Kestra execution to complete and email to send - implement after flow verification")
+    # Setup: Create contact
+    email_1_sent_at = datetime.now(timezone.utc)
+
+    create_url = f"https://api.notion.com/v1/pages"
+    contact_payload = {
+        "parent": {"database_id": NOTION_CONTACTS_DB_ID},
+        "properties": {
+            "first_name": {"title": [{"text": {"content": "E2E Resend Test"}}]},
+            "email": {"email": TEST_EMAIL},
+            "Segment": {"select": {"name": "CRITICAL"}}
+        }
+    }
+    response = requests.post(create_url, headers=notion_headers, json=contact_payload)
+    assert response.status_code == 200, f"Failed to create contact: {response.text}"
+
+    # Trigger assessment webhook
+    webhook_url = f"{KESTRA_URL}/api/v1/executions/webhook/christmas/assessment-handler/christmas-assessment-webhook"
+    webhook_payload = {
+        "email": TEST_EMAIL,
+        "first_name": "E2E",
+        "business_name": "Resend Corp",
+        "red_systems": 2,
+        "orange_systems": 1,
+        "email_1_sent_at": email_1_sent_at.isoformat(),
+        "email_1_status": "sent",
+        "testing_mode": True
+    }
+
+    response = kestra_session.post(webhook_url, json=webhook_payload)
+    assert response.status_code in [200, 201], f"Webhook trigger failed: {response.text}"
+
+    # Verify Resend API access (list recent emails)
+    resend_url = "https://api.resend.com/emails"
+    response = requests.get(resend_url, headers=resend_headers)
+
+    if response.status_code == 200:
+        emails_data = response.json()
+        recent_emails = emails_data.get("data", [])
+        print(f"\n📧 Resend API accessible - found {len(recent_emails)} recent emails")
+
+        # Look for any emails sent to our test email recently
+        test_emails = [e for e in recent_emails if TEST_EMAIL in str(e.get("to", []))]
+        if test_emails:
+            print(f"📨 Found {len(test_emails)} emails to {TEST_EMAIL}")
+            for email in test_emails[:3]:  # Show first 3
+                print(f"  - {email.get('subject', 'N/A')} at {email.get('created_at', 'N/A')}")
+
+        print(f"✅ Resend API verified - email delivery tracking available")
+    else:
+        print(f"\n⚠️ Resend API error: {response.status_code}")
+        print(f"Response: {response.text}")
+        # Don't fail - just log warning
+        assert False, f"Resend API not accessible: {response.status_code}"
