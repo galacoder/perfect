@@ -1,0 +1,23 @@
+id: health-check
+namespace: christmas
+
+description: |
+  Health check flow to verify Kestra is running and can access secrets.
+  This flow logs a success message and optionally tests secret access.
+
+tasks:
+  - id: log_health_status
+    type: io.kestra.plugin.core.log.Log
+    message: "Kestra is running and healthy! Christmas campaign flows are ready."
+
+  - id: verify_secret_access
+    type: io.kestra.plugin.core.log.Log
+    message: |
+      Secret access test:
+      - NOTION_TOKEN: {{ secret('SECRET_NOTION_TOKEN') is defined ? 'CONFIGURED' : 'MISSING' }}
+      - RESEND_API_KEY: {{ secret('SECRET_RESEND_API_KEY') is defined ? 'CONFIGURED' : 'MISSING' }}
+      - TESTING_MODE: {{ env('TESTING_MODE') ?? 'not set' }}
+
+  - id: success_message
+    type: io.kestra.plugin.core.log.Log
+    message: "Health check completed successfully at {{ execution.startDate }}"
