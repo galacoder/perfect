@@ -1,12 +1,12 @@
 {
   "task_id": "1129-port-prefect-to-kestra",
   "domain": "coding",
-  "status": "executing",
+  "status": "blocked",
   "current_phase": "CODE",
   "current_wave": 4,
   "current_feature_id": "4.4",
   "created_at": "2025-11-29T10:00:00Z",
-  "updated_at": "2025-11-30T05:22:31.705093+00:00",
+  "updated_at": "2025-11-30T19:47:01.799334+00:00",
   "meta": {
     "title": "Port Prefect Christmas Automation to Kestra",
     "description": "Migrate all Christmas campaign flows from Prefect v3.4.1 to Kestra self-hosted automation tool. Includes 5 Prefect flows, 3 task modules, FastAPI webhook server, Notion/Resend integrations, Notion template fetching, per-email Notion Sequence Tracker updates, and comprehensive Puppeteer E2E testing.",
@@ -513,13 +513,52 @@
       "id": "4.4",
       "wave": 4,
       "name": "E2E test: Assessment to email delivery (Emails #2-5 only)",
-      "status": "pending",
+      "status": "blocked",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/e2e/test_assessment_e2e.py",
       "description": "End-to-end test of complete assessment flow. CRITICAL: Mock website sending Email #1 first, then trigger Kestra webhook with email_1_sent_at. Verify only Emails #2-5 scheduled by Kestra.",
-      "modified_at": "2025-11-29T12:00:00Z",
-      "modification_reason": "Renamed from signup E2E to assessment E2E, added Email #1 mock",
+      "modified_at": "2025-11-30T12:00:00Z",
+      "modification_reason": "BLOCKED: Flows not deployed to production Kestra instance",
+      "blocked_reason": "Christmas flows not present in Kestra production instance at https://kestra.galatek.dev. Only 'system', 'company.team', and 'tutorial' namespaces exist. No 'christmas' namespace found.",
+      "blocker_details": {
+        "issue": "13 Christmas campaign flows need to be deployed to Kestra",
+        "attempted_solutions": [
+          "API upload via curl (401 Unauthorized - requires admin credentials)",
+          "Puppeteer UI upload (Import button requires authentication)",
+          "SSH to server (Permission denied - publickey/password)",
+          "Docker exec approach (requires SSH access to homelab server)"
+        ],
+        "required_to_unblock": [
+          "Kestra admin credentials (KESTRA_USER + KESTRA_PASS) for API upload",
+          "OR SSH access to galacoder@192.168.2.9 for Docker exec flow upload",
+          "OR manual flow upload via Kestra UI by user"
+        ],
+        "flows_to_deploy": [
+          "christmas.health-check",
+          "christmas.send-email",
+          "christmas.schedule-email-sequence",
+          "christmas.signup-handler",
+          "christmas.assessment-handler",
+          "christmas.noshow-recovery-handler",
+          "christmas.postcall-maybe-handler",
+          "christmas.onboarding-handler",
+          "christmas.notion_search_contact",
+          "christmas.notion_create_sequence",
+          "christmas.notion_fetch_template",
+          "christmas.notion_update_sequence_tracker",
+          "christmas.resend_send_email"
+        ],
+        "deployment_health_status": {
+          "infrastructure": "HEALTHY",
+          "ssl_certificate": "VALID (Let's Encrypt)",
+          "https_accessible": true,
+          "ui_functional": true,
+          "tests_passed": "6/11",
+          "tests_failed": "2/11 (auth required)",
+          "tests_skipped": "3/11 (flows not deployed)"
+        }
+      },
       "test_requirements": [
         "Mock website sending Email #1",
         "POST assessment webhook with email_1_sent_at timestamp",
@@ -527,7 +566,8 @@
         "Verify only 4 emails scheduled by Kestra (#2-5)",
         "Verify Email #2 timing relative to email_1_sent_at",
         "Verify Resend delivery for Email #2"
-      ]
+      ],
+      "started_at": "2025-11-30T12:00:00Z"
     },
     {
       "id": "4.5",
@@ -951,6 +991,14 @@
         "Security considerations and troubleshooting guide",
         "Covers Feature 4.2 (website URL updates)"
       ]
+    },
+    {
+      "timestamp": "2025-11-30T19:47:01.799481+00:00",
+      "action": "Feature 4.4 BLOCKED - Flows not deployed to production Kestra",
+      "feature_id": "4.4",
+      "blocker": "Christmas flows missing from https://kestra.galatek.dev",
+      "deployment_health": "6/11 tests passing (infrastructure healthy, flows not deployed)",
+      "required_to_unblock": "Kestra admin credentials OR SSH access to galacoder@192.168.2.9"
     }
   ]
 }
