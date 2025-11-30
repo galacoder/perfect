@@ -1,0 +1,197 @@
+version: "3.8"
+
+# Production Docker Compose for Christmas Campaign Kestra
+# Optimized for homelab deployment with:
+# - Persistent volumes
+# - Resource limits
+# - Enhanced security
+# - Production logging
+# - Health checks
+# - Automatic restarts
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kestra-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kestra_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-kestra_prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env.kestra}
+      # Performance tuning
+      POSTGRES_MAX_CONNECTIONS: 200
+      POSTGRES_SHARED_BUFFERS: 256MB
+    volumes:
+      # Persistent data storage
+      - kestra-postgres-data-prod:/var/lib/postgresql/data
+      # Backup location
+      - ./backups/postgres:/backups
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kestra_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - kestra-network-prod
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        labels: "service=postgres,env=production"
+
+  kestra:
+    image: kestra/kestra:latest
+    container_name: kestra-prod
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      # Kestra configuration (YAML format)
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-kestra_prod}
+            driverClassName: org.postgresql.Driver
+            username: ${POSTGRES_USER:-kestra_prod}
+            password: ${POSTGRES_PASSWORD}
+        kestra:
+          server:
+            basic-auth:
+              enabled: false
+            access-log:
+              enabled: true
+              format: "[%date] %url %method -> %status %duration"
+          repository:
+            type: postgres
+          storage:
+            type: local
+            local:
+              base-path: /app/storage
+          queue:
+            type: postgres
+          tasks:
+            tmp-dir:
+              path: /tmp/kestra-wd/tmp
+          encryption:
+            secret-key: ${KESTRA_ENCRYPTION_SECRET_KEY:-change-me-in-production}
+          metrics:
+            prometheus:
+              enabled: true
+              port: 8081
+          variables:
+            # Global variables for all flows
+            env: production
+            testing_mode: ${SECRET_TESTING_MODE:-false}
+
+      # JVM optimization for production
+      JAVA_OPTS: >-
+        -Xmx2g
+        -Xms512m
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=100
+        -XX:+ParallelRefProcEnabled
+        -XX:+UseStringDeduplication
+        -Djava.security.egd=file:/dev/./urandom
+
+    env_file:
+      - .env.kestra
+
+    volumes:
+      # Persistent storage for task outputs
+      - kestra-data-prod:/app/storage
+      # Flow definitions (read-only)
+      - ./kestra/flows:/app/flows:ro
+      # Temporary working directory
+      - /tmp/kestra-wd:/tmp/kestra-wd
+      # Logs directory
+      - kestra-logs-prod:/app/logs
+
+    command: server standalone --worker-thread=128
+
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+    networks:
+      - kestra-network-prod
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+        labels: "service=kestra,env=production"
+        compress: "true"
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    # Read-only root filesystem (except writable volumes)
+    # Note: Commented out as Kestra needs write access
+    # read_only: true
+
+volumes:
+  kestra-postgres-data-prod:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${KESTRA_DATA_PATH:-./data/postgres}
+    # Alternative: Use named volume for automatic management
+    # driver: local
+
+  kestra-data-prod:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${KESTRA_STORAGE_PATH:-./data/kestra}
+    # Alternative: Use named volume
+    # driver: local
+
+  kestra-logs-prod:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${KESTRA_LOGS_PATH:-./logs/kestra}
+
+networks:
+  kestra-network-prod:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
