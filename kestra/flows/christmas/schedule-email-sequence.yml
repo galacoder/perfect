@@ -1,0 +1,145 @@
+id: schedule-email-sequence
+namespace: christmas
+
+description: |
+  Schedule email sequence (Emails #2-5 only).
+  CRITICAL: Email #1 is sent by website. This flow schedules only Emails #2-5.
+  Delays calculated relative to email_1_sent_at timestamp from webhook payload.
+
+inputs:
+  - id: email
+    type: STRING
+    description: Contact email address
+  - id: first_name
+    type: STRING
+    description: Contact first name
+  - id: business_name
+    type: STRING
+    description: Contact business name
+  - id: segment
+    type: STRING
+    description: Contact segment (CRITICAL/URGENT/OPTIMIZE)
+  - id: email_1_sent_at
+    type: STRING
+    description: ISO 8601 timestamp when Email #1 was sent by website
+  - id: sequence_type
+    type: STRING
+    description: Sequence type (5day)
+    defaults: 5day
+
+tasks:
+  - id: calculate_delays
+    type: io.kestra.plugin.scripts.python.Script
+    description: Calculate scheduling times for Emails #2-5 based on email_1_sent_at timestamp
+    script: |
+      from datetime import datetime, timedelta
+      import os
+      import json
+
+      # Get email_1_sent_at timestamp from input
+      email_1_time_str = "{{ inputs.email_1_sent_at }}"
+
+      # Parse timestamp or fall back to current time
+      try:
+          if email_1_time_str and email_1_time_str != "":
+              email_1_time = datetime.fromisoformat(email_1_time_str.replace('Z', '+00:00'))
+              print(f"✅ Using email_1_sent_at: {email_1_time.isoformat()}")
+          else:
+              email_1_time = datetime.utcnow()
+              print(f"⚠️  WARNING: email_1_sent_at missing, using current time: {email_1_time.isoformat()}")
+      except Exception as e:
+          email_1_time = datetime.utcnow()
+          print(f"⚠️  WARNING: Failed to parse email_1_sent_at, using current time: {e}")
+
+      # Check testing mode
+      testing_mode = os.getenv("TESTING_MODE", "false").lower() == "true"
+
+      if testing_mode:
+          # Testing mode: Fast delays in minutes
+          # Email #2: +1min, #3: +3min, #4: +6min, #5: +10min
+          email_2_time = email_1_time + timedelta(minutes=1)
+          email_3_time = email_1_time + timedelta(minutes=3)
+          email_4_time = email_1_time + timedelta(minutes=6)
+          email_5_time = email_1_time + timedelta(minutes=10)
+          print("🧪 TESTING MODE: Using fast delays (minutes)")
+      else:
+          # Production mode: Standard delays in hours
+          # Email #2: +24h, #3: +72h, #4: +120h, #5: +168h
+          email_2_time = email_1_time + timedelta(hours=24)
+          email_3_time = email_1_time + timedelta(hours=72)
+          email_4_time = email_1_time + timedelta(hours=120)
+          email_5_time = email_1_time + timedelta(hours=168)
+          print("🚀 PRODUCTION MODE: Using standard delays (hours)")
+
+      # Output timestamps in ISO 8601 format
+      output = {
+          "email_2_time": email_2_time.isoformat(),
+          "email_3_time": email_3_time.isoformat(),
+          "email_4_time": email_4_time.isoformat(),
+          "email_5_time": email_5_time.isoformat()
+      }
+
+      print(f"📅 Scheduled times:")
+      print(f"  Email #2: {email_2_time.isoformat()}")
+      print(f"  Email #3: {email_3_time.isoformat()}")
+      print(f"  Email #4: {email_4_time.isoformat()}")
+      print(f"  Email #5: {email_5_time.isoformat()}")
+
+      # Write output
+      print(json.dumps(output))
+
+  - id: schedule_email_2
+    type: io.kestra.plugin.core.flow.Subflow
+    description: Schedule Email #2
+    flowId: send-email
+    namespace: christmas
+    inputs:
+      email: "{{ inputs.email }}"
+      first_name: "{{ inputs.first_name }}"
+      business_name: "{{ inputs.business_name }}"
+      segment: "{{ inputs.segment }}"
+      email_number: 2
+      sequence_type: "{{ inputs.sequence_type }}"
+    scheduleDate: "{{ outputs.calculate_delays.vars.email_2_time }}"
+
+  - id: schedule_email_3
+    type: io.kestra.plugin.core.flow.Subflow
+    description: Schedule Email #3
+    flowId: send-email
+    namespace: christmas
+    inputs:
+      email: "{{ inputs.email }}"
+      first_name: "{{ inputs.first_name }}"
+      business_name: "{{ inputs.business_name }}"
+      segment: "{{ inputs.segment }}"
+      email_number: 3
+      sequence_type: "{{ inputs.sequence_type }}"
+    scheduleDate: "{{ outputs.calculate_delays.vars.email_3_time }}"
+
+  - id: schedule_email_4
+    type: io.kestra.plugin.core.flow.Subflow
+    description: Schedule Email #4
+    flowId: send-email
+    namespace: christmas
+    inputs:
+      email: "{{ inputs.email }}"
+      first_name: "{{ inputs.first_name }}"
+      business_name: "{{ inputs.business_name }}"
+      segment: "{{ inputs.segment }}"
+      email_number: 4
+      sequence_type: "{{ inputs.sequence_type }}"
+    scheduleDate: "{{ outputs.calculate_delays.vars.email_4_time }}"
+
+  - id: schedule_email_5
+    type: io.kestra.plugin.core.flow.Subflow
+    description: Schedule Email #5
+    flowId: send-email
+    namespace: christmas
+    inputs:
+      email: "{{ inputs.email }}"
+      first_name: "{{ inputs.first_name }}"
+      business_name: "{{ inputs.business_name }}"
+      segment: "{{ inputs.segment }}"
+      email_number: 5
+      sequence_type: "{{ inputs.sequence_type }}"
+    scheduleDate: "{{ outputs.calculate_delays.vars.email_5_time }}"
