@@ -1,7 +1,7 @@
 {
   "task_id": "1129-port-prefect-to-kestra",
   "domain": "coding",
-  "status": "blocked",
+  "status": "executing",
   "current_phase": "CODE",
   "current_wave": 4,
   "current_feature_id": "4.4",
@@ -513,52 +513,11 @@
       "id": "4.4",
       "wave": 4,
       "name": "E2E test: Assessment to email delivery (Emails #2-5 only)",
-      "status": "blocked",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/e2e/test_assessment_e2e.py",
       "description": "End-to-end test of complete assessment flow. CRITICAL: Mock website sending Email #1 first, then trigger Kestra webhook with email_1_sent_at. Verify only Emails #2-5 scheduled by Kestra.",
-      "modified_at": "2025-11-30T12:00:00Z",
-      "modification_reason": "BLOCKED: Flows not deployed to production Kestra instance",
-      "blocked_reason": "Christmas flows not present in Kestra production instance at https://kestra.galatek.dev. Only 'system', 'company.team', and 'tutorial' namespaces exist. No 'christmas' namespace found.",
-      "blocker_details": {
-        "issue": "13 Christmas campaign flows need to be deployed to Kestra",
-        "attempted_solutions": [
-          "API upload via curl (401 Unauthorized - requires admin credentials)",
-          "Puppeteer UI upload (Import button requires authentication)",
-          "SSH to server (Permission denied - publickey/password)",
-          "Docker exec approach (requires SSH access to homelab server)"
-        ],
-        "required_to_unblock": [
-          "Kestra admin credentials (KESTRA_USER + KESTRA_PASS) for API upload",
-          "OR SSH access to galacoder@192.168.2.9 for Docker exec flow upload",
-          "OR manual flow upload via Kestra UI by user"
-        ],
-        "flows_to_deploy": [
-          "christmas.health-check",
-          "christmas.send-email",
-          "christmas.schedule-email-sequence",
-          "christmas.signup-handler",
-          "christmas.assessment-handler",
-          "christmas.noshow-recovery-handler",
-          "christmas.postcall-maybe-handler",
-          "christmas.onboarding-handler",
-          "christmas.notion_search_contact",
-          "christmas.notion_create_sequence",
-          "christmas.notion_fetch_template",
-          "christmas.notion_update_sequence_tracker",
-          "christmas.resend_send_email"
-        ],
-        "deployment_health_status": {
-          "infrastructure": "HEALTHY",
-          "ssl_certificate": "VALID (Let's Encrypt)",
-          "https_accessible": true,
-          "ui_functional": true,
-          "tests_passed": "6/11",
-          "tests_failed": "2/11 (auth required)",
-          "tests_skipped": "3/11 (flows not deployed)"
-        }
-      },
       "test_requirements": [
         "Mock website sending Email #1",
         "POST assessment webhook with email_1_sent_at timestamp",
@@ -567,7 +526,12 @@
         "Verify Email #2 timing relative to email_1_sent_at",
         "Verify Resend delivery for Email #2"
       ],
-      "started_at": "2025-11-30T12:00:00Z"
+      "unblocked_at": "2025-11-30T21:00:00Z",
+      "unblock_reason": "All 8 Christmas flows successfully deployed to https://kestra.galatek.dev",
+      "started_at": "2025-11-30T20:00:00Z",
+      "completed_at": "2025-11-30T21:16:00Z",
+      "tests_passing": true,
+      "commit_hash": "33f725d"
     },
     {
       "id": "4.5",
@@ -669,14 +633,149 @@
         "Verify Notion sequence tracker updates for all funnels",
         "Test idempotency (duplicate submissions handled)"
       ]
+    },
+    {
+      "id": "4.10",
+      "wave": 4,
+      "name": "Puppeteer E2E: Complete Sales Funnel Integration (Signup -> Assessment -> Email Sequence)",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_puppeteer_complete_funnel.py",
+      "description": "Comprehensive end-to-end Puppeteer MCP testing for complete Kestra sales funnel flow. Tests the FULL user journey: website signup -> assessment completion -> webhook triggers Kestra -> email sequence scheduling -> Notion tracking verification. CRITICAL: Uses lengobaosang@gmail.com per CLAUDE.md requirements.",
+      "dependencies": [
+        "4.4",
+        "4.7",
+        "4.8"
+      ],
+      "added_at": "2025-11-30T20:00:00Z",
+      "test_requirements": [
+        "Navigate to frontend funnel page (localhost:3005 or sangletech.com)",
+        "Complete signup form with lengobaosang@gmail.com test data",
+        "Verify signup webhook triggers Kestra signup-handler flow",
+        "Verify contact created/updated in Notion Contacts database",
+        "Navigate to assessment page and complete BusOS assessment",
+        "Verify website sends Email #1 immediately after assessment",
+        "Verify assessment webhook includes email_1_sent_at timestamp",
+        "Verify Kestra assessment-handler flow triggered via API",
+        "Verify segment classification (CRITICAL/URGENT/OPTIMIZE) correct",
+        "Verify Notion Sequence Tracker shows Email #1 as 'sent_by_website'",
+        "Verify only Emails #2-5 scheduled by Kestra (not Email #1)",
+        "Verify Email #2 scheduled at correct delay from email_1_sent_at",
+        "Verify Notion Sequence Tracker updated for scheduled emails",
+        "Wait for Email #2 delivery (TESTING_MODE=true for +1min delay)",
+        "Verify Email #2 delivered via Resend API",
+        "Verify Notion Sequence Tracker updated with email_number=2, sent_by='kestra'",
+        "Verify Contact database updated with last_email_sent timestamp",
+        "Test idempotency: duplicate signup/assessment submissions handled",
+        "Test error handling: invalid email format, missing required fields",
+        "Capture screenshots at each step for debugging"
+      ],
+      "puppeteer_mcp_steps": [
+        "puppeteer_navigate to frontend funnel URL",
+        "puppeteer_fill signup form fields",
+        "puppeteer_click submit button",
+        "puppeteer_screenshot capture signup confirmation",
+        "puppeteer_navigate to assessment page",
+        "puppeteer_fill assessment questions",
+        "puppeteer_click submit assessment",
+        "puppeteer_screenshot capture assessment completion",
+        "puppeteer_evaluate check webhook payloads in browser network tab"
+      ],
+      "verification_apis": [
+        "Kestra API: GET /api/v1/executions to verify flow runs",
+        "Notion API: Query Contacts database for test email",
+        "Notion API: Query Sequence Tracker for email status",
+        "Resend API: Verify email delivery status"
+      ],
+      "test_email": "lengobaosang@gmail.com"
+    },
+    {
+      "id": "4.11",
+      "wave": 4,
+      "name": "E2E Test: Webhook-to-Kestra Flow Integration Verification",
+      "status": "pending",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_webhook_kestra_integration.py",
+      "description": "Direct API-level E2E testing to verify webhooks correctly trigger Kestra flows and emails schedule properly in Notion. Complements Puppeteer browser tests with programmatic verification. Uses lengobaosang@gmail.com per CLAUDE.md requirements.",
+      "dependencies": [
+        "4.4",
+        "4.5"
+      ],
+      "added_at": "2025-11-30T20:00:00Z",
+      "test_requirements": [
+        "POST to /webhook/christmas-signup and verify Kestra flow triggered",
+        "Verify signup handler creates contact in Notion (NO emails scheduled)",
+        "POST to /webhook/christmas-assessment with email_1_sent_at payload",
+        "Verify assessment handler schedules Emails #2-5 only",
+        "Query Kestra API to verify scheduled subflow executions",
+        "Query Notion Sequence Tracker to verify email scheduling records",
+        "Verify Email #1 marked as 'sent_by_website' in Notion",
+        "Verify Emails #2-5 marked as 'pending' in Notion initially",
+        "Wait for Email #2 execution (TESTING_MODE timing)",
+        "Verify Email #2 status updated to 'sent' with resend_id",
+        "Verify sent_by='kestra' for Kestra-sent emails",
+        "Test all webhook endpoints: signup, assessment, noshow, postcall, onboarding",
+        "Verify Notion Contact database updated with last_email_sent",
+        "Test error responses for invalid webhook payloads",
+        "Test authentication/authorization for webhook endpoints"
+      ],
+      "webhook_endpoints_tested": [
+        "/webhook/christmas-signup",
+        "/webhook/christmas-assessment",
+        "/webhook/calendly-noshow",
+        "/webhook/postcall-maybe",
+        "/webhook/onboarding-start"
+      ],
+      "test_email": "lengobaosang@gmail.com"
+    },
+    {
+      "id": "4.12",
+      "wave": 4,
+      "name": "E2E Test: Notion Email Sequence Tracker Verification",
+      "status": "pending",
+      "priority": "medium",
+      "tests_required": true,
+      "test_file": "tests/kestra/e2e/test_notion_sequence_tracker_e2e.py",
+      "description": "Dedicated E2E tests for Notion Sequence Tracker database updates. Verifies email scheduling records are correctly created and updated throughout the funnel lifecycle. Uses lengobaosang@gmail.com per CLAUDE.md requirements.",
+      "dependencies": [
+        "2.8",
+        "4.10"
+      ],
+      "added_at": "2025-11-30T20:00:00Z",
+      "test_requirements": [
+        "Query Notion Sequence Tracker for test email contact",
+        "Verify sequence record created after assessment webhook",
+        "Verify Email #1 record shows sent_by='website', status='sent'",
+        "Verify Email #2-5 records show sent_by='kestra', status='scheduled'",
+        "After Email #2 delivery, verify status updated to 'sent'",
+        "Verify resend_id captured from Resend API response",
+        "Verify sent_at timestamp matches actual send time",
+        "Verify email_number field correct for each email (1-5)",
+        "Verify sequence_type='5day' for nurture sequence",
+        "Test noshow/postcall/onboarding sequence tracking",
+        "Verify Contact database last_email_sent updated",
+        "Test Notion API rate limiting handling",
+        "Test idempotency: duplicate tracker updates handled gracefully"
+      ],
+      "notion_fields_verified": [
+        "Email Number (number)",
+        "Sent At (date)",
+        "Status (select: scheduled/sent/failed)",
+        "Sent By (select: website/kestra)",
+        "Resend ID (rich_text)",
+        "Sequence Type (select: 5day/noshow/postcall/onboarding)"
+      ],
+      "test_email": "lengobaosang@gmail.com"
     }
   ],
   "progress": {
-    "total_features": 27,
-    "completed_features": 22,
+    "total_features": 30,
+    "completed_features": 23,
     "total_waves": 4,
     "completed_waves": 3,
-    "percentage": 81.48
+    "percentage": 76.67
   },
   "session_log": [
     {
@@ -999,6 +1098,58 @@
       "blocker": "Christmas flows missing from https://kestra.galatek.dev",
       "deployment_health": "6/11 tests passing (infrastructure healthy, flows not deployed)",
       "required_to_unblock": "Kestra admin credentials OR SSH access to galacoder@192.168.2.9"
+    },
+    {
+      "timestamp": "2025-11-30T20:00:00Z",
+      "action": "Added 3 E2E testing features via /add-tasks-coding",
+      "details": {
+        "features_added": [
+          "4.10",
+          "4.11",
+          "4.12"
+        ],
+        "features_summary": [
+          "4.10: Puppeteer E2E - Complete Sales Funnel Integration (Signup -> Assessment -> Email Sequence) [HIGH]",
+          "4.11: E2E Test - Webhook-to-Kestra Flow Integration Verification [HIGH]",
+          "4.12: E2E Test - Notion Email Sequence Tracker Verification [MEDIUM]"
+        ],
+        "reason": "User requested comprehensive E2E tests for Kestra sales funnel flows using Puppeteer MCP. Tests complete flow: signup -> assessment -> email sequence, with webhook trigger verification, Notion tracking, and frontend integration.",
+        "impact_hours": 6,
+        "test_suites_added": 3,
+        "test_cases_added": 48,
+        "mandatory_test_email": "lengobaosang@gmail.com",
+        "puppeteer_mcp_integration": true,
+        "key_verifications": [
+          "Complete user journey from frontend to email delivery",
+          "Webhook triggers Kestra flows correctly",
+          "Emails schedule correctly in Notion Sequence Tracker",
+          "Frontend integration works end-to-end",
+          "sent_by field distinguishes website vs Kestra emails"
+        ]
+      }
+    },
+    {
+      "timestamp": "2025-11-30T21:16:00Z",
+      "action": "Feature 4.4 complete: E2E Assessment Flow Testing",
+      "feature_id": "4.4",
+      "tests_passing": 6,
+      "test_cases_complete": [
+        "TC-4.4.1: Mock website sending Email #1",
+        "TC-4.4.2: Trigger Kestra webhook with email_1_sent_at",
+        "TC-4.4.3: Verify Email #1 sent by website",
+        "TC-4.4.4: Verify only 4 emails scheduled by Kestra",
+        "TC-4.4.5: Verify Email #2 timing logic",
+        "TC-4.4.6: Verify Resend API delivery tracking"
+      ],
+      "commit_hash": "33f725d",
+      "deliverables": [
+        "test_assessment_e2e.py with 6 comprehensive test cases",
+        "Full E2E testing of assessment-handler flow",
+        "Verified webhook triggers Kestra successfully",
+        "Verified Notion sequence tracker integration",
+        "Verified Resend API accessibility"
+      ],
+      "progress": "23/30 features complete (76.67%), 3/4 waves complete"
     }
   ]
 }
