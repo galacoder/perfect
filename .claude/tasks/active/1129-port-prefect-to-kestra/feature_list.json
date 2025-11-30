@@ -4,9 +4,9 @@
   "status": "executing",
   "current_phase": "CODE",
   "current_wave": 1,
-  "current_feature_id": "1.4",
+  "current_feature_id": "2.5",
   "created_at": "2025-11-29T10:00:00Z",
-  "updated_at": "2025-11-29T12:00:00Z",
+  "updated_at": "2025-11-29T23:44:24.507403Z",
   "meta": {
     "title": "Port Prefect Christmas Automation to Kestra",
     "description": "Migrate all Christmas campaign flows from Prefect v3.4.1 to Kestra self-hosted automation tool. Includes 5 Prefect flows, 3 task modules, FastAPI webhook server, Notion/Resend integrations, Notion template fetching, per-email Notion Sequence Tracker updates, and comprehensive Puppeteer E2E testing.",
@@ -20,8 +20,16 @@
       "email_responsibility_split": {
         "decided_at": "2025-11-29T12:00:00Z",
         "summary": "Website sends signup email + Email #1 of 5-day sequence. Kestra handles Emails #2-5 and ALL emails for secondary sequences.",
-        "website_sends": ["signup confirmation", "5-day sequence Email #1"],
-        "kestra_sends": ["5-day sequence Emails #2-5", "noshow-recovery (all 3)", "postcall-maybe (all 3)", "onboarding (all 3)"]
+        "website_sends": [
+          "signup confirmation",
+          "5-day sequence Email #1"
+        ],
+        "kestra_sends": [
+          "5-day sequence Emails #2-5",
+          "noshow-recovery (all 3)",
+          "postcall-maybe (all 3)",
+          "onboarding (all 3)"
+        ]
       }
     }
   },
@@ -116,17 +124,21 @@
       "id": "2.1",
       "wave": 2,
       "name": "Port routing.py logic to Kestra-compatible format",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_routing.py",
-      "description": "Convert classify_segment, get_email_template_id functions to Python script tasks or inline logic"
+      "description": "Convert classify_segment, get_email_template_id functions to Python script tasks or inline logic",
+      "started_at": "2025-11-29T16:05:00Z",
+      "completed_at": "2025-11-29T23:37:46.035657Z",
+      "tests_passing": true,
+      "commit_hash": "4067ac9"
     },
     {
       "id": "2.2",
       "wave": 2,
       "name": "Create Notion HTTP tasks (search, create, update, sequence tracker)",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_notion_tasks.py",
@@ -144,23 +156,31 @@
         "test_notion_update_sequence_tracker_sent_timestamp",
         "test_notion_update_sequence_tracker_sent_by_kestra",
         "test_notion_update_sequence_tracker_resend_id"
-      ]
+      ],
+      "started_at": "2025-11-29T16:30:00Z",
+      "completed_at": "2025-11-29T23:40:11.388782Z",
+      "tests_passing": true,
+      "commit_hash": "c64dcf6"
     },
     {
       "id": "2.3",
       "wave": 2,
       "name": "Create Resend HTTP tasks (send email)",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_resend_tasks.py",
-      "description": "Create HTTP task for Resend API email sending with template variable substitution"
+      "description": "Create HTTP task for Resend API email sending with template variable substitution",
+      "started_at": "2025-11-29T17:00:00Z",
+      "completed_at": "2025-11-29T23:41:38.881830Z",
+      "tests_passing": true,
+      "commit_hash": "d29225a"
     },
     {
       "id": "2.4",
       "wave": 2,
       "name": "Port send_email_flow to Kestra YAML with Notion tracking",
-      "status": "pending",
+      "status": "complete",
       "priority": "high",
       "tests_required": true,
       "test_file": "tests/kestra/test_send_email_flow.py",
@@ -181,7 +201,11 @@
         "test_send_email_flow_notion_update_status_success",
         "test_send_email_flow_notion_update_failure_does_not_block_email",
         "test_send_email_flow_contact_last_email_sent_updated"
-      ]
+      ],
+      "started_at": "2025-11-29T17:30:00Z",
+      "completed_at": "2025-11-29T23:44:24.507396Z",
+      "tests_passing": true,
+      "commit_hash": "38713c3"
     },
     {
       "id": "2.5",
@@ -211,7 +235,9 @@
       "tests_required": true,
       "test_file": "tests/kestra/test_notion_templates.py",
       "description": "Fetch email templates dynamically from Notion Templates database. Support all sequences (5-day nurture, no-show recovery, post-call maybe, onboarding). Implement fallback to static templates if Notion fetch fails. Handle personalization variable substitution (first_name, business_name, etc.).",
-      "dependencies": ["2.2"],
+      "dependencies": [
+        "2.2"
+      ],
       "added_at": "2025-11-29T11:00:00Z",
       "test_requirements": [
         "Mock Notion template API responses",
@@ -377,7 +403,9 @@
       "test_file": "tests/kestra/test_notion_sequence_tracker.py",
       "description": "Create reusable Kestra task for updating Notion Sequence Tracker after EVERY email send. This task is called by send_email_flow and all handler flows. Payload includes: email_number (int), sent_at (ISO 8601 timestamp), status ('sent'/'failed'), resend_id (string from Resend API response), sent_by ('kestra' or 'website'), sequence_type ('5day'/'noshow'/'postcall'/'onboarding'). Task must handle Notion API failures gracefully - log error but return success to not block email flow.",
       "added_at": "2025-11-29T14:00:00Z",
-      "dependencies": ["2.2"],
+      "dependencies": [
+        "2.2"
+      ],
       "test_requirements": [
         "test_sequence_tracker_update_payload_structure",
         "test_sequence_tracker_email_number_field_correct",
@@ -529,7 +557,9 @@
       "tests_required": true,
       "test_file": "tests/kestra/e2e/test_puppeteer_secondary_funnels.py",
       "description": "Automated browser testing for calendly-noshow, postcall-maybe, and onboarding-start webhook flows. Each funnel gets complete end-to-end validation. Kestra handles ALL emails for these sequences (no website involvement).",
-      "dependencies": ["4.7"],
+      "dependencies": [
+        "4.7"
+      ],
       "added_at": "2025-11-29T11:00:00Z",
       "test_requirements": [
         "Test calendly-noshow funnel (3-email recovery sequence - ALL from Kestra)",
@@ -545,10 +575,10 @@
   ],
   "progress": {
     "total_features": 27,
-    "completed_features": 4,
+    "completed_features": 8,
     "total_waves": 4,
     "completed_waves": 1,
-    "percentage": 14.81
+    "percentage": 29.63
   },
   "session_log": [
     {
@@ -571,7 +601,11 @@
       "timestamp": "2025-11-29T11:00:00Z",
       "action": "Added 3 features via /add-tasks-coding",
       "details": {
-        "features_added": ["2.6", "4.7", "4.8"],
+        "features_added": [
+          "2.6",
+          "4.7",
+          "4.8"
+        ],
         "features_summary": [
           "2.6: Notion template fetching with fallback (Wave 2)",
           "4.7: Puppeteer E2E - Christmas signup sales funnel (Wave 4)",
@@ -587,8 +621,20 @@
       "action": "CRITICAL ARCHITECTURAL CHANGE via /add-tasks-coding: Website/Kestra email responsibility split",
       "details": {
         "architectural_decision": "Website sends signup email + Email #1 of 5-day sequence. Kestra handles Emails #2-5 and ALL secondary sequence emails.",
-        "features_modified": ["2.5", "3.1", "3.6", "4.4", "4.6", "4.7"],
-        "features_added": ["2.7", "3.5", "4.8", "4.9"],
+        "features_modified": [
+          "2.5",
+          "3.1",
+          "3.6",
+          "4.4",
+          "4.6",
+          "4.7"
+        ],
+        "features_added": [
+          "2.7",
+          "3.5",
+          "4.8",
+          "4.9"
+        ],
         "features_renumbered": {
           "old_3.5": "now_3.6",
           "old_4.7": "now_4.7_modified",
@@ -612,8 +658,17 @@
       "action": "CRITICAL REQUIREMENT via /add-tasks-coding: Notion Database Updates Per Email",
       "details": {
         "requirement": "For EVERY email sent by Kestra, system MUST update Notion Sequence Tracker database with delivery status",
-        "features_modified": ["2.2", "2.4", "3.2", "3.3", "3.4", "3.5"],
-        "features_added": ["2.8"],
+        "features_modified": [
+          "2.2",
+          "2.4",
+          "3.2",
+          "3.3",
+          "3.4",
+          "3.5"
+        ],
+        "features_added": [
+          "2.8"
+        ],
         "key_changes": [
           "2.2: Added update_sequence_tracker_per_email function to Notion HTTP tasks",
           "2.4: send_email_flow now includes Notion Sequence Tracker update after each send",
@@ -643,7 +698,12 @@
     {
       "timestamp": "2025-11-29T16:00:00Z",
       "action": "Wave 1 (Foundation) complete - All features implemented",
-      "features_completed": ["1.1", "1.2", "1.3", "1.4"],
+      "features_completed": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.4"
+      ],
       "commits": [
         "d212b1230dded7c807985563198f5cf58c512ed4",
         "e38951dfdd4e7b807ef47c40a240cd9f621a46ce",
@@ -659,6 +719,35 @@
         "kestra/README.md with comprehensive documentation"
       ],
       "tests_passing": "23/23 tests passing (13 docker-compose + 10 secrets + 11 health flow - 11 tests, feature 1.4 has no tests)"
+    },
+    {
+      "timestamp": "2025-11-29T23:37:46.035668Z",
+      "action": "Feature 2.1 complete: Port routing.py logic to Kestra",
+      "feature_id": "2.1",
+      "tests_passing": 25,
+      "commit_hash": "4067ac9"
+    },
+    {
+      "timestamp": "2025-11-29T23:40:11.388791Z",
+      "action": "Feature 2.2 complete: Create Notion HTTP tasks with sequence tracker",
+      "feature_id": "2.2",
+      "tests_passing": 21,
+      "commit_hash": "c64dcf6"
+    },
+    {
+      "timestamp": "2025-11-29T23:41:38.881840Z",
+      "action": "Feature 2.3 complete: Create Resend HTTP task",
+      "feature_id": "2.3",
+      "tests_passing": 10,
+      "commit_hash": "d29225a"
+    },
+    {
+      "timestamp": "2025-11-29T23:44:24.507406Z",
+      "action": "Feature 2.4 complete: send_email_flow with Notion tracking (CRITICAL feature)",
+      "feature_id": "2.4",
+      "tests_passing": 14,
+      "commit_hash": "38713c3",
+      "note": "Most complex feature - integrates routing, Notion tasks, Resend task, and per-email tracking"
     }
   ]
 }
