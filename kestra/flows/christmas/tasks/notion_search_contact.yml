@@ -23,7 +23,7 @@ contentType: application/json
 body: |
   {
     "filter": {
-      "property": "email",
+      "property": "Email",
       "email": {
         "equals": "{{ inputs.email }}"
       }

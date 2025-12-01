@@ -14,7 +14,7 @@
 # Ported from: campaigns/christmas_campaign/flows/signup_handler.py
 
 id: signup-handler
-namespace: christmas.campaign
+namespace: christmas
 description: Handle Christmas campaign signup - tracking only, NO email sending
 
 triggers:

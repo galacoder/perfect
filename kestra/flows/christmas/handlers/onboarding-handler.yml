@@ -16,7 +16,7 @@
 # Created: 2025-11-30
 
 id: onboarding-handler
-namespace: christmas.campaign
+namespace: christmas
 description: Handle onboarding start - 3-email welcome sequence ALL from Kestra
 
 triggers:
@@ -177,7 +177,7 @@ tasks:
         type: io.kestra.plugin.core.flow.Subflow
         description: Send Email #1 (onboarding) immediately
         flowId: send-email
-        namespace: christmas.campaign
+        namespace: christmas
         inputs:
           email: "{{ inputs.email }}"
           email_number: 1
@@ -192,7 +192,7 @@ tasks:
         type: io.kestra.plugin.core.flow.Subflow
         description: Schedule Email #2 (onboarding)
         flowId: send-email
-        namespace: christmas.campaign
+        namespace: christmas
         inputs:
           email: "{{ inputs.email }}"
           email_number: 2
@@ -207,7 +207,7 @@ tasks:
         type: io.kestra.plugin.core.flow.Subflow
         description: Schedule Email #3 (onboarding)
         flowId: send-email
-        namespace: christmas.campaign
+        namespace: christmas
         inputs:
           email: "{{ inputs.email }}"
           email_number: 3

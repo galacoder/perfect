@@ -38,7 +38,7 @@ http://localhost:8080/api/v1/executions/webhook/christmas/handlers/{handler-name
 
 **Production** (adjust domain as needed):
 ```
-https://kestra.homelab.domain/api/v1/executions/webhook/christmas/handlers/{handler-name}/{webhook-key}
+https://kestra.galatek.dev/api/v1/executions/webhook/christmas/handlers/{handler-name}/{webhook-key}
 ```
 
 ---
@@ -506,8 +506,8 @@ RESEND_API_KEY=re_xxxxx
 
 **Production** (adjust domain):
 ```bash
-KESTRA_BASE_URL=https://kestra.homelab.domain
-KESTRA_WEBHOOK_SIGNUP=https://kestra.homelab.domain/api/v1/executions/webhook/christmas/handlers/signup-handler/signup-webhook-key
+KESTRA_BASE_URL=https://kestra.galatek.dev
+KESTRA_WEBHOOK_SIGNUP=https://kestra.galatek.dev/api/v1/executions/webhook/christmas/handlers/signup-handler/signup-webhook-key
 # ... (same pattern for other webhooks)
 ```
 
@@ -729,7 +729,7 @@ docker-compose -f docker-compose.kestra.yml restart
 
 **Questions?** See `KESTRA_MIGRATION.md` for migration details or `ARCHITECTURE.md` for system architecture.
 
-**Kestra UI**: http://localhost:8080 (local) or https://kestra.homelab.domain (production)
+**Kestra UI**: http://localhost:8080 (local) or https://kestra.galatek.dev (production)
 
 **Last Updated**: 2025-11-30
 **Migration Status**: Complete (Prefect → Kestra)

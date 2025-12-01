@@ -71,8 +71,18 @@
 | 1 | Foundation | 4 | COMPLETE |
 | 2 | Core Flow Migration | 8 | COMPLETE |
 | 3 | Handler Flows Migration | 6 | COMPLETE |
-| 4 | Website Integration & Deployment | 12 (+3 NEW: 4.10, 4.11, 4.12) | In Progress (BLOCKED) |
-| **Total** | | **30** | **73.33% complete** |
+| 4 | Website Integration & Deployment | 14 | In Progress |
+| **Total** | | **32** | **81.25% complete** |
+
+### Wave 4 Feature Status
+| Feature | Status | Notes |
+|---------|--------|-------|
+| 4.1-4.6 | Complete | Documentation and infrastructure |
+| 4.7-4.10 | blocked_external_dependency | Requires frontend webhook integration |
+| 4.11 | Complete | 13/15 tests passing (2 fail due to 4.14 bug) |
+| 4.12 | Complete | 10/10 tests passing |
+| 4.13 | Pending | Traefik domain configuration |
+| 4.14 | Pending | Bug fix: Notion property name |
 
 ---
 
@@ -273,6 +283,55 @@ All E2E tests MUST use: `lengobaosang@gmail.com` (per CLAUDE.md requirements)
 - **Previous Estimate**: 36 hours
 - **New Estimate**: 42 hours (+6)
 - **Test Cases Added**: 54
+
+---
+
+## Changes Summary (2025-11-30 23:30)
+
+### Bug Fix and External Dependency Documentation via /add-tasks-coding
+
+Identified and documented critical blockers for Puppeteer E2E tests.
+
+### Feature Added
+| Feature | Description | Wave | Priority |
+|---------|-------------|------|----------|
+| **4.14** | Fix signup-handler Notion property name: 'email' to 'Email' | 4 | HIGH |
+
+### Features Modified (Marked as blocked_external_dependency)
+| Feature | Change |
+|---------|--------|
+| **4.7** | Blocked - requires frontend (sangletech-tailwindcss) webhook integration |
+| **4.8** | Blocked - requires frontend (sangletech-tailwindcss) webhook integration |
+| **4.9** | Blocked - depends on 4.7 |
+| **4.10** | Blocked - depends on 4.7 and 4.8 |
+
+### External Dependency Documentation
+
+**Blocker Type**: Frontend webhook integration missing
+
+**Repository**: sangletech-tailwindcss
+
+**Required Work**: Frontend must POST assessment/signup data to Kestra webhooks after form submission
+
+**Root Cause**:
+- Assessment completion is PURELY FRONTEND - calculates scores in JavaScript but sends NO data to backend
+- No webhook calls detected during form submissions
+- Kestra flows are ready but never get triggered
+
+**Workaround**: Direct API webhook testing (Feature 4.11) works - bypass browser automation
+
+**Bug Fix (Feature 4.14)**:
+- signup-handler.yml uses lowercase 'email' but Notion expects 'Email' (capitalized)
+- Causes 2 test failures in Feature 4.11 (currently 13/15 passing)
+- After fix, Feature 4.11 should show 15/15 passing
+
+### Impact
+- **Previous Features**: 31
+- **New Features**: 32 (+1)
+- **Completed Features**: 26
+- **Blocked Features**: 4 (4.7-4.10 require frontend work)
+- **Pending Features**: 2 (4.13 Traefik domain, 4.14 bug fix)
+- **Completion**: 81.25% (26/32 features)
 
 ---
 

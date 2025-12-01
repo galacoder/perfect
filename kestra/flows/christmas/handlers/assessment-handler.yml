@@ -19,7 +19,7 @@
 # Created: 2025-11-30
 
 id: assessment-handler
-namespace: christmas.campaign
+namespace: christmas
 description: Handle Christmas assessment - schedule Emails #2-5 only (Email #1 sent by website)
 
 triggers:

@@ -35,21 +35,23 @@ POST http://localhost:8080/api/v1/executions/webhook/christmas/handlers/postcall
 POST http://localhost:8080/api/v1/executions/webhook/christmas/handlers/onboarding-handler/onboarding-webhook-key
 ```
 
-### Production (Homelab)
+### Production (Homelab - Traefik Domain)
 
-**Adjust domain to match your homelab configuration:**
+**Traefik Domain**: `kestra.galatek.dev` (configured via Dokploy deployment)
 
 ```bash
-# Base URL (example)
-KESTRA_BASE_URL=https://kestra.homelab.local
+# Base URL (production)
+KESTRA_BASE_URL=https://kestra.galatek.dev
 
-# Webhook endpoints
-POST https://kestra.homelab.local/api/v1/executions/webhook/christmas/handlers/signup-handler/signup-webhook-key
-POST https://kestra.homelab.local/api/v1/executions/webhook/christmas/handlers/assessment-handler/assessment-webhook-key
-POST https://kestra.homelab.local/api/v1/executions/webhook/christmas/handlers/noshow-recovery-handler/noshow-webhook-key
-POST https://kestra.homelab.local/api/v1/executions/webhook/christmas/handlers/postcall-maybe-handler/postcall-webhook-key
-POST https://kestra.homelab.local/api/v1/executions/webhook/christmas/handlers/onboarding-handler/onboarding-webhook-key
+# Webhook endpoints (christmas namespace)
+POST https://kestra.galatek.dev/api/v1/executions/webhook/christmas/signup-handler/christmas-signup-webhook
+POST https://kestra.galatek.dev/api/v1/executions/webhook/christmas/assessment-handler/christmas-assessment-webhook
+POST https://kestra.galatek.dev/api/v1/executions/webhook/christmas/noshow-recovery-handler/calendly-noshow-webhook
+POST https://kestra.galatek.dev/api/v1/executions/webhook/christmas/postcall-maybe-handler/postcall-maybe-webhook
+POST https://kestra.galatek.dev/api/v1/executions/webhook/christmas/onboarding-handler/onboarding-start-webhook
 ```
+
+**Note**: All flows use `namespace: christmas` (not `christmas.campaign`) to match webhook URLs.
 
 ---
 

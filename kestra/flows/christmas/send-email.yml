@@ -22,7 +22,7 @@
 # Ported from: campaigns/christmas_campaign/flows/send_email_flow.py
 
 id: send-email
-namespace: christmas.campaign
+namespace: christmas
 description: Send single email in Christmas campaign with Notion tracking
 
 inputs:

@@ -536,6 +536,30 @@ This plan migrates the Christmas Campaign marketing automation from Prefect v3.4
     - Resend ID (rich_text)
     - Sequence Type (select: 5day/noshow/postcall/onboarding)
 
+- [ ] **4.13**: Find Traefik domain and update Kestra webhook configuration [MEDIUM]
+  - No test (documentation)
+  - SSH to homelab server (galacoder@192.168.2.9)
+  - Check Traefik routing configuration for Kestra
+  - Update WEBHOOK_ENDPOINTS.md with production URLs
+  - Update WEBSITE_INTEGRATION_KESTRA.md with Traefik domain
+  - **Dependencies**: 4.3
+  - **Action Items**:
+    - Identify domain (e.g., kestra.yourdomain.com)
+    - Test external webhook accessibility
+    - Document SSL/TLS certificate configuration if applicable
+
+- [ ] **4.14**: Fix signup-handler Notion property name: 'email' to 'Email' [HIGH] **(NEW - BUG FIX)**
+  - Test: `tests/kestra/e2e/test_webhook_kestra_integration.py`
+  - **File to Fix**: `kestra/flows/christmas/handlers/signup-handler.yml`
+  - Fix Notion property name mismatch
+  - **Current Issue**: lowercase 'email' but Notion expects 'Email' (capitalized)
+  - **Failing Tests**: 2 test failures in Feature 4.11 (currently 13/15 passing)
+  - **After Fix**: Feature 4.11 should show 15/15 passing
+  - **Test Requirements**:
+    - Verify signup-handler.yml uses 'Email' property (capitalized)
+    - Run Feature 4.11 tests to confirm 15/15 passing
+    - Verify Notion contact creation succeeds with correct property name
+
 ### Success Criteria
 - [ ] Website can trigger Kestra flows
 - [ ] Production deployment is stable
@@ -740,8 +764,59 @@ All E2E tests MUST use: `lengobaosang@gmail.com` (per CLAUDE.md requirements)
 
 ---
 
+## Summary of Changes (2025-11-30 23:30)
+
+### Bug Fix and External Dependency Documentation via /add-tasks-coding
+
+Identified and documented critical blockers for Puppeteer E2E tests.
+
+### Feature Added
+| Feature | Description | Wave | Priority |
+|---------|-------------|------|----------|
+| **4.14** | Fix signup-handler Notion property name: 'email' to 'Email' | 4 | HIGH |
+
+### Features Modified (Marked as blocked_external_dependency)
+| Feature | Change |
+|---------|--------|
+| **4.7** | Blocked - requires frontend (sangletech-tailwindcss) webhook integration |
+| **4.8** | Blocked - requires frontend (sangletech-tailwindcss) webhook integration |
+| **4.9** | Blocked - depends on 4.7 |
+| **4.10** | Blocked - depends on 4.7 and 4.8 |
+
+### External Dependency Documentation
+
+**Blocker Type**: Frontend webhook integration missing
+
+**Repository**: sangletech-tailwindcss
+
+**Required Work**: Frontend must POST assessment/signup data to Kestra webhooks after form submission
+
+**Root Cause**:
+- Assessment completion is PURELY FRONTEND - calculates scores in JavaScript but sends NO data to backend
+- No webhook calls detected during form submissions
+- Kestra flows are ready but never get triggered
+
+**Workaround**: Direct API webhook testing (Feature 4.11) works - bypass browser automation
+
+**Bug Fix (Feature 4.14)**:
+- signup-handler.yml uses lowercase 'email' but Notion expects 'Email' (capitalized)
+- Causes 2 test failures in Feature 4.11 (currently 13/15 passing)
+- After fix, Feature 4.11 should show 15/15 passing
+
+### Impact
+- **Previous Features**: 31
+- **New Features**: 32 (+1)
+- **Completed Features**: 26
+- **Blocked Features**: 4 (4.7-4.10 require frontend work)
+- **Pending Features**: 2 (4.13 Traefik domain, 4.14 bug fix)
+- **Completion**: 81.25% (26/32 features)
+
+---
+
 ## Next Steps
 
-1. Review and approve this plan
-2. Run `/execute-coding` to begin Wave 1
-3. Monitor progress via feature_list.json
+1. Execute Feature 4.14: Fix signup-handler Notion property name
+2. Execute Feature 4.13: Find Traefik domain for webhook configuration
+3. Coordinate with frontend team to add webhook integration (unblocks 4.7-4.10)
+4. Run `/execute-coding` to continue implementation
+5. Monitor progress via feature_list.json

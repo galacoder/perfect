@@ -15,7 +15,7 @@
 # Created: 2025-11-30
 
 id: noshow-recovery-handler
-namespace: christmas.campaign
+namespace: christmas
 description: Handle Calendly no-show recovery - 3-email sequence ALL from Kestra
 
 triggers:
@@ -169,7 +169,7 @@ tasks:
     type: io.kestra.plugin.core.flow.Subflow
     description: Send Email #1 (no-show recovery) immediately
     flowId: send-email
-    namespace: christmas.campaign
+    namespace: christmas
     inputs:
       email: "{{ inputs.email }}"
       email_number: 1
@@ -184,7 +184,7 @@ tasks:
     type: io.kestra.plugin.core.flow.Subflow
     description: Schedule Email #2 (no-show recovery)
     flowId: send-email
-    namespace: christmas.campaign
+    namespace: christmas
     inputs:
       email: "{{ inputs.email }}"
       email_number: 2
@@ -199,7 +199,7 @@ tasks:
     type: io.kestra.plugin.core.flow.Subflow
     description: Schedule Email #3 (no-show recovery)
     flowId: send-email
-    namespace: christmas.campaign
+    namespace: christmas
     inputs:
       email: "{{ inputs.email }}"
       email_number: 3
