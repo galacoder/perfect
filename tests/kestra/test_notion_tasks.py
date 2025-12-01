@@ -44,7 +44,7 @@ class TestNotionTaskTemplates:
         headers = task.get('headers', {})
         assert 'Authorization' in headers
         assert 'Bearer' in headers['Authorization']
-        assert 'SECRET_NOTION_TOKEN' in headers['Authorization']
+        assert "secret('NOTION_TOKEN')" in headers['Authorization']
 
     def test_notion_search_contact_endpoint(self):
         """Notion search contact task uses correct endpoint."""
@@ -141,16 +141,16 @@ class TestNotionAPIConfiguration:
     """Test Notion API configuration and security."""
 
     def test_all_notion_tasks_use_secret_token(self):
-        """All Notion tasks use SECRET_NOTION_TOKEN for auth."""
+        """All Notion tasks use secret('NOTION_TOKEN') for auth."""
         task_files = list(TASKS_DIR.glob("notion_*.yml"))
 
         for task_file in task_files:
             with open(task_file, 'r') as f:
                 content = f.read()
 
-            # Should use SECRET_NOTION_TOKEN
-            assert 'SECRET_NOTION_TOKEN' in content, \
-                f"{task_file.name} does not use SECRET_NOTION_TOKEN"
+            # Should use secret('NOTION_TOKEN')
+            assert "secret('NOTION_TOKEN')" in content, \
+                f"{task_file.name} does not use secret('NOTION_TOKEN')"
 
     def test_all_notion_tasks_use_notion_api_version(self):
         """All Notion tasks use correct Notion API version header."""
