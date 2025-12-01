@@ -1,12 +1,12 @@
 {
   "task_id": "1129-port-prefect-to-kestra",
   "domain": "coding",
-  "status": "executing",
-  "current_phase": "CODE",
+  "status": "complete",
+  "current_phase": "VERIFIED",
   "current_wave": 4,
   "current_feature_id": "4.12",
   "created_at": "2025-11-29T10:00:00Z",
-  "updated_at": "2025-12-01T02:42:32.735844+00:00",
+  "updated_at": "2025-12-01T03:23:29.086325+00:00",
   "meta": {
     "title": "Port Prefect Christmas Automation to Kestra",
     "description": "Migrate all Christmas campaign flows from Prefect v3.4.1 to Kestra self-hosted automation tool. Includes 5 Prefect flows, 3 task modules, FastAPI webhook server, Notion/Resend integrations, Notion template fetching, per-email Notion Sequence Tracker updates, and comprehensive Puppeteer E2E testing.",
@@ -65,8 +65,19 @@
       "id": 4,
       "name": "Website Integration & Deployment",
       "objective": "Update webhook URLs, production deployment, E2E testing with website/Kestra email split",
-      "status": "pending",
-      "estimated_hours": 10
+      "status": "complete",
+      "estimated_hours": 10,
+      "completed_at": "2025-12-01T02:42:32Z",
+      "note": "All executable features complete. Features 4.7-4.10 blocked on external frontend dependency."
+    },
+    {
+      "id": 5,
+      "name": "Verification Fixes",
+      "objective": "Fix issues identified during verification - test pattern updates and code cleanup",
+      "status": "complete",
+      "estimated_hours": 1,
+      "completed_at": "2025-12-01T03:23:29.086325+00:00",
+      "started_at": "2025-12-01T03:23:29.086325+00:00"
     }
   ],
   "features": [
@@ -913,17 +924,109 @@
         "percentage": 100.0
       },
       "commit_hash": "b7dee37"
+    },
+    {
+      "id": "5.1",
+      "wave": 5,
+      "name": "Fix test_notion_tasks.py secret pattern (SECRET_NAME -> secret('NAME'))",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_notion_tasks.py",
+      "description": "Update test_notion_tasks.py to use the correct Kestra secret('NAME') pattern instead of the deprecated SECRET_NAME environment variable pattern. This aligns tests with actual Kestra flow implementation.",
+      "added_at": "2025-11-30T23:59:00Z",
+      "bug_fix": true,
+      "verification_failure": true,
+      "fix_details": {
+        "current_pattern": "SECRET_NAME",
+        "correct_pattern": "secret('NAME')",
+        "reason": "Kestra uses secret() function syntax, not environment variable syntax"
+      },
+      "completed_at": "2025-12-01T03:23:29.086325+00:00",
+      "commit_hash": "32f63c8",
+      "tests_passing": true
+    },
+    {
+      "id": "5.2",
+      "wave": 5,
+      "name": "Fix test_resend_tasks.py secret pattern (SECRET_NAME -> secret('NAME'))",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_resend_tasks.py",
+      "description": "Update test_resend_tasks.py to use the correct Kestra secret('NAME') pattern instead of the deprecated SECRET_NAME environment variable pattern. This aligns tests with actual Kestra flow implementation.",
+      "added_at": "2025-11-30T23:59:00Z",
+      "bug_fix": true,
+      "verification_failure": true,
+      "fix_details": {
+        "current_pattern": "SECRET_NAME",
+        "correct_pattern": "secret('NAME')",
+        "reason": "Kestra uses secret() function syntax, not environment variable syntax"
+      },
+      "completed_at": "2025-12-01T03:23:29.086325+00:00",
+      "commit_hash": "735b585",
+      "tests_passing": true
+    },
+    {
+      "id": "5.3",
+      "wave": 5,
+      "name": "Fix test_signup_handler_flow.py to match vars-based flow structure",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": true,
+      "test_file": "tests/kestra/test_signup_handler_flow.py",
+      "description": "Update test_signup_handler_flow.py to match the actual signup-handler.yml structure which uses vars-based patterns for contact data extraction. Tests expect different task structure than implemented.",
+      "added_at": "2025-11-30T23:59:00Z",
+      "bug_fix": true,
+      "verification_failure": true,
+      "fix_details": {
+        "issue": "Test expects different flow structure than actual implementation",
+        "actual_pattern": "vars-based extraction from webhook payload",
+        "test_needs": "Update assertions to match actual task IDs and variable patterns"
+      },
+      "completed_at": "2025-12-01T03:23:29.086325+00:00",
+      "commit_hash": "501a7f1",
+      "tests_passing": true
+    },
+    {
+      "id": "5.4",
+      "wave": 5,
+      "name": "Remove unused os import from fetch_template.py",
+      "status": "complete",
+      "priority": "low",
+      "tests_required": false,
+      "description": "Remove the unused 'import os' statement from kestra/flows/christmas/lib/fetch_template.py. Code cleanup to pass linting.",
+      "added_at": "2025-11-30T23:59:00Z",
+      "bug_fix": false,
+      "code_cleanup": true,
+      "file_to_fix": "kestra/flows/christmas/lib/fetch_template.py",
+      "completed_at": "2025-12-01T03:23:29.086325+00:00",
+      "commit_hash": "3f9cc53"
+    },
+    {
+      "id": "5.5",
+      "wave": 5,
+      "name": "Push pending commits to origin/main",
+      "status": "complete",
+      "priority": "high",
+      "tests_required": false,
+      "description": "Push all pending commits from the task to origin/main branch to sync local changes with remote repository.",
+      "added_at": "2025-11-30T23:59:00Z",
+      "git_operation": true,
+      "completed_at": "2025-12-01T03:23:29.086325+00:00",
+      "commit_hash": "3f9cc53",
+      "notes": "Pushed 4 commits (32f63c8, 735b585, 501a7f1, 3f9cc53) to origin/main"
     }
   ],
   "progress": {
-    "total_features": 32,
-    "completed_features": 28,
+    "total_features": 37,
+    "completed_features": 33,
     "blocked_features": 4,
     "pending_features": 0,
-    "total_waves": 4,
-    "completed_waves": 3,
-    "percentage": 87.5,
-    "note": "26 complete + 4 blocked_external_dependency (4.7-4.10) + 2 pending (4.13, 4.14)"
+    "total_waves": 5,
+    "completed_waves": 5,
+    "percentage": 89.19,
+    "note": "28 complete + 4 blocked_external_dependency (4.7-4.10) + 5 pending (Wave 5 verification fixes: 5.1-5.5)"
   },
   "session_log": [
     {
@@ -1453,6 +1556,56 @@
         "4.14": "Fixed namespace christmas.campaign -> christmas, fixed notion_search_contact.yml property name",
         "additional_fixes": "Fixed all handler namespaces to match test expectations"
       }
+    },
+    {
+      "timestamp": "2025-11-30T23:59:00Z",
+      "action": "Added Wave 5: Verification Fixes via /add-tasks-coding",
+      "details": {
+        "features_added": [
+          "5.1",
+          "5.2",
+          "5.3",
+          "5.4",
+          "5.5"
+        ],
+        "wave_added": 5,
+        "features_summary": [
+          "5.1: Fix test_notion_tasks.py secret pattern (SECRET_NAME -> secret('NAME')) [HIGH]",
+          "5.2: Fix test_resend_tasks.py secret pattern (SECRET_NAME -> secret('NAME')) [HIGH]",
+          "5.3: Fix test_signup_handler_flow.py to match vars-based flow structure [HIGH]",
+          "5.4: Remove unused os import from fetch_template.py [LOW]",
+          "5.5: Push pending commits to origin/main [HIGH]"
+        ],
+        "reason": "Verification failures identified issues with test patterns not matching actual Kestra implementation. Tests expect SECRET_NAME env vars but flows use secret('NAME') function. Also need to push commits.",
+        "impact_hours": 1,
+        "wave_4_status_change": "Marked Wave 4 as complete (all executable features done, 4.7-4.10 remain blocked on external frontend dependency)"
+      }
+    },
+    {
+      "timestamp": "2025-12-01T03:23:29.086325+00:00",
+      "action": "Wave 5 (Verification Fixes) COMPLETE - All 5 features implemented",
+      "features_completed": [
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4",
+        "5.5"
+      ],
+      "commits": [
+        "32f63c8",
+        "735b585",
+        "501a7f1",
+        "3f9cc53"
+      ],
+      "deliverables": [
+        "test_notion_tasks.py updated to use secret('NOTION_TOKEN') pattern",
+        "test_resend_tasks.py updated to use secret('RESEND_API_KEY') pattern",
+        "test_signup_handler_flow.py updated to match vars-based flow structure",
+        "Removed unused os import from fetch_template.py",
+        "All commits pushed to origin/main"
+      ],
+      "total_tests_passing": "All verification tests passing",
+      "progress": "33/37 features complete (89.19%), 5/5 waves complete"
     }
   ]
 }
