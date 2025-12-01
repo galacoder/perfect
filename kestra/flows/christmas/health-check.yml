@@ -14,8 +14,8 @@ tasks:
     type: io.kestra.plugin.core.log.Log
     message: |
       Secret access test:
-      - NOTION_TOKEN: {{ secret('SECRET_NOTION_TOKEN') is defined ? 'CONFIGURED' : 'MISSING' }}
-      - RESEND_API_KEY: {{ secret('SECRET_RESEND_API_KEY') is defined ? 'CONFIGURED' : 'MISSING' }}
+      - NOTION_TOKEN: {{ secret('NOTION_TOKEN') is defined ? 'CONFIGURED' : 'MISSING' }}
+      - RESEND_API_KEY: {{ secret('RESEND_API_KEY') is defined ? 'CONFIGURED' : 'MISSING' }}
       - TESTING_MODE: {{ env('TESTING_MODE') ?? 'not set' }}
 
   - id: success_message

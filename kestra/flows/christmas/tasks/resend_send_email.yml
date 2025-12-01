@@ -18,7 +18,7 @@ type: io.kestra.plugin.core.http.Request
 uri: "https://api.resend.com/emails"
 method: POST
 headers:
-  Authorization: "Bearer {{ secret('SECRET_RESEND_API_KEY') }}"
+  Authorization: "Bearer {{ secret('RESEND_API_KEY') }}"
   Content-Type: "application/json"
 contentType: application/json
 body: |
