@@ -9,7 +9,6 @@ Supports all sequence types:
 """
 
 import requests
-import os
 from typing import Dict, Optional
 
 
