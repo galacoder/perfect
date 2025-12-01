@@ -54,7 +54,7 @@ class TestResendTaskTemplates:
         headers = task.get('headers', {})
         assert 'Authorization' in headers
         assert 'Bearer' in headers['Authorization']
-        assert 'SECRET_RESEND_API_KEY' in headers['Authorization']
+        assert "secret('RESEND_API_KEY')" in headers['Authorization']
 
     def test_resend_email_payload_structure(self):
         """Resend email payload has correct structure."""
@@ -102,13 +102,13 @@ class TestResendAPIConfiguration:
     """Test Resend API configuration and security."""
 
     def test_resend_task_uses_secret_api_key(self):
-        """Resend task uses SECRET_RESEND_API_KEY for auth."""
+        """Resend task uses secret('RESEND_API_KEY') for auth."""
         task_file = TASKS_DIR / "resend_send_email.yml"
         with open(task_file, 'r') as f:
             content = f.read()
 
-        # Should use SECRET_RESEND_API_KEY
-        assert 'SECRET_RESEND_API_KEY' in content
+        # Should use secret('RESEND_API_KEY')
+        assert "secret('RESEND_API_KEY')" in content
 
     def test_resend_task_method_post(self):
         """Resend send email uses POST method."""
