@@ -813,10 +813,83 @@ Identified and documented critical blockers for Puppeteer E2E tests.
 
 ---
 
+---
+
+## Wave 5: Verification Fixes
+**Objective**: Fix issues identified during verification - test pattern updates and code cleanup
+**Estimated Hours**: 1
+**Status**: Pending
+
+### Tasks
+
+- [ ] **5.1**: Fix test_notion_tasks.py secret pattern (SECRET_NAME -> secret('NAME')) [HIGH]
+  - Test: `tests/kestra/test_notion_tasks.py`
+  - Update tests to use correct Kestra secret('NAME') pattern
+  - Tests currently expect SECRET_NAME environment variable pattern
+  - Actual Kestra implementation uses secret() function syntax
+
+- [ ] **5.2**: Fix test_resend_tasks.py secret pattern (SECRET_NAME -> secret('NAME')) [HIGH]
+  - Test: `tests/kestra/test_resend_tasks.py`
+  - Update tests to use correct Kestra secret('NAME') pattern
+  - Same issue as 5.1 - tests expect env var pattern, flows use function pattern
+
+- [ ] **5.3**: Fix test_signup_handler_flow.py to match vars-based flow structure [HIGH]
+  - Test: `tests/kestra/test_signup_handler_flow.py`
+  - Update tests to match actual signup-handler.yml structure
+  - Tests expect different task IDs and variable patterns than implemented
+  - Actual flow uses vars-based pattern for contact data extraction
+
+- [ ] **5.4**: Remove unused os import from fetch_template.py [LOW]
+  - File: `kestra/flows/christmas/lib/fetch_template.py`
+  - Code cleanup to pass linting
+  - No tests required
+
+- [ ] **5.5**: Push pending commits to origin/main [HIGH]
+  - Push all pending commits from the task
+  - Sync local changes with remote repository
+  - No tests required
+
+### Success Criteria
+- [ ] All test files use correct secret('NAME') pattern
+- [ ] signup_handler_flow tests match actual implementation
+- [ ] No unused imports in Python files
+- [ ] All commits pushed to origin/main
+
+---
+
+## Summary of Changes (2025-11-30 23:59)
+
+### Wave 5 Added via /add-tasks-coding
+
+Verification failures identified issues with test patterns not matching actual Kestra implementation.
+
+### Features Added
+| Feature | Description | Wave | Priority |
+|---------|-------------|------|----------|
+| **5.1** | Fix test_notion_tasks.py secret pattern | 5 | HIGH |
+| **5.2** | Fix test_resend_tasks.py secret pattern | 5 | HIGH |
+| **5.3** | Fix test_signup_handler_flow.py vars-based pattern | 5 | HIGH |
+| **5.4** | Remove unused os import from fetch_template.py | 5 | LOW |
+| **5.5** | Push pending commits to origin/main | 5 | HIGH |
+
+### Root Cause
+- Tests were written expecting SECRET_NAME environment variable pattern
+- Actual Kestra flows use secret('NAME') function syntax
+- signup_handler tests expect different task structure than implemented
+
+### Impact
+- **Previous Features**: 32
+- **New Features**: 37 (+5)
+- **Previous Estimate**: 42 hours
+- **New Estimate**: 43 hours (+1)
+- **Wave 4 Status**: Marked complete (executable features done)
+
+---
+
 ## Next Steps
 
-1. Execute Feature 4.14: Fix signup-handler Notion property name
-2. Execute Feature 4.13: Find Traefik domain for webhook configuration
-3. Coordinate with frontend team to add webhook integration (unblocks 4.7-4.10)
-4. Run `/execute-coding` to continue implementation
+1. Execute Wave 5 features via `/execute-coding`
+2. Verify all tests pass after fixes
+3. Push commits to origin/main
+4. Coordinate with frontend team to add webhook integration (unblocks 4.7-4.10)
 5. Monitor progress via feature_list.json
